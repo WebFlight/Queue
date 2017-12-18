@@ -1,0 +1,52 @@
+/* ==========================================================================
+   Layout Grid
+
+   Default Bootstrap containers
+========================================================================== */
+.mx-layoutgrid {
+    > .row {
+        @media (max-width: $screen-xs-max) {
+            margin-right: -#{$gutter-size / 2};
+            margin-left: -#{$gutter-size / 2};
+        }
+        > [class*="col-"] {
+            padding-right: $gutter-size;
+            padding-left: $gutter-size;
+            @media (max-width: $screen-xs-max) {
+                padding-right: $gutter-size / 2;
+                padding-left: $gutter-size / 2;
+            }
+        }
+    }
+}
+
+// Vertical Align Elements in a bootstrap grid (place on container)
+.v-center {
+    display: table;
+    width: 100%;
+    &::before,
+    &::after {
+        display: none;
+    }
+    .row {
+        display: table-row;
+    }
+    div[class*="col-"] {
+        display: table-cell;
+        float: none;
+        vertical-align: middle;
+
+        &:first-child {
+            padding-left: 0;
+        }
+        &:last-child {
+            padding-right: 0;
+        }
+    }
+}
+
+// Remove padding for Bootstrap columns, add class on row
+.no-gutter > [class*="col-"] {
+    padding-right: 0;
+    padding-left: 0;
+}

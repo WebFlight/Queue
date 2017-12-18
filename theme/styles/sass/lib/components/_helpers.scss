@@ -1,0 +1,216 @@
+/* ==========================================================================
+   Helpers
+
+   Default Mendix Helpers
+========================================================================== */
+
+.show {
+    display: block !important;
+}
+
+.hidden {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+.invisible {
+    visibility: hidden !important;
+}
+
+.display-ie8-only:not([attr*=""]) {
+    display: none !important;
+    padding: 0 !important;
+}
+
+.list-nostyle {
+    ul {
+        margin: 0 !important;
+        padding: 0 !important;
+        li {
+            list-style-type: none !important;
+        }
+    }
+}
+
+.nowrap,
+.nowrap * {
+    overflow: hidden;
+    // Star for inside an element, IE8 span > a
+    white-space: nowrap !important;
+    text-overflow: ellipsis;
+}
+
+.form-disabled p {
+    @extend .form-control;
+    background-color: $form-input-bg-disabled !important;
+}
+
+.padding-bottom-none {
+    padding-bottom: 0 !important;
+}
+
+.no-margin {
+    margin: 0 !important;
+}
+
+// Render DIV as Table Cells
+.table {
+    display: table !important;
+}
+
+.table-row {
+    display: table-row !important;
+}
+
+.table-cell {
+    display: table-cell !important;
+}
+
+// Quick floats
+.pull-left {
+    float: left !important;
+}
+.pull-right {
+    float: right !important;
+}
+
+// Align options
+.align-top {
+    vertical-align: top !important;
+}
+
+.align-middle {
+    vertical-align: middle !important;
+}
+
+.align-bottom {
+    vertical-align: bottom !important;
+}
+
+// Flex alignments
+.align-content-left {
+    display: flex !important;
+    flex-flow: row wrap !important;
+    justify-content: flex-start !important;
+}
+
+.align-content-right {
+    display: flex !important;
+    flex-flow: row wrap !important;
+    justify-content: flex-end !important;
+}
+
+.align-content-center {
+    display: flex !important;
+    align-items: center !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+ 
+// Spacing
+.spacing-inner {
+    padding: $element-spacing !important;
+}
+.spacing-inner-top {
+    padding-top: $element-spacing !important;
+}
+.spacing-inner-right {
+    padding-right: $element-spacing !important;
+}
+.spacing-inner-bottom {
+    padding-bottom: $element-spacing !important;
+}
+.spacing-inner-left {
+    padding-left: $element-spacing !important;
+}
+
+.spacing-outer {
+    margin: $element-spacing !important;
+}
+.spacing-outer-top {
+    margin-top: $element-spacing !important;
+}
+.spacing-outer-right {
+    margin-right: $element-spacing !important;
+}
+.spacing-outer-bottom {
+    margin-bottom: $element-spacing !important;
+}
+.spacing-outer-left {
+    margin-left: $element-spacing !important;
+}
+
+.spacing-inner-container {
+    padding: $container-spacing !important;
+}
+.spacing-inner-top-container {
+    padding-top: $container-spacing !important;
+}
+.spacing-inner-right-container {
+    padding-right: $container-spacing !important;
+}
+.spacing-inner-bottom-container {
+    padding-bottom: $container-spacing !important;
+}
+.spacing-inner-left-container {
+    padding-left: $container-spacing !important;
+}
+
+.spacing-outer-container {
+    margin: $element-spacing !important;
+}
+.spacing-outer-top-container {
+    margin-top: $container-spacing !important;
+}
+.spacing-outer-right-container {
+    margin-right: $container-spacing !important;
+}
+.spacing-outer-bottom-container {
+    margin-bottom: $container-spacing !important;
+}
+.spacing-outer-left-container {
+    margin-left: $container-spacing !important;
+}
+
+.spacing-inner-responsive {
+    @include layout-spacing($type: padding, $direction: all, $device: responsive, $is_important: true);
+}
+.spacing-inner-top-responsive {
+    @include layout-spacing($type: padding, $direction: top, $device: responsive, $is_important: true);
+}
+.spacing-inner-right-responsive {
+    @include layout-spacing($type: padding, $direction: right, $device: responsive, $is_important: true);
+}
+.spacing-inner-bottom-responsive {
+    @include layout-spacing($type: padding, $direction: bottom, $device: responsive, $is_important: true);
+}
+.spacing-inner-left-responsive {
+    @include layout-spacing($type: padding, $direction: left, $device: responsive, $is_important: true);
+}
+
+.spacing-outer-responsive {
+    @include layout-spacing($type: margin, $direction: all, $device: responsive, $is_important: true);
+}
+.spacing-outer-top-responsive {
+    @include layout-spacing($type: margin, $direction: top, $device: responsive, $is_important: true);
+}
+.spacing-outer-right-responsive {
+    @include layout-spacing($type: margin, $direction: right, $device: responsive, $is_important: true);
+}
+.spacing-outer-bottom-responsive {
+    @include layout-spacing($type: margin, $direction: bottom, $device: responsive, $is_important: true);
+}
+.spacing-outer-left-responsive {
+    @include layout-spacing($type: margin, $direction: left, $device: responsive, $is_important: true);
+}
+
+// Display properties
+.d-inline {
+    display: inline !important;
+}
+.d-inline-block {
+    display: inline-block !important;
+}
+.d-block {
+    display: block !important;
+}
