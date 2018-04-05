@@ -22,6 +22,10 @@ public class QueueHandler implements Runnable {
 	public QueueHandler (IMendixIdentifier jobId) {
 		this.jobId = jobId;
 	}
+	
+	public IMendixIdentifier getJobId() {
+		return this.jobId;
+	}
 
 	@Override
 	public void run() {
@@ -45,6 +49,7 @@ public class QueueHandler implements Runnable {
 			Job job = Job.load(this.context, jobId);
 			HashMap<String, Object> jobInput = new HashMap<>();
 			jobInput.put("Job", jobObject);
+			
 			try {
 				job.setStatus(this.context, ENU_JobStatus.Running);
 				job.commit();

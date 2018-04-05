@@ -9,40 +9,43 @@
 
 package queue.actions;
 
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
+import java.util.concurrent.ScheduledFuture;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
-import queue.helpers.JobToQueueAdder;
-import queue.helpers.JobValidator;
-import queue.helpers.MicroflowValidator;
-import queue.proxies.constants.Constants;
+import queue.proxies.ENU_JobStatus;
 import queue.repositories.JobRepository;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
-public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
+public class RemoveJob extends CustomJavaAction<java.lang.Boolean>
 {
-	private IMendixObject __JobParameter1;
-	private queue.proxies.Job JobParameter1;
+	private IMendixObject __job;
+	private queue.proxies.Job job;
+	private java.lang.Boolean removeWhenRunning;
 
-	public AddJobToQueue(IContext context, IMendixObject JobParameter1)
+	public RemoveJob(IContext context, IMendixObject job, java.lang.Boolean removeWhenRunning)
 	{
 		super(context);
-		this.__JobParameter1 = JobParameter1;
+		this.__job = job;
+		this.removeWhenRunning = removeWhenRunning;
 	}
 
 	@Override
 	public java.lang.Boolean executeAction() throws Exception
 	{
-		this.JobParameter1 = __JobParameter1 == null ? null : queue.proxies.Job.initialize(getContext(), __JobParameter1);
+		this.job = __job == null ? null : queue.proxies.Job.initialize(getContext(), __job);
 
 		// BEGIN USER CODE
-		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
-		MicroflowValidator microflowValidator = new MicroflowValidator();
-		JobValidator jobValidator = new JobValidator(logger, microflowValidator);
-		JobToQueueAdder adder = new JobToQueueAdder();
 		JobRepository jobRepository = new JobRepository();
-		return adder.add(this.context(), logger, jobRepository, jobValidator, JobParameter1);
+		ScheduledFuture<?> future = jobRepository.get(job.getMendixObject());
+		
+		boolean cancelled = future.cancel(removeWhenRunning);
+		
+		if(cancelled) {
+			job.setStatus(ENU_JobStatus.Cancelled);
+			job.commit();
+		}
+		
+		return cancelled;
 		// END USER CODE
 	}
 
@@ -52,7 +55,7 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 	@Override
 	public java.lang.String toString()
 	{
-		return "AddJobToQueue";
+		return "RemoveJob";
 	}
 
 	// BEGIN EXTRA CODE
