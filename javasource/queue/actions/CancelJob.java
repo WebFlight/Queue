@@ -15,14 +15,15 @@ import com.mendix.webui.CustomJavaAction;
 import queue.proxies.ENU_JobStatus;
 import queue.repositories.JobRepository;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.systemwideinterfaces.core.UserException;
 
-public class RemoveJob extends CustomJavaAction<java.lang.Boolean>
+public class CancelJob extends CustomJavaAction<java.lang.Boolean>
 {
 	private IMendixObject __job;
 	private queue.proxies.Job job;
 	private java.lang.Boolean removeWhenRunning;
 
-	public RemoveJob(IContext context, IMendixObject job, java.lang.Boolean removeWhenRunning)
+	public CancelJob(IContext context, IMendixObject job, java.lang.Boolean removeWhenRunning)
 	{
 		super(context);
 		this.__job = job;
@@ -36,7 +37,12 @@ public class RemoveJob extends CustomJavaAction<java.lang.Boolean>
 
 		// BEGIN USER CODE
 		JobRepository jobRepository = new JobRepository();
-		ScheduledFuture<?> future = jobRepository.get(job.getMendixObject());
+		ScheduledFuture<?> future; 
+		try {
+			future = jobRepository.get(job.getMendixObject());
+		} catch (UserException e) {
+			return false;
+		}
 		
 		boolean cancelled = future.cancel(removeWhenRunning);
 		
@@ -55,7 +61,7 @@ public class RemoveJob extends CustomJavaAction<java.lang.Boolean>
 	@Override
 	public java.lang.String toString()
 	{
-		return "RemoveJob";
+		return "CancelJob";
 	}
 
 	// BEGIN EXTRA CODE

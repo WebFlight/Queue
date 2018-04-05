@@ -95,7 +95,7 @@ public class JobValidator {
 	private boolean checkRetry(Job job) {
 		int retry = job.getRetry();
 		
-		if (retry == 0) {
+		if (retry >= 0) {
 			this.logger.debug("Delay of 0 is valid");
 			return true;
 		}
@@ -107,7 +107,7 @@ public class JobValidator {
 			this.logger.error("Could not commit job when retry is set to 0.");
 			return false;
 		}
-		this.logger.warn("It is not allowed to set retry when adding a job to the queue. Will be set to 0.");
+		this.logger.warn("It is not allowed to set retry lower than 0. Will be set to 0.");
 		return true;
 	}
 }
