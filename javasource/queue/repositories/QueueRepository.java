@@ -10,8 +10,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
-import com.mendix.systemwideinterfaces.core.UserException;
-import com.mendix.systemwideinterfaces.core.UserException.ExceptionCategory;
 
 import queue.entities.QueueConfiguration;
 import queue.factories.QueueThreadFactory;
@@ -23,9 +21,6 @@ public class QueueRepository {
 	private static ConcurrentHashMap<String, ScheduledThreadPoolExecutor> queueMap = new ConcurrentHashMap<>();
 
 	public static void newQueue (QueueConfiguration configuration, QueueThreadPoolFactory poolFactory, QueueThreadFactory threadFactory) {
-		if (queueExists(configuration.getName())) {
-			throw new UserException(ExceptionCategory.DataValidation, "Queue with name " + configuration.getName() + " already exists.");
-		}
 		queueMap.put(configuration.getName(), (ScheduledThreadPoolExecutor) poolFactory.newScheduledThreadPool(configuration, threadFactory));
 	}
 	
