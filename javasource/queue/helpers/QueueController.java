@@ -17,7 +17,7 @@ public class QueueController {
 
 	public boolean shutdown(String name, boolean gracefully, boolean awaitTermination, int terminationTimeout) {
 		if (QueueRepository.queueExists(name) == false) {
-			logger.error("Queue with name " + name + " has not been initialized and cannot be terminated.");
+			logger.error("Queue with name " + name + " has not been initialized and therefore cannot be terminated.");
 			return false;
 		}
 		

@@ -17,7 +17,6 @@ public class JobValidator {
 	}
 	
 	public boolean isValid (Job job) {
-		
 		return 
 				checkQueue(job) &&
 				checkMicroflowName(job) &&
