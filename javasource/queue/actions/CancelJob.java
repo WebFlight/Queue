@@ -12,6 +12,8 @@ package queue.actions;
 import java.util.concurrent.ScheduledFuture;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
+
+import queue.helpers.JobCanceller;
 import queue.proxies.ENU_JobStatus;
 import queue.repositories.JobRepository;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
@@ -37,21 +39,9 @@ public class CancelJob extends CustomJavaAction<java.lang.Boolean>
 
 		// BEGIN USER CODE
 		JobRepository jobRepository = JobRepository.getInstance();
-		ScheduledFuture<?> future; 
-		try {
-			future = jobRepository.get(job.getMendixObject());
-		} catch (UserException e) {
-			return false;
-		}
+		JobCanceller jobCanceller = new JobCanceller();
 		
-		boolean cancelled = future.cancel(removeWhenRunning);
-		
-		if(cancelled) {
-			job.setStatus(ENU_JobStatus.Cancelled);
-			job.commit();
-		}
-		
-		return cancelled;
+		return jobCanceller.cancel(jobRepository, job, removeWhenRunning);
 		// END USER CODE
 	}
 
