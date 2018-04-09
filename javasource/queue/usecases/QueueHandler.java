@@ -58,7 +58,8 @@ public class QueueHandler implements Runnable {
 				job.commit(this.context);
 			} catch (CoreException e) {
 				if (job.getRetry() < job.getmaxRetries()) {
-					QueueRepository
+					QueueRepository queueRepository = QueueRepository.getInstance();
+					queueRepository
 					.getQueue(job.getQueue())
 					.schedule(
 							new QueueHandler(this.jobId), ExponentialBackoff.getExponentialBackOff(500, job.getRetry()), TimeUnit.MILLISECONDS

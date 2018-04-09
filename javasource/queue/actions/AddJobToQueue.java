@@ -18,6 +18,8 @@ import queue.helpers.JobValidator;
 import queue.helpers.MicroflowValidator;
 import queue.proxies.constants.Constants;
 import queue.repositories.JobRepository;
+import queue.repositories.QueueRepository;
+
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
@@ -42,7 +44,9 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 		JobValidator jobValidator = new JobValidator(logger, microflowValidator);
 		JobToQueueAdder adder = new JobToQueueAdder();
 		JobRepository jobRepository = new JobRepository();
-		return adder.add(this.context(), logger, jobRepository, jobValidator, JobParameter1);
+		QueueRepository queueRepository = QueueRepository.getInstance();
+		
+		return adder.add(this.context(), logger, queueRepository, jobRepository, jobValidator, JobParameter1);
 		// END USER CODE
 	}
 

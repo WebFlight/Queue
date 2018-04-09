@@ -14,15 +14,14 @@ import queue.usecases.QueueHandler;
 
 public class JobToQueueAdder {
 	
-	public boolean add(IContext context, ILogNode logger, JobRepository jobRepository, JobValidator jobValidator, Job job) {
-		boolean valid = jobValidator.isValid(job);
+	public boolean add(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, JobValidator jobValidator, Job job) {
+		boolean valid = jobValidator.isValid(queueRepository, job);
 		
 		if (valid == false) {
 			return false;
 		}
 		
-		
-		ScheduledExecutorService executor = QueueRepository.getQueue(job.getQueue());
+		ScheduledExecutorService executor = queueRepository.getQueue(job.getQueue());
 		
 		if(executor == null) {
 			logger.error("Queue with name " + job.getQueue() + " could not be found. Job has not been added.");

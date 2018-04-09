@@ -41,7 +41,8 @@ public class InitializeQueue extends CustomJavaAction<java.lang.Boolean>
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
 		
 		QueueValidator queueValidator = new QueueValidator(logger);
-		boolean valid = queueValidator.isValid(this.Name, this.PoolSize.intValue(), this.Priority.intValue());
+		QueueRepository queueRepository = QueueRepository.getInstance();
+		boolean valid = queueValidator.isValid(queueRepository, this.Name, this.PoolSize.intValue(), this.Priority.intValue());
 		
 		if (valid == false) {
 			return false;
@@ -50,7 +51,7 @@ public class InitializeQueue extends CustomJavaAction<java.lang.Boolean>
 		QueueConfiguration configuration = new QueueConfiguration(this.Name, this.PoolSize.intValue(), this.Priority.intValue());
 		QueueThreadFactory threadFactory = new QueueThreadFactory(configuration);
 		QueueThreadPoolFactory threadPoolFactory = new QueueThreadPoolFactory();
-		QueueRepository.newQueue(configuration, threadPoolFactory, threadFactory);
+		queueRepository.newQueue(configuration, threadPoolFactory, threadFactory);
 		
 		logger.info("Queue " + Name + " has been initialized with " + PoolSize + " threads and priority " + Priority + ".");
 			

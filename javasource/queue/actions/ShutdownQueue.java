@@ -15,6 +15,7 @@ import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 import queue.helpers.QueueController;
 import queue.proxies.constants.Constants;
+import queue.repositories.QueueRepository;
 
 public class ShutdownQueue extends CustomJavaAction<java.lang.Boolean>
 {
@@ -38,7 +39,8 @@ public class ShutdownQueue extends CustomJavaAction<java.lang.Boolean>
 		// BEGIN USER CODE
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
 		QueueController queueController = new QueueController(logger);
-		return queueController.shutdown(Name, Gracefully, AwaitTermination, TerminationTimeout.intValue());
+		QueueRepository queueRepository = QueueRepository.getInstance();
+		return queueController.shutdown(queueRepository, Name, Gracefully, AwaitTermination, TerminationTimeout.intValue());
 		// END USER CODE
 	}
 

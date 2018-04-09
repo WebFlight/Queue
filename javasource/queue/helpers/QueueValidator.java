@@ -12,19 +12,19 @@ public class QueueValidator {
 		this.logger = logger;
 	}
 	
-	public boolean isValid (String name, int poolSize, int priority) {
-		return checkName(name) &&
+	public boolean isValid (QueueRepository queueRepository, String name, int poolSize, int priority) {
+		return checkName(queueRepository, name) &&
 				checkPoolSize(poolSize) &&
 				checkPriority(priority);
 	}
 	
-	private boolean checkName(String name) {
+	private boolean checkName(QueueRepository queueRepository, String name) {
 		if (name == "" || name == null) {
 			this.logger.error("Queue name is missing.");
 			return false;
 		}
 		
-		if (QueueRepository.queueExists(name)) {
+		if (queueRepository.queueExists(name)) {
 			this.logger.error("Queue " + name + " has already been initialized.");
 			return false;
 		}

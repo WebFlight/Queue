@@ -16,16 +16,16 @@ public class JobValidator {
 		this.microflowValidator = microflowValidator;
 	}
 	
-	public boolean isValid (Job job) {
+	public boolean isValid (QueueRepository queueRepository, Job job) {
 		return 
-				checkQueue(job) &&
+				checkQueue(queueRepository, job) &&
 				checkMicroflowName(job) &&
 				checkMaxRetries(job) &&
 				checkDelay(job) &&
 				checkRetry(job);
 	}
 	
-	private boolean checkQueue(Job job) {
+	private boolean checkQueue(QueueRepository queueRepository, Job job) {
 		String queue = job.getQueue();
 		
 		if (queue == "" || queue == null) {
@@ -33,7 +33,7 @@ public class JobValidator {
 			return false;
 		}
 		
-		if (QueueRepository.queueExists(queue)) {
+		if (queueRepository.queueExists(queue)) {
 			this.logger.debug("Queue with name " + queue + " found.");
 			return true;
 		}

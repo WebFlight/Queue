@@ -25,7 +25,8 @@ public class GetQueueOverview extends CustomJavaAction<java.util.List<IMendixObj
 	public java.util.List<IMendixObject> executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return QueueRepository.getQueueInfos(this.context());
+		QueueRepository queueRepository = QueueRepository.getInstance();
+		return queueRepository.getQueueInfos(this.context());
 		// END USER CODE
 	}
 

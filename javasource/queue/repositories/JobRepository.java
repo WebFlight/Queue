@@ -8,7 +8,7 @@ import com.mendix.systemwideinterfaces.core.UserException;
 import com.mendix.systemwideinterfaces.core.UserException.ExceptionCategory;
 
 public class JobRepository {
-	private static ConcurrentHashMap<Long, ScheduledFuture<?>> scheduledJobMap = new ConcurrentHashMap<>();
+	private volatile static ConcurrentHashMap<Long, ScheduledFuture<?>> scheduledJobMap = new ConcurrentHashMap<>();
 	
 	public void add(IMendixObject job, ScheduledFuture<?> future) {
 		if(!contains(job)) {
@@ -23,12 +23,11 @@ public class JobRepository {
 		throw new UserException(ExceptionCategory.DataValidation, "Job could not be retrieved from repository.");
 	}
 	
-//	public void remove(IMendixObject job) {
-//		if(contains(job)) {
-//			scheduledJobMap.remove(job.getId().toLong());
-//		}
-//		throw new UserException(ExceptionCategory.DataValidation, "Job could not be removed from repository.");
-//	}
+	public void remove(IMendixObject job) {
+		if(contains(job)) {
+			scheduledJobMap.remove(job.getId().toLong());
+		}
+	}
 	
 	public boolean contains(IMendixObject job) {
 		return scheduledJobMap.containsKey(job.getId().toLong());
