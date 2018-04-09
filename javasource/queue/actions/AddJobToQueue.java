@@ -13,13 +13,13 @@ import com.mendix.core.Core;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
+import queue.helpers.JobToQueueAdder;
 import queue.helpers.JobValidator;
 import queue.helpers.MicroflowValidator;
-import queue.helpers.TimeUnitConverter;
-import queue.proxies.ENU_JobStatus;
 import queue.proxies.constants.Constants;
+import queue.repositories.JobRepository;
 import queue.repositories.QueueRepository;
-import queue.usecases.QueueHandler;
+
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
@@ -42,31 +42,11 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
 		MicroflowValidator microflowValidator = new MicroflowValidator();
 		JobValidator jobValidator = new JobValidator(logger, microflowValidator);
-		boolean valid = jobValidator.isValid(JobParameter1);
+		JobToQueueAdder adder = new JobToQueueAdder();
+		JobRepository jobRepository = JobRepository.getInstance();
+		QueueRepository queueRepository = QueueRepository.getInstance();
 		
-		if (valid == false) {
-			return false;
-		}
-		
-		
-		JobParameter1.setStatus(ENU_JobStatus.Queued);
-		
-		try {
-			JobParameter1.commit(this.context());
-		} catch (Exception e) {
-			logger.error("Could not commit job.");
-			return false;
-		}
-		
-		QueueRepository
-			.getQueue(JobParameter1.getQueue())
-			.schedule(
-					new QueueHandler(__JobParameter1.getId()), 
-					JobParameter1.getDelay(), 
-					TimeUnitConverter.getTimeUnit(JobParameter1.getDelayUnit().getCaption())
-					);
-		
-		return true;
+		return adder.add(this.context(), logger, queueRepository, jobRepository, jobValidator, JobParameter1);
 		// END USER CODE
 	}
 

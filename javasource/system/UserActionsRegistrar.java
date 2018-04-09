@@ -13,6 +13,7 @@ public class UserActionsRegistrar
   {
     registrator.bundleComponentLoaded();
     registrator.registerUserAction(queue.actions.AddJobToQueue.class);
+    registrator.registerUserAction(queue.actions.CancelJob.class);
     registrator.registerUserAction(queue.actions.GetQueueOverview.class);
     registrator.registerUserAction(queue.actions.InitializeQueue.class);
     registrator.registerUserAction(queue.actions.ShutdownQueue.class);

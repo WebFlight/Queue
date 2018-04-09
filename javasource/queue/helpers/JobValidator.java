@@ -16,17 +16,16 @@ public class JobValidator {
 		this.microflowValidator = microflowValidator;
 	}
 	
-	public boolean isValid (Job job) {
-		
+	public boolean isValid (QueueRepository queueRepository, Job job) {
 		return 
-				checkQueue(job) &&
+				checkQueue(queueRepository, job) &&
 				checkMicroflowName(job) &&
 				checkMaxRetries(job) &&
 				checkDelay(job) &&
 				checkRetry(job);
 	}
 	
-	private boolean checkQueue(Job job) {
+	private boolean checkQueue(QueueRepository queueRepository, Job job) {
 		String queue = job.getQueue();
 		
 		if (queue == "" || queue == null) {
@@ -34,7 +33,7 @@ public class JobValidator {
 			return false;
 		}
 		
-		if (QueueRepository.queueExists(queue)) {
+		if (queueRepository.queueExists(queue)) {
 			this.logger.debug("Queue with name " + queue + " found.");
 			return true;
 		}
@@ -95,7 +94,7 @@ public class JobValidator {
 	private boolean checkRetry(Job job) {
 		int retry = job.getRetry();
 		
-		if (retry == 0) {
+		if (retry >= 0) {
 			this.logger.debug("Delay of 0 is valid");
 			return true;
 		}
@@ -107,7 +106,7 @@ public class JobValidator {
 			this.logger.error("Could not commit job when retry is set to 0.");
 			return false;
 		}
-		this.logger.warn("It is not allowed to set retry when adding a job to the queue. Will be set to 0.");
+		this.logger.warn("It is not allowed to set retry lower than 0. Will be set to 0.");
 		return true;
 	}
 }

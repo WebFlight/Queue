@@ -16,23 +16,45 @@ import queue.factories.QueueThreadFactory;
 import queue.factories.QueueThreadPoolFactory;
 import queue.proxies.QueueInfo;
 
-public class QueueRepository {
+public final class QueueRepository {
 	
-	private static ConcurrentHashMap<String, ScheduledThreadPoolExecutor> queueMap = new ConcurrentHashMap<>();
+	private static QueueRepository queueRepository;
+	private static final Object lock = new Object();
+	private volatile ConcurrentHashMap<String, ScheduledThreadPoolExecutor> queueMap = new ConcurrentHashMap<>();
+	
+	protected QueueRepository() {
+		
+	};
+	
+	public static QueueRepository getInstance() {
+		QueueRepository instance = queueRepository;
+		
+		if(instance == null) {
+			synchronized(lock) {
+				instance = queueRepository;
+				if (instance == null) {
+					instance = new QueueRepository();
+					queueRepository = instance;
+				}
+			}
+		}
+		
+		return instance;
+	}
 
-	public static void newQueue (QueueConfiguration configuration, QueueThreadPoolFactory poolFactory, QueueThreadFactory threadFactory) {
+	public void newQueue (QueueConfiguration configuration, QueueThreadPoolFactory poolFactory, QueueThreadFactory threadFactory) {
 		queueMap.put(configuration.getName(), (ScheduledThreadPoolExecutor) poolFactory.newScheduledThreadPool(configuration, threadFactory));
 	}
 	
-	public static ScheduledExecutorService getQueue(String name) {
+	public ScheduledExecutorService getQueue(String name) {
 		return queueMap.get(name);
 	}
 	
-	public static boolean queueExists(String name) {
+	public boolean queueExists(String name) {
 		return queueMap.keySet().contains(name);
 	}
 	
-	public static List<IMendixObject> getQueueInfos(IContext context) {
+	public List<IMendixObject> getQueueInfos(IContext context) {
 		List<IMendixObject> queueInfos = new ArrayList<>();
 		Iterator<Entry<String, ScheduledThreadPoolExecutor>> it = queueMap.entrySet().iterator();
 		

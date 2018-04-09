@@ -15,13 +15,13 @@ public class QueueController {
 		this.logger = logger;
 	}
 
-	public boolean shutdown(String name, boolean gracefully, boolean awaitTermination, int terminationTimeout) {
-		if (QueueRepository.queueExists(name) == false) {
-			logger.error("Queue with name " + name + " has not been initialized and cannot be terminated.");
+	public boolean shutdown(QueueRepository queueRepository, String name, boolean gracefully, boolean awaitTermination, int terminationTimeout) {
+		if (queueRepository.queueExists(name) == false) {
+			logger.error("Queue with name " + name + " has not been initialized and therefore cannot be terminated.");
 			return false;
 		}
 		
-		ScheduledExecutorService queue = QueueRepository.getQueue(name);
+		ScheduledExecutorService queue = queueRepository.getQueue(name);
 		
 		if (gracefully) {
 			return shutdownGracefully(queue, awaitTermination, terminationTimeout);
