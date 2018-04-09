@@ -43,7 +43,7 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 		MicroflowValidator microflowValidator = new MicroflowValidator();
 		JobValidator jobValidator = new JobValidator(logger, microflowValidator);
 		JobToQueueAdder adder = new JobToQueueAdder();
-		JobRepository jobRepository = new JobRepository();
+		JobRepository jobRepository = JobRepository.getInstance();
 		QueueRepository queueRepository = QueueRepository.getInstance();
 		
 		return adder.add(this.context(), logger, queueRepository, jobRepository, jobValidator, JobParameter1);

@@ -7,8 +7,30 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.systemwideinterfaces.core.UserException;
 import com.mendix.systemwideinterfaces.core.UserException.ExceptionCategory;
 
-public class JobRepository {
-	private volatile static ConcurrentHashMap<Long, ScheduledFuture<?>> scheduledJobMap = new ConcurrentHashMap<>();
+public final class JobRepository {
+	private static JobRepository jobRepository;
+	private static final Object lock = new Object();
+	private volatile ConcurrentHashMap<Long, ScheduledFuture<?>> scheduledJobMap = new ConcurrentHashMap<>();
+	
+	protected JobRepository() {
+		
+	}
+	
+	public static JobRepository getInstance() {
+		JobRepository instance = jobRepository;
+		
+		if(instance == null) {
+			synchronized(lock) {
+				instance = jobRepository;
+				if (instance == null) {
+					instance = new JobRepository();
+					jobRepository = instance;
+				}
+			}
+		}
+		
+		return instance;
+	}
 	
 	public void add(IMendixObject job, ScheduledFuture<?> future) {
 		if(!contains(job)) {

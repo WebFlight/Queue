@@ -36,7 +36,7 @@ public class CancelJob extends CustomJavaAction<java.lang.Boolean>
 		this.job = __job == null ? null : queue.proxies.Job.initialize(getContext(), __job);
 
 		// BEGIN USER CODE
-		JobRepository jobRepository = new JobRepository();
+		JobRepository jobRepository = JobRepository.getInstance();
 		ScheduledFuture<?> future; 
 		try {
 			future = jobRepository.get(job.getMendixObject());
