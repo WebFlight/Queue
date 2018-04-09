@@ -14,7 +14,9 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 import queue.entities.QueueConfiguration;
 import queue.factories.QueueThreadFactory;
 import queue.factories.QueueThreadPoolFactory;
+import queue.proxies.Job;
 import queue.proxies.QueueInfo;
+import queue.usecases.QueueHandler;
 
 public final class QueueRepository {
 	
@@ -78,5 +80,9 @@ public final class QueueRepository {
 		}
 		
 		return queueInfos;
+	}
+	
+	public QueueHandler getQueueHandler(Job job) {
+		return new QueueHandler(job.getMendixObject().getId());
 	}
 }
