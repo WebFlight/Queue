@@ -7,11 +7,11 @@ import com.mendix.systemwideinterfaces.core.UserException;
 
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
-import queue.repositories.JobRepository;
+import queue.repositories.ScheduledJobRepository;
 
 public class JobCanceller {
 	
-	public boolean cancel(JobRepository jobRepository, Job job, boolean removeWhenRunning) throws CoreException {
+	public boolean cancel(ScheduledJobRepository jobRepository, Job job, boolean removeWhenRunning) throws CoreException {
 		ScheduledFuture<?> future; 
 		try {
 			future = jobRepository.get(job.getMendixObject());

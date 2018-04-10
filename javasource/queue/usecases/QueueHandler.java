@@ -3,7 +3,6 @@ package queue.usecases;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import com.mendix.core.Core;
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -13,6 +12,7 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 import queue.helpers.ExponentialBackoff;
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
+import queue.repositories.JobRepository;
 import queue.repositories.QueueRepository;
 
 public class QueueHandler implements Runnable {
@@ -20,11 +20,13 @@ public class QueueHandler implements Runnable {
 	private IMendixIdentifier jobId;
 	private ILogNode logger;
 	private QueueRepository queueRepository;
+	private JobRepository jobRepository;
 	
-	public QueueHandler (ILogNode logger, QueueRepository queueRepository, IMendixIdentifier jobId) {
+	public QueueHandler (ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, IMendixIdentifier jobId) {
 		this.jobId = jobId;
 		this.logger = logger;
 		this.queueRepository = queueRepository;
+		this.jobRepository = jobRepository;
 	}
 
 	@Override
@@ -32,15 +34,19 @@ public class QueueHandler implements Runnable {
 		IContext context = queueRepository.getSystemContext();
 		try {
 			IMendixObject jobObject = null;
+			Job job = null;
 			int retries = 0;
 			while (retries <= 10) {
 				logger.debug("Trying to retrieve job object. Attempt " + (retries + 1) + " of 10.");
-				jobObject = Core.retrieveId(context, jobId);
+				job = jobRepository.getJob(context, jobId);
+				jobObject = job.getMendixObject();
+				
 				if (jobObject != null) {
 					logger.debug("Job object found.");
 					break;
 				}
 				logger.debug("Job object not found.");
+				
 				try {
 					Thread.sleep(ExponentialBackoff.getExponentialBackOff(500, retries));
 				} catch (InterruptedException e) {
@@ -49,7 +55,6 @@ public class QueueHandler implements Runnable {
 				retries++;
 			}
 			
-			Job job = Job.load(context, jobId);
 			HashMap<String, Object> jobInput = new HashMap<>();
 			jobInput.put("Job", jobObject);
 			
@@ -58,7 +63,7 @@ public class QueueHandler implements Runnable {
 				job.commit();
 				logger.debug("Job status set to Running.");
 				logger.debug("Starting execution of microflow " + job.getMicroflowName() + ".");
-				Core.execute(context, job.getMicroflowName(), true, jobInput);
+				jobRepository.executeJob(context, job.getMicroflowName(), true, jobInput);
 				logger.debug("Finished execution of microflow " + job.getMicroflowName() + ".");
 				job.setStatus(context, ENU_JobStatus.Done);
 				job.commit(context);
@@ -70,7 +75,7 @@ public class QueueHandler implements Runnable {
 					queueRepository
 					.getQueue(job.getQueue())
 					.schedule(
-							queueRepository.getQueueHandler(logger, queueRepository, jobId), 
+							queueRepository.getQueueHandler(logger, queueRepository, jobRepository, jobId), 
 							ExponentialBackoff.getExponentialBackOff(500, job.getRetry()), TimeUnit.MILLISECONDS
 							);
 					job.setRetry(job.getRetry() + 1);

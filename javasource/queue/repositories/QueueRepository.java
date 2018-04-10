@@ -84,8 +84,8 @@ public final class QueueRepository {
 		return queueInfos;
 	}
 	
-	public QueueHandler getQueueHandler(ILogNode logger, QueueRepository queueRepository, IMendixIdentifier jobId) {
-		return new QueueHandler(logger, queueRepository, jobId);
+	public QueueHandler getQueueHandler(ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, IMendixIdentifier jobId) {
+		return new QueueHandler(logger, queueRepository, jobRepository, jobId);
 	}
 	
 	public IContext getSystemContext() {

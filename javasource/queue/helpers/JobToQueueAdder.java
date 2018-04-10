@@ -8,12 +8,13 @@ import com.mendix.systemwideinterfaces.core.IContext;
 
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
+import queue.repositories.ScheduledJobRepository;
 import queue.repositories.JobRepository;
 import queue.repositories.QueueRepository;
 
 public class JobToQueueAdder {
 	
-	public boolean add(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, JobValidator jobValidator, Job job) {
+	public boolean add(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, JobValidator jobValidator, Job job) {
 		boolean valid = jobValidator.isValid(queueRepository, job);
 		
 		if (valid == false) {
@@ -43,12 +44,12 @@ public class JobToQueueAdder {
 		}
 		
 		ScheduledFuture<?> future =	executor.schedule(
-					queueRepository.getQueueHandler(logger, queueRepository, job.getMendixObject().getId()), 
+					queueRepository.getQueueHandler(logger, queueRepository, jobRepository, job.getMendixObject().getId()), 
 					job.getDelay(), 
 					TimeUnitConverter.getTimeUnit(job.getDelayUnit().getCaption())
 					);
 		
-		jobRepository.add(job.getMendixObject(), future);
+		scheduledJobRepository.add(job.getMendixObject(), future);
 		
 		return true;
 	}

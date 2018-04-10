@@ -1,58 +1,20 @@
 package queue.repositories;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
+import java.util.HashMap;
 
-import com.mendix.systemwideinterfaces.core.IMendixObject;
-import com.mendix.systemwideinterfaces.core.UserException;
-import com.mendix.systemwideinterfaces.core.UserException.ExceptionCategory;
+import com.mendix.core.Core;
+import com.mendix.core.CoreException;
+import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 
-public final class JobRepository {
-	private static JobRepository jobRepository;
-	private static final Object lock = new Object();
-	private volatile ConcurrentHashMap<Long, ScheduledFuture<?>> scheduledJobMap = new ConcurrentHashMap<>();
-	
-	protected JobRepository() {
-		
-	}
-	
-	public static JobRepository getInstance() {
-		JobRepository instance = jobRepository;
-		
-		if(instance == null) {
-			synchronized(lock) {
-				instance = jobRepository;
-				if (instance == null) {
-					instance = new JobRepository();
-					jobRepository = instance;
-				}
-			}
-		}
-		
-		return instance;
-	}
-	
-	public void add(IMendixObject job, ScheduledFuture<?> future) {
-		if(!contains(job)) {
-			scheduledJobMap.put(job.getId().toLong(), future);
-		}
-	}
-	
-	public ScheduledFuture<?> get(IMendixObject job) {
-		if(contains(job)) {
-			return scheduledJobMap.get(job.getId().toLong());
-		}
-		throw new UserException(ExceptionCategory.DataValidation, "Job could not be retrieved from repository.");
-	}
-	
-	public void remove(IMendixObject job) {
-		if(contains(job)) {
-			scheduledJobMap.remove(job.getId().toLong());
-		}
-	}
-	
-	public boolean contains(IMendixObject job) {
-		return scheduledJobMap.containsKey(job.getId().toLong());
-	}
+import queue.proxies.Job;
 
+public class JobRepository {
+	public Job getJob(IContext context, IMendixIdentifier jobId) throws CoreException {
+		return Job.load(context, jobId);
+	}
+	
+	public void executeJob(IContext context, String microflowName, boolean inTransaction, HashMap<String, Object> jobInput) throws CoreException {
+		Core.execute(context, microflowName, inTransaction, jobInput);
+	}
 }

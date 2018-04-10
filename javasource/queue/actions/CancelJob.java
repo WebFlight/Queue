@@ -12,7 +12,7 @@ package queue.actions;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 import queue.helpers.JobCanceller;
-import queue.repositories.JobRepository;
+import queue.repositories.ScheduledJobRepository;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 public class CancelJob extends CustomJavaAction<java.lang.Boolean>
@@ -34,7 +34,7 @@ public class CancelJob extends CustomJavaAction<java.lang.Boolean>
 		this.job = __job == null ? null : queue.proxies.Job.initialize(getContext(), __job);
 
 		// BEGIN USER CODE
-		JobRepository jobRepository = JobRepository.getInstance();
+		ScheduledJobRepository jobRepository = ScheduledJobRepository.getInstance();
 		JobCanceller jobCanceller = new JobCanceller();
 		
 		return jobCanceller.cancel(jobRepository, job, removeWhenRunning);
