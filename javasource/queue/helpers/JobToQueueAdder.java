@@ -5,6 +5,7 @@ import java.util.concurrent.ScheduledFuture;
 
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IUser;
 
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
@@ -14,7 +15,7 @@ import queue.repositories.QueueRepository;
 
 public class JobToQueueAdder {
 	
-	public boolean add(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, JobValidator jobValidator, Job job) {
+	public boolean add(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, JobValidator jobValidator, Job job, boolean runFromUser) {
 		boolean valid = jobValidator.isValid(queueRepository, job);
 		
 		if (valid == false) {
@@ -43,8 +44,16 @@ public class JobToQueueAdder {
 			return false;
 		}
 		
+		IUser user = null;
+		
+		if(runFromUser) {
+			logger.debug("Run from user enabled. User will be added to queue handler.");
+			user = context.getSession().getUser(context);
+			logger.debug("User " + user.getName() + " added to queue handler.");
+		}
+		
 		ScheduledFuture<?> future =	executor.schedule(
-					queueRepository.getQueueHandler(logger, queueRepository, jobRepository, job.getMendixObject().getId()), 
+					queueRepository.getQueueHandler(logger, user, queueRepository, jobRepository, job.getMendixObject().getId()), 
 					job.getDelay(), 
 					TimeUnitConverter.getTimeUnit(job.getDelayUnit().getCaption())
 					);
