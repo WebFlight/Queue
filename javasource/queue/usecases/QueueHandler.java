@@ -34,10 +34,13 @@ public class QueueHandler implements Runnable {
 			IMendixObject jobObject = null;
 			int retries = 0;
 			while (retries <= 10) {
+				logger.debug("Trying to retrieve job object. Attempt " + (retries + 1) + " of 10.");
 				jobObject = Core.retrieveId(context, jobId);
 				if (jobObject != null) {
+					logger.debug("Job object found.");
 					break;
 				}
+				logger.debug("Job object not found.");
 				try {
 					Thread.sleep(ExponentialBackoff.getExponentialBackOff(500, retries));
 				} catch (InterruptedException e) {
@@ -53,11 +56,17 @@ public class QueueHandler implements Runnable {
 			try {
 				job.setStatus(context, ENU_JobStatus.Running);
 				job.commit();
+				logger.debug("Job status set to Running.");
+				logger.debug("Starting execution of microflow " + job.getMicroflowName() + ".");
 				Core.execute(context, job.getMicroflowName(), true, jobInput);
+				logger.debug("Finished execution of microflow " + job.getMicroflowName() + ".");
 				job.setStatus(context, ENU_JobStatus.Done);
 				job.commit(context);
+				logger.debug("Job status set to Done.");
 			} catch (CoreException e) {
+				logger.error("Error during execution of microflow " + job.getMicroflowName() + ".");
 				if (job.getRetry() < job.getmaxRetries()) {
+					logger.debug("Retry " + (job.getRetry() + 1) + " of " + job.getmaxRetries() + " will be scheduled for job with microflow " + job.getMicroflowName() + ".");
 					queueRepository
 					.getQueue(job.getQueue())
 					.schedule(
@@ -67,9 +76,11 @@ public class QueueHandler implements Runnable {
 					job.setRetry(job.getRetry() + 1);
 					job.setStatus(ENU_JobStatus.Queued);
 					job.commit();
+					logger.debug("Job rescheduled and status set to Queued.");
 				} else {
 					job.setStatus(context, ENU_JobStatus.Error);
 					job.commit(context);
+					logger.debug("Max retries reached, status is set to Error.");
 				}
 			} finally {
 			}
