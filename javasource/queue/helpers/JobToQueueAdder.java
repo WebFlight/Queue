@@ -46,7 +46,7 @@ public class JobToQueueAdder {
 		
 		IUser user = null;
 		
-		if(runFromUser) {
+		if(runFromUser && !context.isSudo()) {
 			logger.debug("Run from user enabled. User will be added to queue handler.");
 			user = context.getSession().getUser(context);
 			logger.debug("User " + user.getName() + " added to queue handler.");
