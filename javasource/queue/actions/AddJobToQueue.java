@@ -24,19 +24,21 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 {
-	private IMendixObject __JobParameter1;
-	private queue.proxies.Job JobParameter1;
+	private IMendixObject __job;
+	private queue.proxies.Job job;
+	private java.lang.Boolean runFromUser;
 
-	public AddJobToQueue(IContext context, IMendixObject JobParameter1)
+	public AddJobToQueue(IContext context, IMendixObject job, java.lang.Boolean runFromUser)
 	{
 		super(context);
-		this.__JobParameter1 = JobParameter1;
+		this.__job = job;
+		this.runFromUser = runFromUser;
 	}
 
 	@Override
 	public java.lang.Boolean executeAction() throws Exception
 	{
-		this.JobParameter1 = __JobParameter1 == null ? null : queue.proxies.Job.initialize(getContext(), __JobParameter1);
+		this.job = __job == null ? null : queue.proxies.Job.initialize(getContext(), __job);
 
 		// BEGIN USER CODE
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
@@ -47,7 +49,7 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 		QueueRepository queueRepository = QueueRepository.getInstance();
 		JobRepository jobRepository = new JobRepository();
 		
-		return adder.add(this.context(), logger, queueRepository, jobRepository, scheduledJobRepository, jobValidator, JobParameter1);
+		return adder.add(this.context(), logger, queueRepository, jobRepository, scheduledJobRepository, jobValidator, job, runFromUser);
 		// END USER CODE
 	}
 

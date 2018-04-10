@@ -8,6 +8,7 @@ import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.systemwideinterfaces.core.IUser;
 
 import queue.helpers.ExponentialBackoff;
 import queue.proxies.ENU_JobStatus;
@@ -19,22 +20,35 @@ public class QueueHandler implements Runnable {
 	
 	private IMendixIdentifier jobId;
 	private ILogNode logger;
+	private IUser user;
 	private QueueRepository queueRepository;
 	private JobRepository jobRepository;
 	
-	public QueueHandler (ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, IMendixIdentifier jobId) {
+	public QueueHandler (ILogNode logger, IUser user, QueueRepository queueRepository, JobRepository jobRepository, IMendixIdentifier jobId) {
 		this.jobId = jobId;
 		this.logger = logger;
+		this.user = user;
 		this.queueRepository = queueRepository;
 		this.jobRepository = jobRepository;
 	}
 
 	@Override
 	public void run() {
-		IContext context = queueRepository.getSystemContext();
+		
 		try {
 			IMendixObject jobObject = null;
 			Job job = null;
+			
+			IContext context = null;
+			
+			if(user != null) {
+				context = queueRepository.getUserContext(this.user);
+			}
+			
+			if(user == null) {
+				context = queueRepository.getSystemContext();
+			}
+			
 			int retries = 0;
 			while (retries <= 10) {
 				logger.debug("Trying to retrieve job object. Attempt " + (retries + 1) + " of 10.");
@@ -60,7 +74,7 @@ public class QueueHandler implements Runnable {
 			
 			try {
 				job.setStatus(context, ENU_JobStatus.Running);
-				job.commit();
+				job.commit(context);
 				logger.debug("Job status set to Running.");
 				logger.debug("Starting execution of microflow " + job.getMicroflowName() + ".");
 				jobRepository.executeJob(context, job.getMicroflowName(), true, jobInput);
@@ -75,12 +89,12 @@ public class QueueHandler implements Runnable {
 					queueRepository
 					.getQueue(job.getQueue())
 					.schedule(
-							queueRepository.getQueueHandler(logger, queueRepository, jobRepository, jobId), 
+							queueRepository.getQueueHandler(logger, user, queueRepository, jobRepository, jobId), 
 							ExponentialBackoff.getExponentialBackOff(500, job.getRetry()), TimeUnit.MILLISECONDS
 							);
-					job.setRetry(job.getRetry() + 1);
-					job.setStatus(ENU_JobStatus.Queued);
-					job.commit();
+					job.setRetry(context, job.getRetry() + 1);
+					job.setStatus(context, ENU_JobStatus.Queued);
+					job.commit(context);
 					logger.debug("Job rescheduled and status set to Queued.");
 				} else {
 					job.setStatus(context, ENU_JobStatus.Error);
