@@ -13,6 +13,7 @@ public class QueueInitializer {
 			boolean valid = queueValidator.isValid(queueRepository, configuration.getName(), configuration.getCorePoolSize(), configuration.getPriority());
 		
 			if (valid == false) {
+				logger.error("QueueValidator returned false. Queue "+ configuration.getName() + " will not be initialized.");
 				return false;
 			}
 			

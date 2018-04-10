@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
+import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
@@ -17,14 +18,15 @@ import queue.repositories.QueueRepository;
 public class QueueHandler implements Runnable {
 	
 	private IMendixIdentifier jobId;
-	private final IContext context = Core.createSystemContext();
+	private IContext context;
+	private ILogNode logger;
+	private QueueRepository queueRepository;
 	
-	public QueueHandler (IMendixIdentifier jobId) {
+	public QueueHandler (IContext context, ILogNode logger, QueueRepository queueRepository, IMendixIdentifier jobId) {
+		this.context = context;
 		this.jobId = jobId;
-	}
-	
-	public IMendixIdentifier getJobId() {
-		return this.jobId;
+		this.logger = logger;
+		this.queueRepository = queueRepository;
 	}
 
 	@Override
@@ -40,8 +42,7 @@ public class QueueHandler implements Runnable {
 				try {
 					Thread.sleep(ExponentialBackoff.getExponentialBackOff(500, retries));
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("While executing job, could bring Thread to sleep when retrieving job object.");
 				}
 				retries++;
 			}
@@ -58,11 +59,11 @@ public class QueueHandler implements Runnable {
 				job.commit(this.context);
 			} catch (CoreException e) {
 				if (job.getRetry() < job.getmaxRetries()) {
-					QueueRepository queueRepository = QueueRepository.getInstance();
 					queueRepository
 					.getQueue(job.getQueue())
 					.schedule(
-							new QueueHandler(this.jobId), ExponentialBackoff.getExponentialBackOff(500, job.getRetry()), TimeUnit.MILLISECONDS
+							queueRepository.getQueueHandler(context, logger, queueRepository, jobId), 
+							ExponentialBackoff.getExponentialBackOff(500, job.getRetry()), TimeUnit.MILLISECONDS
 							);
 					job.setRetry(job.getRetry() + 1);
 					job.setStatus(ENU_JobStatus.Queued);
@@ -75,8 +76,7 @@ public class QueueHandler implements Runnable {
 			}
 			
 		} catch (CoreException e) {
-			//TODO Implement error handling 
-			e.printStackTrace();
+			logger.error("Could not retrieve job object. Job will not be executed.");
 		}
 	}
 
