@@ -8,13 +8,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+import com.mendix.core.Core;
+import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 import queue.entities.QueueConfiguration;
 import queue.factories.QueueThreadFactory;
 import queue.factories.QueueThreadPoolFactory;
 import queue.proxies.QueueInfo;
+import queue.usecases.QueueHandler;
 
 public final class QueueRepository {
 	
@@ -78,5 +82,13 @@ public final class QueueRepository {
 		}
 		
 		return queueInfos;
+	}
+	
+	public QueueHandler getQueueHandler(ILogNode logger, QueueRepository queueRepository, IMendixIdentifier jobId) {
+		return new QueueHandler(logger, queueRepository, jobId);
+	}
+	
+	public IContext getSystemContext() {
+		return Core.createSystemContext();
 	}
 }

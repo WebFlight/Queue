@@ -10,7 +10,6 @@ import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
 import queue.repositories.JobRepository;
 import queue.repositories.QueueRepository;
-import queue.usecases.QueueHandler;
 
 public class JobToQueueAdder {
 	
@@ -44,7 +43,7 @@ public class JobToQueueAdder {
 		}
 		
 		ScheduledFuture<?> future =	executor.schedule(
-					new QueueHandler(job.getMendixObject().getId()), 
+					queueRepository.getQueueHandler(logger, queueRepository, job.getMendixObject().getId()), 
 					job.getDelay(), 
 					TimeUnitConverter.getTimeUnit(job.getDelayUnit().getCaption())
 					);

@@ -17,6 +17,13 @@ import queue.helpers.QueueController;
 import queue.proxies.constants.Constants;
 import queue.repositories.QueueRepository;
 
+/**
+ * Graceful shutdown waits for all pending jobs that have been submitted. No additional jobs can be added to the queue.
+ * 
+ * If graceful shutdown is set to false, all running and pending tasks will be terminated.
+ * 
+ * AwaitTermination waits until the queue has been shut down or the timeout period has been exceeded.
+ */
 public class ShutdownQueue extends CustomJavaAction<java.lang.Boolean>
 {
 	private java.lang.String Name;

@@ -16,6 +16,7 @@ import com.mendix.webui.CustomJavaAction;
 import queue.entities.QueueConfiguration;
 import queue.factories.QueueThreadFactory;
 import queue.factories.QueueThreadPoolFactory;
+import queue.helpers.QueueInitializer;
 import queue.helpers.QueueValidator;
 import queue.proxies.constants.Constants;
 import queue.repositories.QueueRepository;
@@ -42,20 +43,14 @@ public class InitializeQueue extends CustomJavaAction<java.lang.Boolean>
 		
 		QueueValidator queueValidator = new QueueValidator(logger);
 		QueueRepository queueRepository = QueueRepository.getInstance();
-		boolean valid = queueValidator.isValid(queueRepository, this.Name, this.PoolSize.intValue(), this.Priority.intValue());
-		
-		if (valid == false) {
-			return false;
-		}
-		
 		QueueConfiguration configuration = new QueueConfiguration(this.Name, this.PoolSize.intValue(), this.Priority.intValue());
 		QueueThreadFactory threadFactory = new QueueThreadFactory(configuration);
 		QueueThreadPoolFactory threadPoolFactory = new QueueThreadPoolFactory();
-		queueRepository.newQueue(configuration, threadPoolFactory, threadFactory);
+		QueueInitializer queueInitializer = new QueueInitializer();
 		
-		logger.info("Queue " + Name + " has been initialized with " + PoolSize + " threads and priority " + Priority + ".");
-			
-		return true;
+		boolean initialized = queueInitializer.initialize(logger, configuration, threadPoolFactory, threadFactory, queueValidator, queueRepository);
+		
+		return initialized;
 		// END USER CODE
 	}
 

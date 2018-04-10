@@ -9,15 +9,11 @@
 
 package queue.actions;
 
-import java.util.concurrent.ScheduledFuture;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
-
 import queue.helpers.JobCanceller;
-import queue.proxies.ENU_JobStatus;
 import queue.repositories.JobRepository;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
-import com.mendix.systemwideinterfaces.core.UserException;
 
 public class CancelJob extends CustomJavaAction<java.lang.Boolean>
 {
