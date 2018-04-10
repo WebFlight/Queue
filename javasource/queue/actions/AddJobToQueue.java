@@ -19,7 +19,6 @@ import queue.helpers.MicroflowValidator;
 import queue.proxies.constants.Constants;
 import queue.repositories.JobRepository;
 import queue.repositories.QueueRepository;
-
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>

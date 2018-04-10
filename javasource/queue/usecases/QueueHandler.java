@@ -18,12 +18,10 @@ import queue.repositories.QueueRepository;
 public class QueueHandler implements Runnable {
 	
 	private IMendixIdentifier jobId;
-	private IContext context;
 	private ILogNode logger;
 	private QueueRepository queueRepository;
 	
-	public QueueHandler (IContext context, ILogNode logger, QueueRepository queueRepository, IMendixIdentifier jobId) {
-		this.context = context;
+	public QueueHandler (ILogNode logger, QueueRepository queueRepository, IMendixIdentifier jobId) {
 		this.jobId = jobId;
 		this.logger = logger;
 		this.queueRepository = queueRepository;
@@ -31,11 +29,12 @@ public class QueueHandler implements Runnable {
 
 	@Override
 	public void run() {
+		IContext context = queueRepository.getSystemContext();
 		try {
 			IMendixObject jobObject = null;
 			int retries = 0;
 			while (retries <= 10) {
-				jobObject = Core.retrieveId(this.context, jobId);
+				jobObject = Core.retrieveId(context, jobId);
 				if (jobObject != null) {
 					break;
 				}
@@ -47,30 +46,30 @@ public class QueueHandler implements Runnable {
 				retries++;
 			}
 			
-			Job job = Job.load(this.context, jobId);
+			Job job = Job.load(context, jobId);
 			HashMap<String, Object> jobInput = new HashMap<>();
 			jobInput.put("Job", jobObject);
 			
 			try {
-				job.setStatus(this.context, ENU_JobStatus.Running);
+				job.setStatus(context, ENU_JobStatus.Running);
 				job.commit();
-				Core.execute(this.context, job.getMicroflowName(), true, jobInput);
-				job.setStatus(this.context, ENU_JobStatus.Done);
-				job.commit(this.context);
+				Core.execute(context, job.getMicroflowName(), true, jobInput);
+				job.setStatus(context, ENU_JobStatus.Done);
+				job.commit(context);
 			} catch (CoreException e) {
 				if (job.getRetry() < job.getmaxRetries()) {
 					queueRepository
 					.getQueue(job.getQueue())
 					.schedule(
-							queueRepository.getQueueHandler(context, logger, queueRepository, jobId), 
+							queueRepository.getQueueHandler(logger, queueRepository, jobId), 
 							ExponentialBackoff.getExponentialBackOff(500, job.getRetry()), TimeUnit.MILLISECONDS
 							);
 					job.setRetry(job.getRetry() + 1);
 					job.setStatus(ENU_JobStatus.Queued);
 					job.commit();
 				} else {
-					job.setStatus(this.context, ENU_JobStatus.Error);
-					job.commit(this.context);
+					job.setStatus(context, ENU_JobStatus.Error);
+					job.commit(context);
 				}
 			} finally {
 			}

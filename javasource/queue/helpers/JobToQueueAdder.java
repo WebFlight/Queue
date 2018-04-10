@@ -43,7 +43,7 @@ public class JobToQueueAdder {
 		}
 		
 		ScheduledFuture<?> future =	executor.schedule(
-					queueRepository.getQueueHandler(context, logger, queueRepository, job.getMendixObject().getId()), 
+					queueRepository.getQueueHandler(logger, queueRepository, job.getMendixObject().getId()), 
 					job.getDelay(), 
 					TimeUnitConverter.getTimeUnit(job.getDelayUnit().getCaption())
 					);
