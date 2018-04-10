@@ -64,7 +64,7 @@ public class QueueHandler implements Runnable {
 				job.commit(context);
 				logger.debug("Job status set to Done.");
 			} catch (CoreException e) {
-				logger.error("Error during execution of microflow " + job.getMicroflowName() + ".");
+				logger.error("Error during execution of microflow " + job.getMicroflowName() + ".", e);
 				if (job.getRetry() < job.getmaxRetries()) {
 					logger.debug("Retry " + (job.getRetry() + 1) + " of " + job.getmaxRetries() + " will be scheduled for job with microflow " + job.getMicroflowName() + ".");
 					queueRepository
