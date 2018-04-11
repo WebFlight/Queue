@@ -22,8 +22,8 @@ public class JobCanceller {
 		boolean cancelled = future.cancel(removeWhenRunning);
 		
 		if(cancelled) {
-			job.setStatus(ENU_JobStatus.Cancelled);
-			job.commit();
+			job.setStatus(context, ENU_JobStatus.Cancelled);
+			job.commit(context);
 		}
 		
 		scheduledJobRepository.remove(context, job.getMendixObject());

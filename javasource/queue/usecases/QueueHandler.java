@@ -93,6 +93,15 @@ public class QueueHandler implements Runnable {
 				job.commit(context);
 				logger.debug("Job status set to Done.");
 			} catch (CoreException e) {
+				Throwable t = e.getCause();
+				do {
+					t = t.getCause();
+					if(t instanceof InterruptedException) {
+						logger.warn("Microflow " + job.getMicroflowName(context) + " has been interrupted. Status will be set to Cancelled.");
+						return;
+					}
+				} while (t.getCause() != null);
+				
 				logger.error("Error during execution of microflow " + job.getMicroflowName(context) + ".", e);
 				if (job.getRetry(context) < job.getmaxRetries(context)) {
 					logger.debug("Retry " + (job.getRetry(context) + 1) + " of " + job.getmaxRetries(context) + " will be scheduled for job with microflow " + job.getMicroflowName(context) + ".");
@@ -111,5 +120,4 @@ public class QueueHandler implements Runnable {
 			logger.error("Could not retrieve job object. Job will not be executed.");
 		}
 	}
-
 }
