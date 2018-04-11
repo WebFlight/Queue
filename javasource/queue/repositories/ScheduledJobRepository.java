@@ -3,14 +3,14 @@ package queue.repositories;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
+import com.mendix.core.CoreException;
+import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
-import com.mendix.systemwideinterfaces.core.UserException;
-import com.mendix.systemwideinterfaces.core.UserException.ExceptionCategory;
 
 public final class ScheduledJobRepository {
 	private static ScheduledJobRepository jobRepository;
 	private static final Object lock = new Object();
-	private volatile ConcurrentHashMap<Long, ScheduledFuture<?>> scheduledJobMap = new ConcurrentHashMap<>();
+	private volatile ConcurrentHashMap<String, ScheduledFuture<?>> scheduledJobMap = new ConcurrentHashMap<>();
 	
 	protected ScheduledJobRepository() {
 		
@@ -32,27 +32,25 @@ public final class ScheduledJobRepository {
 		return instance;
 	}
 	
-	public void add(IMendixObject job, ScheduledFuture<?> future) {
-		if(!contains(job)) {
-			scheduledJobMap.put(job.getId().toLong(), future);
-		}
+	public void add(IContext context, IMendixObject job, ScheduledFuture<?> future) {
+		scheduledJobMap.put(getId(context, job), future);
 	}
 	
-	public ScheduledFuture<?> get(IMendixObject job) {
-		if(contains(job)) {
-			return scheduledJobMap.get(job.getId().toLong());
-		}
-		throw new UserException(ExceptionCategory.DataValidation, "Job could not be retrieved from repository.");
+	public ScheduledFuture<?> get(IContext context, IMendixObject job) throws CoreException {
+		return scheduledJobMap.get(getId(context, job));
 	}
 	
-	public void remove(IMendixObject job) {
-		if(contains(job)) {
-			scheduledJobMap.remove(job.getId().toLong());
-		}
+	public void remove(IContext context, IMendixObject job) {
+		scheduledJobMap.remove(getId(context, job));
 	}
 	
-	public boolean contains(IMendixObject job) {
-		return scheduledJobMap.containsKey(job.getId().toLong());
+	public void remove(IContext context, IMendixObject job, int retry) {
+		String id = String.valueOf(job.getId().toLong()) + retry;
+		scheduledJobMap.remove(id);
+	}
+	
+	private String getId(IContext context, IMendixObject job) {
+		return String.valueOf(job.getId().toLong()) + job.getValue(context, "Retry");
 	}
 
 }

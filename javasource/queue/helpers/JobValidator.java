@@ -2,6 +2,7 @@ package queue.helpers;
 
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
+import com.mendix.systemwideinterfaces.core.IContext;
 
 import queue.proxies.Job;
 import queue.repositories.QueueRepository;
@@ -16,17 +17,17 @@ public class JobValidator {
 		this.microflowValidator = microflowValidator;
 	}
 	
-	public boolean isValid (QueueRepository queueRepository, Job job) {
+	public boolean isValid (IContext context, QueueRepository queueRepository, Job job) {
 		return 
-				checkQueue(queueRepository, job) &&
-				checkMicroflowName(job) &&
-				checkMaxRetries(job) &&
-				checkDelay(job) &&
-				checkRetry(job);
+				checkQueue(context, queueRepository, job) &&
+				checkMicroflowName(context, job) &&
+				checkMaxRetries(context, job) &&
+				checkDelay(context, job) &&
+				checkRetry(context, job);
 	}
 	
-	private boolean checkQueue(QueueRepository queueRepository, Job job) {
-		String queue = job.getQueue();
+	private boolean checkQueue(IContext context, QueueRepository queueRepository, Job job) {
+		String queue = job.getQueue(context);
 		
 		if (queue == "" || queue == null) {
 			this.logger.error("Queue name is missing.");
@@ -42,8 +43,8 @@ public class JobValidator {
 		return false;
 	}
 	
-	private boolean checkMicroflowName(Job job) {
-		String microflowName = job.getMicroflowName();
+	private boolean checkMicroflowName(IContext context, Job job) {
+		String microflowName = job.getMicroflowName(context);
 		
 		if (microflowName == "" || microflowName == null) {
 			this.logger.error("Microflow name is missing.");
@@ -67,8 +68,8 @@ public class JobValidator {
 		return false;
 	}
 	
-	private boolean checkMaxRetries(Job job) {
-		int maxRetries = job.getmaxRetries();
+	private boolean checkMaxRetries(IContext context, Job job) {
+		int maxRetries = job.getmaxRetries(context);
 		
 		if (maxRetries >= 0) {
 			this.logger.debug("Max retries of " + maxRetries + " is valid");
@@ -79,8 +80,8 @@ public class JobValidator {
 		return false;
 	}
 	
-	private boolean checkDelay(Job job) {
-		int delay = job.getDelay();
+	private boolean checkDelay(IContext context, Job job) {
+		int delay = job.getDelay(context);
 		
 		if (delay >= 0) {
 			this.logger.debug("Delay of " + delay + " is valid");
@@ -91,17 +92,17 @@ public class JobValidator {
 		return false;
 	}
 	
-	private boolean checkRetry(Job job) {
-		int retry = job.getRetry();
+	private boolean checkRetry(IContext context, Job job) {
+		int retry = job.getRetry(context);
 		
 		if (retry >= 0) {
 			this.logger.debug("Delay of 0 is valid");
 			return true;
 		}
 		
-		job.setRetry(0);
+		job.setRetry(context, 0);
 		try{
-			job.commit();
+			job.commit(context);
 		} catch (CoreException e) {
 			this.logger.error("Could not commit job when retry is set to 0.");
 			return false;

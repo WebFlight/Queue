@@ -49,7 +49,9 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 		QueueRepository queueRepository = QueueRepository.getInstance();
 		JobRepository jobRepository = new JobRepository();
 		
-		return adder.add(this.context(), logger, queueRepository, jobRepository, scheduledJobRepository, jobValidator, job, runFromUser);
+		adder.add(this.context(), logger, queueRepository, jobRepository, scheduledJobRepository, jobValidator, job, runFromUser, null);
+		
+		return true;
 		// END USER CODE
 	}
 

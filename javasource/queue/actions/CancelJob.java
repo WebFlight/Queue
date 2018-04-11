@@ -37,7 +37,7 @@ public class CancelJob extends CustomJavaAction<java.lang.Boolean>
 		ScheduledJobRepository jobRepository = ScheduledJobRepository.getInstance();
 		JobCanceller jobCanceller = new JobCanceller();
 		
-		return jobCanceller.cancel(jobRepository, job, removeWhenRunning);
+		return jobCanceller.cancel(this.context(), jobRepository, job, removeWhenRunning);
 		// END USER CODE
 	}
 
