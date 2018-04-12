@@ -42,32 +42,25 @@ public class JobToQueueAdder {
 			throw new CoreException("Could not commit job.");
 		}
 		
-		if (user == null) {
-			if(runFromUser) {
-				if(context.getSession().getUser(context) != null) {
-					logger.debug("Run from user enabled. User will be added to queue handler.");
-					user = context.getSession().getUser(context);
-					logger.debug("User " + user.getName() + " added to queue handler.");
-				}
-				if(context.getSession().getUser(context) == null) {
-					logger.warn("Job is added by System user. RunFromUser will be disabled.");
-				}
-			}
+		if(runFromUser && user == null) {
+			logger.debug("Run from user enabled. User will be added to queue handler.");
+			user = context.getSession().getUser(context);
+			logger.debug("User " + user.getName() + " added to queue handler.");
 		}
 				
 		ScheduledFuture<?> future =	executor.schedule(
-					queueRepository.getQueueHandler(logger, user, jobValidator, this, scheduledJobRepository, queueRepository, jobRepository, job.getMendixObject().getId()), 
-					job.getDelay(context), 
+					queueRepository.getQueueHandler(logger, user, runFromUser, jobValidator, this, scheduledJobRepository, queueRepository, jobRepository, job.getMendixObject().getId()), 
+					job.getCurrentDelay(context), 
 					TimeUnitConverter.getTimeUnit(job.getDelayUnit(context).getCaption())
 					);
 		
 		scheduledJobRepository.add(context, job.getMendixObject(), future);
 	}
 	
-	public void addRetry(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, JobValidator jobValidator, Job job, IUser user) throws CoreException {
-		int newDelay= ExponentialBackoff.getExponentialBackOff(job.getDelay(context), job.getRetry(context));
-		job.setDelay(context, newDelay);
+	public void addRetry(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, JobValidator jobValidator, Job job, IUser user, boolean runFromUser) throws CoreException {
+		int newDelay= ExponentialBackoff.getExponentialBackOff(job.getBaseDelay(context), job.getRetry(context));
+		job.setCurrentDelay(context, newDelay);
 		job.setRetry(context, job.getRetry(context) + 1);
-		add(context, logger, queueRepository, jobRepository, scheduledJobRepository, jobValidator, job, true, user);
+		add(context, logger, queueRepository, jobRepository, scheduledJobRepository, jobValidator, job, runFromUser, user);
 	}
 }
