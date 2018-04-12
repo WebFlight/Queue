@@ -1,9 +1,6 @@
 package queue.repositories;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,7 +16,7 @@ import queue.entities.QueueConfiguration;
 import queue.factories.QueueThreadFactory;
 import queue.factories.QueueThreadPoolFactory;
 import queue.helpers.JobToQueueAdder;
-import queue.proxies.QueueInfo;
+import queue.helpers.QueueInfoProvider;
 import queue.usecases.QueueHandler;
 
 public final class QueueRepository {
@@ -27,10 +24,7 @@ public final class QueueRepository {
 	private static QueueRepository queueRepository;
 	private static final Object lock = new Object();
 	private volatile ConcurrentHashMap<String, ScheduledThreadPoolExecutor> queueMap = new ConcurrentHashMap<>();
-	
-	protected QueueRepository() {
-		
-	};
+	private QueueInfoProvider queueInfoProvider = new QueueInfoProvider();
 	
 	public static QueueRepository getInstance() {
 		QueueRepository instance = queueRepository;
@@ -61,29 +55,7 @@ public final class QueueRepository {
 	}
 	
 	public List<IMendixObject> getQueueInfos(IContext context) {
-		List<IMendixObject> queueInfos = new ArrayList<>();
-		Iterator<Entry<String, ScheduledThreadPoolExecutor>> it = queueMap.entrySet().iterator();
-		
-		while (it.hasNext()) {
-			Entry<String, ScheduledThreadPoolExecutor> entry = it.next();
-			QueueInfo queueInfo = new QueueInfo(context);
-
-			ScheduledThreadPoolExecutor executor = entry.getValue();
-			
-			queueInfo.setName(entry.getKey());
-			queueInfo.setIsShutDown(executor.isShutdown());
-			queueInfo.setIsTerminated(executor.isTerminated());
-			queueInfo.setActiveThreads(executor.getActiveCount());
-			queueInfo.setCorePoolSize(executor.getCorePoolSize());
-			queueInfo.setPoolSize(executor.getPoolSize());
-			queueInfo.setCompletedJobCount(executor.getCompletedTaskCount());
-			queueInfo.setTotalJobCount(executor.getTaskCount());
-			queueInfo.setJobsInQueue(executor.getQueue().size());
-			
-			queueInfos.add(queueInfo.getMendixObject());
-		}
-		
-		return queueInfos;
+		return queueInfoProvider.getQueueInfo(context, queueMap);
 	}
 	
 	public QueueHandler getQueueHandler(ILogNode logger, JobToQueueAdder jobToQueueAdder, ScheduledJobRepository scheduledJobRepository, QueueRepository queueRepository, JobRepository jobRepository, IMendixIdentifier jobId) {
