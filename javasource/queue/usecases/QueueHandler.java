@@ -8,7 +8,6 @@ import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
-import queue.helpers.ExponentialBackoff;
 import queue.helpers.JobToQueueAdder;
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
@@ -55,7 +54,7 @@ public class QueueHandler implements Runnable {
 				logger.debug("Job object not found.");
 				
 				try {
-					Thread.sleep(ExponentialBackoff.getExponentialBackOff(200, retries));
+					Thread.sleep(jobToQueueAdder.getExponentialBackoffCalculator().calculate(200, retries));
 				} catch (InterruptedException e) {
 					logger.error("While executing job, could bring Thread to sleep when retrieving job object.");
 				}

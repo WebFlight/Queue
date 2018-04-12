@@ -16,9 +16,11 @@ import queue.repositories.QueueRepository;
 public class JobToQueueAdder {
 	
 	private JobValidator jobValidator;
+	private ExponentialBackoffCalculator exponentialBackoffCalculator;
 	
-	public JobToQueueAdder(JobValidator jobValidator) {
+	public JobToQueueAdder(JobValidator jobValidator, ExponentialBackoffCalculator exponentialBackoffCalculator) {
 		this.jobValidator = jobValidator;
+		this.exponentialBackoffCalculator = exponentialBackoffCalculator;
 	}
 	
 	public void add(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job) throws CoreException {
@@ -57,9 +59,13 @@ public class JobToQueueAdder {
 	}
 	
 	public void addRetry(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job) throws CoreException {
-		int newDelay= ExponentialBackoff.getExponentialBackOff(job.getBaseDelay(context), job.getRetry(context));
+		int newDelay= this.exponentialBackoffCalculator.calculate(job.getBaseDelay(context), job.getRetry(context));
 		job.setCurrentDelay(context, newDelay);
 		job.setRetry(context, job.getRetry(context) + 1);
 		add(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
+	}
+	
+	public ExponentialBackoffCalculator getExponentialBackoffCalculator() {
+		return this.exponentialBackoffCalculator;
 	}
 }

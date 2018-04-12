@@ -1,8 +1,8 @@
 package queue.helpers;
 
-public class ExponentialBackoff {
+public class ExponentialBackoffCalculator {
 
-	public static int getExponentialBackOff(int base, int retry) {
+	public int calculate(int base, int retry) {
 		Double exponentialBackOff = new Double(Math.round(base * Math.pow(2, retry)));
 		int exponentialBackOffInt = exponentialBackOff.intValue();
 		return exponentialBackOffInt;
