@@ -3,7 +3,7 @@ package queue.helpers;
 import java.util.concurrent.ScheduledFuture;
 
 import com.mendix.core.CoreException;
-import com.mendix.systemwideinterfaces.core.UserException;
+import com.mendix.systemwideinterfaces.core.IContext;
 
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
@@ -11,22 +11,24 @@ import queue.repositories.ScheduledJobRepository;
 
 public class JobCanceller {
 	
-	public boolean cancel(ScheduledJobRepository jobRepository, Job job, boolean removeWhenRunning) throws CoreException {
+	public boolean cancel(IContext context, ScheduledJobRepository scheduledJobRepository, Job job, boolean removeWhenRunning) throws CoreException {
 		ScheduledFuture<?> future; 
-		try {
-			future = jobRepository.get(job.getMendixObject());
-		} catch (UserException e) {
-			return false;
+		future = scheduledJobRepository.get(context, job.getMendixObject());
+		
+		if(future == null) {
+			throw new CoreException("Job cannot be cancelled, because ScheduledFuture does not exist.");
 		}
 		
 		boolean cancelled = future.cancel(removeWhenRunning);
 		
 		if(cancelled) {
-			job.setStatus(ENU_JobStatus.Cancelled);
-			job.commit();
+			job.setStatus(context, ENU_JobStatus.Cancelled);
+			job.commit(context);
 		}
 		
-		return cancelled;
+		scheduledJobRepository.remove(context, job.getMendixObject());
+		
+		return true;
 	}
 
 }
