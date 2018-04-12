@@ -13,7 +13,6 @@ import com.mendix.core.Core;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
-import com.mendix.webui.FeedbackHelper;
 import queue.helpers.JobToQueueAdder;
 import queue.helpers.JobValidator;
 import queue.helpers.MicroflowValidator;
@@ -49,8 +48,6 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 		JobRepository jobRepository = new JobRepository();
 		
 		adder.add(this.context(), logger, queueRepository, jobRepository, scheduledJobRepository, job);
-		
-		FeedbackHelper.addRefreshClass(this.context(), "Queue.Job");
 		return true;
 		// END USER CODE
 	}

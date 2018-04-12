@@ -7,8 +7,6 @@ import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
-import com.mendix.systemwideinterfaces.core.ISession;
-import com.mendix.systemwideinterfaces.core.IUser;
 
 import queue.helpers.ExponentialBackoff;
 import queue.helpers.JobToQueueAdder;
