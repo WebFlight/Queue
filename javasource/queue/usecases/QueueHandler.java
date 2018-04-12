@@ -7,11 +7,11 @@ import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.systemwideinterfaces.core.ISession;
 import com.mendix.systemwideinterfaces.core.IUser;
 
 import queue.helpers.ExponentialBackoff;
 import queue.helpers.JobToQueueAdder;
-import queue.helpers.JobValidator;
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
 import queue.repositories.JobRepository;
@@ -22,21 +22,15 @@ public class QueueHandler implements Runnable {
 	
 	private IMendixIdentifier jobId;
 	private ILogNode logger;
-	private boolean runFromUser;
-	private IUser user;
-	private JobValidator jobValidator;
 	private JobToQueueAdder jobToQueueAdder;
 	private ScheduledJobRepository scheduledJobRepository;
 	private QueueRepository queueRepository;
 	private JobRepository jobRepository;
 	private int retry = 0;
 	
-	public QueueHandler (ILogNode logger, IUser user, boolean runFromUser, JobValidator jobValidator, JobToQueueAdder jobToQueueAdder, ScheduledJobRepository scheduledJobRepository, QueueRepository queueRepository, JobRepository jobRepository, IMendixIdentifier jobId) {
+	public QueueHandler (ILogNode logger, JobToQueueAdder jobToQueueAdder, ScheduledJobRepository scheduledJobRepository, QueueRepository queueRepository, JobRepository jobRepository, IMendixIdentifier jobId) {
 		this.jobId = jobId;
 		this.logger = logger;
-		this.user = user;
-		this.runFromUser = runFromUser;
-		this.jobValidator = jobValidator;
 		this.jobToQueueAdder = jobToQueueAdder;
 		this.scheduledJobRepository = scheduledJobRepository;
 		this.queueRepository = queueRepository;
@@ -49,15 +43,7 @@ public class QueueHandler implements Runnable {
 		try {
 			IMendixObject jobObject = null;
 			
-			IContext context = null;
-			
-			if(runFromUser && user != null) {
-				context = queueRepository.getUserContext(this.user);
-			}
-			
-			if(!runFromUser || user == null) {
-				context = queueRepository.getSystemContext();
-			}
+			IContext context = queueRepository.getSystemContext();;
 			
 			int retries = 0;
 			while (retries <= 10) {
@@ -107,7 +93,7 @@ public class QueueHandler implements Runnable {
 				logger.error("Error during execution of microflow " + job.getMicroflowName(context) + ".", e);
 				if (job.getRetry(context) < job.getMaxRetries(context)) {
 					logger.debug("Retry " + (job.getRetry(context) + 1) + " of " + job.getMaxRetries(context) + " will be scheduled for job with microflow " + job.getMicroflowName(context) + ".");
-					jobToQueueAdder.addRetry(context, logger, queueRepository, jobRepository, scheduledJobRepository, jobValidator, job, user, runFromUser);
+					jobToQueueAdder.addRetry(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
 					logger.debug("Job rescheduled and status set to Queued.");
 				} else {
 					job.setStatus(context, ENU_JobStatus.Error);

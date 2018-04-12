@@ -27,13 +27,11 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 {
 	private IMendixObject __job;
 	private queue.proxies.Job job;
-	private java.lang.Boolean runFromUser;
 
-	public AddJobToQueue(IContext context, IMendixObject job, java.lang.Boolean runFromUser)
+	public AddJobToQueue(IContext context, IMendixObject job)
 	{
 		super(context);
 		this.__job = job;
-		this.runFromUser = runFromUser;
 	}
 
 	@Override
@@ -45,12 +43,12 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
 		MicroflowValidator microflowValidator = new MicroflowValidator();
 		JobValidator jobValidator = new JobValidator(logger, microflowValidator);
-		JobToQueueAdder adder = new JobToQueueAdder();
+		JobToQueueAdder adder = new JobToQueueAdder(jobValidator);
 		ScheduledJobRepository scheduledJobRepository = ScheduledJobRepository.getInstance();
 		QueueRepository queueRepository = QueueRepository.getInstance();
 		JobRepository jobRepository = new JobRepository();
 		
-		adder.add(this.context(), logger, queueRepository, jobRepository, scheduledJobRepository, jobValidator, job, runFromUser, null);
+		adder.add(this.context(), logger, queueRepository, jobRepository, scheduledJobRepository, job);
 		
 		FeedbackHelper.addRefreshClass(this.context(), "Queue.Job");
 		return true;
