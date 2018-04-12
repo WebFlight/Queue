@@ -1,15 +1,15 @@
 package queue.tests;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import queue.helpers.ExponentialBackoffCalculator;
 
-class TestExponentialBackoffCalculator {
+public class TestExponentialBackoffCalculator {
 
 	@Test
-	void testCalculate() {
+	public void testCalculate() {
 		ExponentialBackoffCalculator exponentialBackoffCalculator = new ExponentialBackoffCalculator();
 		int base = 500;
 		int retry = 3;
