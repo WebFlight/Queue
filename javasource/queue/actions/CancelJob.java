@@ -11,6 +11,7 @@ package queue.actions;
 
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
+import com.mendix.webui.FeedbackHelper;
 import queue.helpers.JobCanceller;
 import queue.repositories.ScheduledJobRepository;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
@@ -36,8 +37,9 @@ public class CancelJob extends CustomJavaAction<java.lang.Boolean>
 		// BEGIN USER CODE
 		ScheduledJobRepository jobRepository = ScheduledJobRepository.getInstance();
 		JobCanceller jobCanceller = new JobCanceller();
-		
-		return jobCanceller.cancel(this.context(), jobRepository, job, removeWhenRunning);
+		jobCanceller.cancel(this.context(), jobRepository, job, removeWhenRunning);
+		FeedbackHelper.addRefreshClass(this.context(), "Queue.Job");
+		return true;
 		// END USER CODE
 	}
 

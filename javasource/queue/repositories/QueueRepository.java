@@ -5,22 +5,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import com.mendix.core.Core;
-import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
-import com.mendix.systemwideinterfaces.core.IUser;
 
 import queue.entities.QueueConfiguration;
 import queue.factories.QueueThreadFactory;
 import queue.factories.QueueThreadPoolFactory;
 import queue.helpers.JobToQueueAdder;
-import queue.helpers.JobValidator;
 import queue.proxies.QueueInfo;
 import queue.usecases.QueueHandler;
 
@@ -88,15 +86,11 @@ public final class QueueRepository {
 		return queueInfos;
 	}
 	
-	public QueueHandler getQueueHandler(ILogNode logger, IUser user, JobValidator jobValidator, JobToQueueAdder jobToQueueAdder, ScheduledJobRepository scheduledJobRepository, QueueRepository queueRepository, JobRepository jobRepository, IMendixIdentifier jobId) {
-		return new QueueHandler(logger, user, jobValidator, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
+	public QueueHandler getQueueHandler(ILogNode logger, JobToQueueAdder jobToQueueAdder, ScheduledJobRepository scheduledJobRepository, QueueRepository queueRepository, JobRepository jobRepository, IMendixIdentifier jobId) {
+		return new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
 	}
 	
 	public IContext getSystemContext() {
 		return Core.createSystemContext();
-	}
-	
-	public IContext getUserContext(IUser user) throws CoreException {
-		return Core.initializeSession(user, null).createContext();
 	}
 }

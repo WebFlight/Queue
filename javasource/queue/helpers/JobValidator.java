@@ -22,7 +22,8 @@ public class JobValidator {
 				checkQueue(context, queueRepository, job) &&
 				checkMicroflowName(context, job) &&
 				checkMaxRetries(context, job) &&
-				checkDelay(context, job) &&
+				checkCurrentDelay(context, job) &&
+				checkBaseDelay(context, job) &&
 				checkRetry(context, job);
 	}
 	
@@ -69,7 +70,7 @@ public class JobValidator {
 	}
 	
 	private boolean checkMaxRetries(IContext context, Job job) {
-		int maxRetries = job.getmaxRetries(context);
+		int maxRetries = job.getMaxRetries(context);
 		
 		if (maxRetries >= 0) {
 			this.logger.debug("Max retries of " + maxRetries + " is valid");
@@ -80,15 +81,27 @@ public class JobValidator {
 		return false;
 	}
 	
-	private boolean checkDelay(IContext context, Job job) {
-		int delay = job.getDelay(context);
+	private boolean checkCurrentDelay(IContext context, Job job) {
+		int currentDelay = job.getCurrentDelay(context);
 		
-		if (delay >= 0) {
-			this.logger.debug("Delay of " + delay + " is valid");
+		if (currentDelay >= 0) {
+			this.logger.debug("Delay of " + currentDelay + " is valid");
 			return true;
 		}
 		
-		this.logger.error("Delay of " + delay + " is invalid and should be a number larger than or equal to 0.");
+		this.logger.error("Delay of " + currentDelay + " is invalid and should be a number larger than or equal to 0.");
+		return false;
+	}
+	
+	private boolean checkBaseDelay(IContext context, Job job) {
+		int baseDelay = job.getBaseDelay(context);
+		
+		if (baseDelay >= 0) {
+			this.logger.debug("Base delay of " + baseDelay + " is valid");
+			return true;
+		}
+		
+		this.logger.error("Base delay of " + baseDelay + " is invalid and should be a number larger than or equal to 0.");
 		return false;
 	}
 	
