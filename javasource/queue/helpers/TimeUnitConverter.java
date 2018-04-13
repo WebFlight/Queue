@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TimeUnitConverter {
 	
-	public static TimeUnit getTimeUnit (String timeUnitString) {
+	public TimeUnit getTimeUnit (String timeUnitString) {
 		switch(timeUnitString) {
 		case "Days":
 			return TimeUnit.DAYS;
