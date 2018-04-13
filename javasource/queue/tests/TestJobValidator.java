@@ -204,6 +204,28 @@ public class TestJobValidator {
 
 	
 	@Test
+	public void validateFalseRetryNegative() {
+		String validQueueName = "ValidQueueName";
+		String validMicroflowName = "ValidMicroflowName";
+		when(job.getQueue(context)).thenReturn(validQueueName);
+		when(job.getBaseDelay(context)).thenReturn(500);
+		when(job.getCurrentDelay(context)).thenReturn(0);
+		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
+		when(job.getMaxRetries(context)).thenReturn(5);
+		when(job.getMicroflowName(context)).thenReturn("ValidMicroflowName");
+		when(job.getRetry(context)).thenReturn(-1);
+		
+		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
+		
+		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
+		assertFalse(actualResult);
+		verify(job, times(1)).getRetry(context);
+		verify(logger, times(1)).error("Retry of -1 is invalid and should be a number larger than or equal to 0.");
+	}
+	
+	@Test
 	public void validateFalseDelayUnitNull () {
 		String validQueueName = "ValidQueueName";
 		String validMicroflowName = "ValidMicroflowName";
@@ -222,5 +244,72 @@ public class TestJobValidator {
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
 		verify(job, times(1)).getDelayUnit(context);
+		verify(logger, times(1)).error("DelayUnit cannot be empty.");
+	}
+	
+	@Test
+	public void validateFalseMaxRetriesNegative() {
+		String validQueueName = "ValidQueueName";
+		String validMicroflowName = "ValidMicroflowName";
+		when(job.getQueue(context)).thenReturn(validQueueName);
+		when(job.getBaseDelay(context)).thenReturn(500);
+		when(job.getCurrentDelay(context)).thenReturn(0);
+		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
+		when(job.getMaxRetries(context)).thenReturn(-3);
+		when(job.getMicroflowName(context)).thenReturn("ValidMicroflowName");
+		when(job.getRetry(context)).thenReturn(0);
+		
+		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
+		
+		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
+		assertFalse(actualResult);
+		verify(job, times(1)).getMaxRetries(context);
+		verify(logger, times(1)).error("MaxRetries of -3 is invalid and should be a number larger than or equal to 0.");
+	}
+	
+	@Test
+	public void validateFalseCurrentDelayNegative() {
+		String validQueueName = "ValidQueueName";
+		String validMicroflowName = "ValidMicroflowName";
+		when(job.getQueue(context)).thenReturn(validQueueName);
+		when(job.getBaseDelay(context)).thenReturn(500);
+		when(job.getCurrentDelay(context)).thenReturn(-800);
+		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
+		when(job.getMaxRetries(context)).thenReturn(5);
+		when(job.getMicroflowName(context)).thenReturn("ValidMicroflowName");
+		when(job.getRetry(context)).thenReturn(0);
+		
+		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
+		
+		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
+		assertFalse(actualResult);
+		verify(job, times(1)).getMaxRetries(context);
+		verify(logger, times(1)).error("CurrentDelay of -800 is invalid and should be a number larger than or equal to 0.");
+	}
+	
+	@Test
+	public void validateFalseBaseDelayNegative() {
+		String validQueueName = "ValidQueueName";
+		String validMicroflowName = "ValidMicroflowName";
+		when(job.getQueue(context)).thenReturn(validQueueName);
+		when(job.getBaseDelay(context)).thenReturn(-500);
+		when(job.getCurrentDelay(context)).thenReturn(300);
+		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
+		when(job.getMaxRetries(context)).thenReturn(5);
+		when(job.getMicroflowName(context)).thenReturn("ValidMicroflowName");
+		when(job.getRetry(context)).thenReturn(0);
+		
+		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
+		
+		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
+		assertFalse(actualResult);
+		verify(job, times(1)).getMaxRetries(context);
+		verify(logger, times(1)).error("BaseDelay of -500 is invalid and should be a number larger than or equal to 0.");
 	}
 }
