@@ -5,22 +5,20 @@ import java.util.concurrent.TimeUnit;
 public class TimeUnitConverter {
 	
 	public TimeUnit getTimeUnit (String timeUnitString) {
-		switch(timeUnitString) {
-		case "Days":
+		if (timeUnitString.equals("Days"))
 			return TimeUnit.DAYS;
-		case "Hours":
+		if (timeUnitString.equals("Hours"))
 			return TimeUnit.HOURS;
-		case "Minutes":
+		if (timeUnitString.equals("Minutes"))
 			return TimeUnit.MINUTES;
-		case "Seconds":
+		if (timeUnitString.equals("Seconds"))
 			return TimeUnit.SECONDS;
-		case "Milliseconds":
+		if (timeUnitString.equals("Milliseconds"))
 			return TimeUnit.MILLISECONDS;
-		case "Microseconds":
+		if (timeUnitString.equals("Microseconds"))
 			return TimeUnit.MICROSECONDS;
 			
-		default: return TimeUnit.MILLISECONDS;	
-		}
+		return TimeUnit.MILLISECONDS;	
 	}
 
 }
