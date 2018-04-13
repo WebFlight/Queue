@@ -17,10 +17,12 @@ public class JobToQueueAdder {
 	
 	private JobValidator jobValidator;
 	private ExponentialBackoffCalculator exponentialBackoffCalculator;
+	private TimeUnitConverter timeUnitConverter;
 	
-	public JobToQueueAdder(JobValidator jobValidator, ExponentialBackoffCalculator exponentialBackoffCalculator) {
+	public JobToQueueAdder(JobValidator jobValidator, ExponentialBackoffCalculator exponentialBackoffCalculator, TimeUnitConverter timeUnitConverter) {
 		this.jobValidator = jobValidator;
 		this.exponentialBackoffCalculator = exponentialBackoffCalculator;
+		this.timeUnitConverter = timeUnitConverter;
 	}
 	
 	public void add(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job) throws CoreException {
@@ -52,7 +54,7 @@ public class JobToQueueAdder {
 		ScheduledFuture<?> future =	executor.schedule(
 					queueRepository.getQueueHandler(logger, this, scheduledJobRepository, queueRepository, jobRepository, job.getMendixObject().getId()), 
 					job.getCurrentDelay(context), 
-					TimeUnitConverter.getTimeUnit(job.getDelayUnit(context).getCaption())
+					timeUnitConverter.getTimeUnit(job.getDelayUnit(context).getCaption())
 					);
 		
 		scheduledJobRepository.add(context, job.getMendixObject(), future);
