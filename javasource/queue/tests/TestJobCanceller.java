@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.verification.VerificationMode;
 
 import static org.mockito.Mockito.*;
 
@@ -80,22 +79,18 @@ public class TestJobCanceller {
 		assertTrue(actualResult);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void cancelJobFutureDoesNotExist() throws CoreException {
 		// Given the following behavior of input objects
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(scheduledJobRepository.get(context, jobObject)).thenReturn(null);
 		
-		// When job is the cancel method is invoked with removeWhenRunning = true
+		// When job is the cancel method is invoked with scheduledJobRepository.get(context, jobObject) returning null
 		JobCanceller jobCanceller = new JobCanceller();
 		
+		// Then exception is expected
 		expectedException.expect(CoreException.class);
-		boolean actualResult = jobCanceller.cancel(context, scheduledJobRepository, job, true);
-	
-		
-		// Then the following methods are called
-		verify(job, times(1)).getMendixObject();
-		verify(scheduledJobRepository, times(1)).get(context, jobObject);
+		expectedException.expectMessage("Job cannot be cancelled, because ScheduledFuture does not exist.");
+		jobCanceller.cancel(context, scheduledJobRepository, job, true);
 	}
 }
