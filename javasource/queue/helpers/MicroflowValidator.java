@@ -3,17 +3,23 @@ package queue.helpers;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.mendix.core.Core;
+import queue.repositories.MicroflowRepository;
 
 public class MicroflowValidator {
 	
+	private MicroflowRepository microflowRepository;
+	
+	public MicroflowValidator(MicroflowRepository microflowRepository) {
+		this.microflowRepository = microflowRepository;
+	}
+	
 	public boolean validate(String microflowName) {
-		return Core.getMicroflowNames().contains(microflowName);
+		return microflowRepository.getMicroflowNames().contains(microflowName);
 	}
 	
 	public String getClosestMatch(String microflowName) {
 		String microflowSuggestion = "";
-		Set<String> microflowNames = Core.getMicroflowNames();
+		Set<String> microflowNames = this.microflowRepository.getMicroflowNames();
 		
 		if (microflowNames.size() == 0) {
 			return "";
