@@ -1,9 +1,9 @@
 package queue.helpers;
 
-import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 
+import queue.proxies.ENU_TimeUnit;
 import queue.proxies.Job;
 import queue.repositories.QueueRepository;
 
@@ -24,103 +24,103 @@ public class JobValidator {
 				checkMaxRetries(context, job) &&
 				checkCurrentDelay(context, job) &&
 				checkBaseDelay(context, job) &&
-				checkRetry(context, job);
+				checkRetry(context, job) &&
+				checkDelayUnit(context, job);
 	}
 	
 	private boolean checkQueue(IContext context, QueueRepository queueRepository, Job job) {
 		String queue = job.getQueue(context);
 		
-		if (queue == "" || queue == null) {
-			this.logger.error("Queue name is missing.");
+		boolean validString = checkIfStringExistsAndNotEmpty(queue, "Queue");
+		
+		if (validString) {
+			if (queueRepository.queueExists(queue)) {
+				this.logger.debug("Queue with name " + queue + " found.");
+				return true;
+			}
+			
+			this.logger.error("Queue with name " + queue +  " has not been initialized.");
 			return false;
 		}
 		
-		if (queueRepository.queueExists(queue)) {
-			this.logger.debug("Queue with name " + queue + " found.");
-			return true;
-		}
-		
-		this.logger.error("Queue with name " + queue +  " has not been initialized.");
 		return false;
 	}
 	
 	private boolean checkMicroflowName(IContext context, Job job) {
 		String microflowName = job.getMicroflowName(context);
 		
-		if (microflowName == "" || microflowName == null) {
-			this.logger.error("Microflow name is missing.");
+		boolean validString = checkIfStringExistsAndNotEmpty(microflowName, "MicroflowName");
+				
+		if (validString) {
+			if (this.microflowValidator.validate(microflowName)) {
+				this.logger.debug("Microflow " + microflowName + " found.");
+				return true;
+			}
+			
+			String microflowSuggestion = this.microflowValidator.getClosestMatch(microflowName);
+			
+			if  (microflowSuggestion == "") {
+				this.logger.error("Microflow " + microflowName + " could not be found.");
+				return false;
+			}
+			
+			this.logger.error("Microflow " + microflowName + " could not be found. Did you mean " + microflowSuggestion + "?");
+			
 			return false;
 		}
-		
-		if (this.microflowValidator.validate(microflowName)) {
-			this.logger.debug("Microflow " + microflowName + " found.");
-			return true;
-		}
-		
-		String microflowSuggestion = this.microflowValidator.getClosestMatch(microflowName);
-		
-		if  (microflowSuggestion == "") {
-			this.logger.error("Microflow " + microflowName + " could not be found.");
-			return false;
-		}
-		
-		this.logger.error("Microflow " + microflowName + " could not be found. Did you mean " + microflowSuggestion + "?");
 		
 		return false;
 	}
 	
 	private boolean checkMaxRetries(IContext context, Job job) {
 		int maxRetries = job.getMaxRetries(context);
-		
-		if (maxRetries >= 0) {
-			this.logger.debug("Max retries of " + maxRetries + " is valid");
-			return true;
-		}
-		
-		this.logger.error("Max retries of " + maxRetries + " is invalid and should be a number larger than or equal to 0.");
-		return false;
+		return checkIfIntegerPositiveOrEqualToZero(maxRetries, "MaxRetries");
 	}
 	
 	private boolean checkCurrentDelay(IContext context, Job job) {
 		int currentDelay = job.getCurrentDelay(context);
-		
-		if (currentDelay >= 0) {
-			this.logger.debug("Delay of " + currentDelay + " is valid");
-			return true;
-		}
-		
-		this.logger.error("Delay of " + currentDelay + " is invalid and should be a number larger than or equal to 0.");
-		return false;
+		return checkIfIntegerPositiveOrEqualToZero(currentDelay, "CurrentDelay");
 	}
 	
 	private boolean checkBaseDelay(IContext context, Job job) {
 		int baseDelay = job.getBaseDelay(context);
-		
-		if (baseDelay >= 0) {
-			this.logger.debug("Base delay of " + baseDelay + " is valid");
-			return true;
-		}
-		
-		this.logger.error("Base delay of " + baseDelay + " is invalid and should be a number larger than or equal to 0.");
-		return false;
+		return checkIfIntegerPositiveOrEqualToZero(baseDelay, "BaseDelay");
 	}
 	
 	private boolean checkRetry(IContext context, Job job) {
 		int retry = job.getRetry(context);
-		
-		if (retry >= 0) {
-			this.logger.debug("Delay of 0 is valid");
-			return true;
-		}
-		
-		job.setRetry(context, 0);
-		try{
-			job.commit(context);
-		} catch (CoreException e) {
-			this.logger.error("Could not commit job when retry is set to 0.");
+		return checkIfIntegerPositiveOrEqualToZero(retry, "Retry");
+	}
+	
+	private boolean checkDelayUnit(IContext context, Job job) {
+		ENU_TimeUnit delayUnit = job.getDelayUnit(context);
+		if (delayUnit == null) {
+			this.logger.error("DelayUnit cannot be empty.");
 			return false;
 		}
-		this.logger.warn("It is not allowed to set retry lower than 0. Will be set to 0.");
+		this.logger.debug("DelayUnit is valid.");
+		return true;
+	}
+	
+	private boolean checkIfIntegerPositiveOrEqualToZero(int number, String attributeName) {
+		if (number >= 0) {
+			this.logger.debug(attributeName + " of " + number + " is valid");
+			return true;
+		}
+		this.logger.error(attributeName + " of " + number + " is invalid and should be a number larger than or equal to 0.");
+		return false;
+	}
+	
+	private boolean checkIfStringExistsAndNotEmpty(String text, String attributeName) {
+		if (text == null) {
+			this.logger.error(attributeName + " is missing");
+			return false;
+		}
+		if (text.equals("")) {
+			this.logger.error(attributeName + " is missing");
+			return false;
+		}
+		this.logger.debug(attributeName + " of " + text + " is valid");
 		return true;
 	}
 }
