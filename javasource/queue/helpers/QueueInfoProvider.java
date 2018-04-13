@@ -10,9 +10,16 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
+import queue.factories.QueueInfoFactory;
 import queue.proxies.QueueInfo;
 
 public class QueueInfoProvider {
+	
+	private QueueInfoFactory queueInfoFactory;
+	
+	public QueueInfoProvider(QueueInfoFactory queueInfoFactory) {
+		this.queueInfoFactory = queueInfoFactory;
+	}
 	
 	public List<IMendixObject> getQueueInfo(IContext context, ConcurrentHashMap<String, ScheduledThreadPoolExecutor> queueMap) {
 		List<IMendixObject> queueInfos = new ArrayList<>();
@@ -20,7 +27,7 @@ public class QueueInfoProvider {
 		
 		while (it.hasNext()) {
 			Entry<String, ScheduledThreadPoolExecutor> entry = it.next();
-			QueueInfo queueInfo = new QueueInfo(context);
+			QueueInfo queueInfo = queueInfoFactory.newQueueInfo(context);
 
 			ScheduledThreadPoolExecutor executor = entry.getValue();
 			

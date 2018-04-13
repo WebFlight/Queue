@@ -13,6 +13,7 @@ import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 import queue.entities.QueueConfiguration;
+import queue.factories.QueueInfoFactory;
 import queue.factories.QueueThreadFactory;
 import queue.factories.QueueThreadPoolFactory;
 import queue.helpers.JobToQueueAdder;
@@ -24,7 +25,7 @@ public final class QueueRepository {
 	private static QueueRepository queueRepository;
 	private static final Object lock = new Object();
 	private volatile ConcurrentHashMap<String, ScheduledThreadPoolExecutor> queueMap = new ConcurrentHashMap<>();
-	private QueueInfoProvider queueInfoProvider = new QueueInfoProvider();
+	private QueueInfoProvider queueInfoProvider = new QueueInfoProvider(new QueueInfoFactory());
 	
 	public static QueueRepository getInstance() {
 		QueueRepository instance = queueRepository;
