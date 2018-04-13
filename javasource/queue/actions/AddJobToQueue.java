@@ -20,6 +20,7 @@ import queue.helpers.MicroflowValidator;
 import queue.proxies.constants.Constants;
 import queue.repositories.ScheduledJobRepository;
 import queue.repositories.JobRepository;
+import queue.repositories.MicroflowRepository;
 import queue.repositories.QueueRepository;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
@@ -41,7 +42,8 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 
 		// BEGIN USER CODE
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
-		MicroflowValidator microflowValidator = new MicroflowValidator();
+		MicroflowRepository microflowRepository = new MicroflowRepository();
+		MicroflowValidator microflowValidator = new MicroflowValidator(microflowRepository);
 		JobValidator jobValidator = new JobValidator(logger, microflowValidator);
 		ExponentialBackoffCalculator exponentialBackoffCalculator = new ExponentialBackoffCalculator();
 		JobToQueueAdder adder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator);
