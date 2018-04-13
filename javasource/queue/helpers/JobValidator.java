@@ -113,11 +113,11 @@ public class JobValidator {
 	
 	private boolean checkIfStringExistsAndNotEmpty(String text, String attributeName) {
 		if (text == null) {
-			this.logger.error(attributeName + " is missing");
+			this.logger.error(attributeName + " is missing in Job object.");
 			return false;
 		}
 		if (text.equals("")) {
-			this.logger.error(attributeName + " is missing");
+			this.logger.error(attributeName + " is missing in Job object.");
 			return false;
 		}
 		this.logger.debug(attributeName + " of " + text + " is valid");
