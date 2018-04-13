@@ -7,7 +7,7 @@ import com.mendix.core.CoreException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
-public final class ScheduledJobRepository {
+public class ScheduledJobRepository {
 	private static ScheduledJobRepository jobRepository;
 	private static final Object lock = new Object();
 	private volatile ConcurrentHashMap<String, ScheduledFuture<?>> scheduledJobMap = new ConcurrentHashMap<>();
