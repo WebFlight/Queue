@@ -19,7 +19,12 @@ public class QueueValidator {
 	}
 	
 	private boolean checkName(QueueRepository queueRepository, String name) {
-		if (name == "" || name == null) {
+		if(name == null) {
+			this.logger.error("Queue name is missing.");
+			return false;
+		}
+		
+		if (name.equals("")) {
 			this.logger.error("Queue name is missing.");
 			return false;
 		}
