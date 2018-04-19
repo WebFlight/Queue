@@ -19,6 +19,7 @@ import queue.helpers.ExponentialBackoffCalculator;
 import queue.helpers.JobToQueueAdder;
 import queue.helpers.JobValidator;
 import queue.helpers.TimeUnitConverter;
+import queue.proxies.ENU_JobStatus;
 import queue.proxies.ENU_TimeUnit;
 import queue.proxies.Job;
 import queue.repositories.JobRepository;
@@ -43,9 +44,8 @@ public class TestJobToQueueAdder {
 	IMendixObject jobObject = mock(IMendixObject.class);
 	IMendixIdentifier jobIdentifier = mock(IMendixIdentifier.class);
 	QueueHandler queueHandler = mock(QueueHandler.class);
-	ENU_TimeUnit timeUnit = mock(ENU_TimeUnit.class);
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "static-access" })
 	@Test
 	public void addJob() throws CoreException {
 		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
@@ -61,12 +61,19 @@ public class TestJobToQueueAdder {
 		when(jobObject.getId()).thenReturn(jobIdentifier);
 		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
 		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
-		when(job.getDelayUnit(context)).thenReturn(timeUnit.Milliseconds);
-		when(timeUnit.getCaption()).thenReturn("milliseconds");
-		when(timeUnitConverter.getTimeUnit("milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
+		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
+		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
 		when(queue.schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS)).thenReturn(future);
 		
 		jobToQueueAdder.add(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
+		verify(jobValidator, times(1)).isValid(context, queueRepository, job);
+		verify(job, times(1)).getQueue(context);
+		verify(job, times(1)).setStatus(context, ENU_JobStatus.Queued);
+		verify(job, times(1)).commit(context);
+		verify(queue, times(1)).schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS);
+		verify(job, times(1)).getCurrentDelay(context);
+		verify(job, times(1)).getDelayUnit(context);
+		verify(job, times(1)).getMendixObject();
 	}
 
 }

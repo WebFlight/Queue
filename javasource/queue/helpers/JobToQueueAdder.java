@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledFuture;
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
@@ -50,14 +51,16 @@ public class JobToQueueAdder {
 		} catch (Exception e) {
 			throw new CoreException("Could not commit job.");
 		}
+		
+		IMendixObject jobObject = job.getMendixObject();
 				
 		ScheduledFuture<?> future =	executor.schedule(
-					queueRepository.getQueueHandler(logger, this, scheduledJobRepository, queueRepository, jobRepository, job.getMendixObject().getId()), 
+					queueRepository.getQueueHandler(logger, this, scheduledJobRepository, queueRepository, jobRepository, jobObject.getId()), 
 					job.getCurrentDelay(context), 
 					timeUnitConverter.getTimeUnit(job.getDelayUnit(context).getCaption())
 					);
 		
-		scheduledJobRepository.add(context, job.getMendixObject(), future);
+		scheduledJobRepository.add(context, jobObject, future);
 	}
 	
 	public void addRetry(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job) throws CoreException {
