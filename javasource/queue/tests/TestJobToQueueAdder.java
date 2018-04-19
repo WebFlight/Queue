@@ -7,7 +7,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
@@ -45,7 +47,10 @@ public class TestJobToQueueAdder {
 	IMendixIdentifier jobIdentifier = mock(IMendixIdentifier.class);
 	QueueHandler queueHandler = mock(QueueHandler.class);
 	
-	@SuppressWarnings({ "unchecked", "static-access" })
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
+	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJob() throws CoreException {
 		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
@@ -74,6 +79,58 @@ public class TestJobToQueueAdder {
 		verify(job, times(1)).getCurrentDelay(context);
 		verify(job, times(1)).getDelayUnit(context);
 		verify(job, times(1)).getMendixObject();
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	@Test
+	public void addJobNotValid() throws CoreException {
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
+		String name = "NewQueue";
+		int currentDelay = 500;
+		
+		when(jobValidator.isValid(context, queueRepository, job)).thenReturn(false);
+		when(job.getQueue(context)).thenReturn(name);
+		when(queueRepository.getQueue(name)).thenReturn(queue);
+		when(queue.isShutdown()).thenReturn(false);
+		when(queue.isTerminated()).thenReturn(false);
+		when(job.getMendixObject()).thenReturn(jobObject);
+		when(jobObject.getId()).thenReturn(jobIdentifier);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
+		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
+		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
+		when(queue.schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS)).thenReturn(future);
+		
+		expectedException.expect(CoreException.class);
+		expectedException.expectMessage("Job is not added, because it could not be validated.");
+		
+		jobToQueueAdder.add(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	@Test
+	public void addJobExecutorNull() throws CoreException {
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
+		String name = "NewQueue";
+		int currentDelay = 500;
+		
+		when(jobValidator.isValid(context, queueRepository, job)).thenReturn(true);
+		when(job.getQueue(context)).thenReturn(name);
+		when(queueRepository.getQueue(name)).thenReturn(null);
+		when(queue.isShutdown()).thenReturn(false);
+		when(queue.isTerminated()).thenReturn(false);
+		when(job.getMendixObject()).thenReturn(jobObject);
+		when(jobObject.getId()).thenReturn(jobIdentifier);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
+		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
+		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
+		when(queue.schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS)).thenReturn(future);
+		
+		expectedException.expect(CoreException.class);
+		expectedException.expectMessage("Queue with name " + job.getQueue(context) + " could not be found. Job has not been added.");
+		
+		jobToQueueAdder.add(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
 	}
 
 }
