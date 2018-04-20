@@ -26,4 +26,12 @@ public class JobRepository {
 	public void sleep(long millis) throws InterruptedException {
 		Thread.sleep(millis);
 	}
+	
+	public HashMap<String, Object> getJobInput(IMendixObject jobObject) {
+		HashMap<String, Object> jobInput = new HashMap<>();
+		jobInput.put("Job", jobObject);
+		return jobInput;
+	}
+	
+	
 }

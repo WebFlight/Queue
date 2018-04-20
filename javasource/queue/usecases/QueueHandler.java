@@ -68,33 +68,39 @@ public class QueueHandler implements Runnable {
 			
 			Job job = jobRepository.initialize(context, jobObject);
 			this.retry = job.getRetry(context);
+			String microflowName = job.getMicroflowName(context);
 			
-			HashMap<String, Object> jobInput = new HashMap<>();
-			jobInput.put("Job", jobObject);
+			HashMap<String, Object> jobInput = jobRepository.getJobInput(jobObject);
 			
 			try {
 				job.setStatus(context, ENU_JobStatus.Running);
 				job.commit(context);
 				logger.debug("Job status set to Running.");
-				logger.debug("Starting execution of microflow " + job.getMicroflowName(context) + ".");
-				jobRepository.executeJob(context, job.getMicroflowName(context), true, jobInput);
-				logger.debug("Finished execution of microflow " + job.getMicroflowName(context) + ".");
+				logger.debug("Starting execution of microflow " + microflowName + ".");
+				jobRepository.executeJob(context, microflowName, true, jobInput);
+				logger.debug("Finished execution of microflow " + microflowName + ".");
 				job.setStatus(context, ENU_JobStatus.Done);
 				job.commit(context);
 				logger.debug("Job status set to Done.");
+				scheduledJobRepository.remove(context, jobObject, retry);
 			} catch (CoreException e) {
+				scheduledJobRepository.remove(context, jobObject, retry);
 				Throwable t = e.getCause();
-				do {
+				while(true) {
 					t = t.getCause();
+					if (t == null) {
+						break;
+					}
+					
 					if(t instanceof InterruptedException) {
-						logger.warn("Microflow " + job.getMicroflowName(context) + " has been interrupted. Status will be set to Cancelled.");
+						logger.warn("Microflow " + microflowName + " has been interrupted. Status will be set to Cancelled.");
 						return;
 					}
-				} while (t.getCause() != null);
+				}
 				
-				logger.error("Error during execution of microflow " + job.getMicroflowName(context) + ".", e);
-				if (job.getRetry(context) < job.getMaxRetries(context)) {
-					logger.debug("Retry " + (job.getRetry(context) + 1) + " of " + job.getMaxRetries(context) + " will be scheduled for job with microflow " + job.getMicroflowName(context) + ".");
+				logger.error("Error during execution of microflow " + microflowName + ".", e);
+				if (this.retry < job.getMaxRetries(context)) {
+					logger.debug("Retry " + (this.retry + 1) + " of " + job.getMaxRetries(context) + " will be scheduled for job with microflow " + job.getMicroflowName(context) + ".");
 					jobToQueueAdder.addRetry(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
 					logger.debug("Job rescheduled and status set to Queued.");
 				} else {
@@ -102,10 +108,7 @@ public class QueueHandler implements Runnable {
 					job.commit(context);
 					logger.debug("Max retries reached, status is set to Error.");
 				}
-			} finally {
-				scheduledJobRepository.remove(context, jobObject, retry);
-			}
-			
+			} 
 		} catch (CoreException e) {
 			logger.error("Could not retrieve job object. Job will not be executed.");
 		}
