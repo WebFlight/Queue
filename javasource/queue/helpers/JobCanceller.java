@@ -6,7 +6,7 @@ import com.mendix.core.CoreException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
-import queue.proxies.ENU_JobStatus;
+//import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
 import queue.repositories.ScheduledJobRepository;
 
@@ -23,14 +23,7 @@ public class JobCanceller {
 			throw new CoreException("Job cannot be cancelled, because ScheduledFuture does not exist.");
 		}
 		
-		boolean cancelled = future.cancel(removeWhenRunning);
-		
-		if(cancelled) {
-			job.setStatus(context, ENU_JobStatus.Cancelled);
-			job.commit(context);
-		}
-		
-		scheduledJobRepository.remove(context, jobObject);
+		future.cancel(removeWhenRunning);
 		
 		return true;
 	}

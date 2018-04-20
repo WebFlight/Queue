@@ -94,6 +94,8 @@ public class QueueHandler implements Runnable {
 					
 					if(t instanceof InterruptedException) {
 						logger.warn("Microflow " + microflowName + " has been interrupted. Status will be set to Cancelled.");
+						job.setStatus(context, ENU_JobStatus.Cancelled);
+						job.commit(context);
 						return;
 					}
 				}

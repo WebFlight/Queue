@@ -47,9 +47,6 @@ public class TestJobCanceller {
 		verify(job, times(1)).getMendixObject();
 		verify(scheduledJobRepository, times(1)).get(context, jobObject);
 		verify(future, times(1)).cancel(true);
-		verify(job, times(1)).setStatus(context, ENU_JobStatus.Cancelled);
-		verify(job, times(1)).commit(context);
-		verify(scheduledJobRepository, times(1)).remove(context, job.getMendixObject());
 		
 		// And result is true
 		assertTrue(actualResult);
@@ -73,7 +70,6 @@ public class TestJobCanceller {
 		verify(future, times(1)).cancel(false);
 		verify(job, times(0)).setStatus(context, ENU_JobStatus.Cancelled);
 		verify(job, times(0)).commit(context);
-		verify(scheduledJobRepository, times(1)).remove(context, job.getMendixObject());
 		
 		// And result is true
 		assertTrue(actualResult);

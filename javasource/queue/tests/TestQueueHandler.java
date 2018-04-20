@@ -202,10 +202,12 @@ public class TestQueueHandler {
 		verify(logger, times(0)).debug("Finished execution of microflow " + job.getMicroflowName(context) + ".");
 		verify(logger, times(1)).debug("Max retries reached, status is set to Error.");
 		verify(logger, times(1)).error("Error during execution of microflow " + microflowName + ".", e);
+		verify(e, times(1)).getCause();
+		verify(t, times(1)).getCause();
 	}
 	
 	@Test
-	public void runAnotherExceptionWhileExecutingMicroflow() throws CoreException {
+	public void runAnotherExceptionWhileExecutingMicroflow() throws CoreException, InterruptedException {
 		int retry = 1;
 		String microflowName = "MicroflowToRun";
 		
@@ -225,10 +227,31 @@ public class TestQueueHandler {
 		
 		
 		queueHandler.run();
+		
+		verify(jobRepository, times(1)).getJob(context, jobId);
+		verify(jobRepository, times(1)).initialize(context, jobObject);
+		verify(job, times(1)).setStatus(context, ENU_JobStatus.Running);
+		verify(job, times(1)).setStatus(context, ENU_JobStatus.Error);
+		verify(job, times(2)).commit(context);
+		verify(jobRepository, times(0)).sleep(anyLong());
+		verify(job, times(1)).getRetry(context);
+		verify(jobRepository, times(1)).getJobInput(jobObject);
+		verify(jobRepository, times(1)).executeJob(context, microflowName, true, jobInput);
+		verify(scheduledJobRepository, times(1)).remove(context, jobObject, retry);
+		verify(logger, times(1)).debug("Job object found.");
+		verify(logger, times(1)).debug("Trying to retrieve job object. Attempt 1 of 10.");
+		verify(logger, times(1)).debug("Job status set to Running.");
+		verify(logger, times(0)).debug("Job status set to Done.");
+		verify(logger, times(1)).debug("Starting execution of microflow " + job.getMicroflowName(context) + ".");
+		verify(logger, times(0)).debug("Finished execution of microflow " + job.getMicroflowName(context) + ".");
+		verify(logger, times(1)).debug("Max retries reached, status is set to Error.");
+		verify(logger, times(1)).error("Error during execution of microflow " + microflowName + ".", e);
+		verify(e, times(1)).getCause();
+		verify(t, times(1)).getCause();
 	}
 	
 	@Test
-	public void runInterruptedWhileExecutingMicroflow() throws CoreException {
+	public void runInterruptedWhileExecutingMicroflow() throws CoreException, InterruptedException {
 		int retry = 1;
 		String microflowName = "MicroflowToRun";
 		
@@ -248,10 +271,29 @@ public class TestQueueHandler {
 		
 		
 		queueHandler.run();
+		verify(jobRepository, times(1)).getJob(context, jobId);
+		verify(jobRepository, times(1)).initialize(context, jobObject);
+		verify(job, times(1)).setStatus(context, ENU_JobStatus.Running);
+		verify(job, times(1)).setStatus(context, ENU_JobStatus.Cancelled);
+		verify(job, times(2)).commit(context);
+		verify(jobRepository, times(0)).sleep(anyLong());
+		verify(job, times(1)).getRetry(context);
+		verify(jobRepository, times(1)).getJobInput(jobObject);
+		verify(jobRepository, times(1)).executeJob(context, microflowName, true, jobInput);
+		verify(scheduledJobRepository, times(1)).remove(context, jobObject, retry);
+		verify(logger, times(1)).debug("Job object found.");
+		verify(logger, times(1)).debug("Trying to retrieve job object. Attempt 1 of 10.");
+		verify(logger, times(1)).debug("Job status set to Running.");
+		verify(logger, times(0)).debug("Job status set to Done.");
+		verify(logger, times(1)).debug("Starting execution of microflow " + job.getMicroflowName(context) + ".");
+		verify(logger, times(0)).debug("Finished execution of microflow " + job.getMicroflowName(context) + ".");
+		verify(logger, times(1)).warn("Microflow " + microflowName + " has been interrupted. Status will be set to Cancelled.");
+		verify(e, times(1)).getCause();
+		verify(t, times(1)).getCause();
 	}
 	
 	@Test
-	public void runExceptionWhileExecutingMicroflowRetry() throws CoreException {
+	public void runExceptionWhileExecutingMicroflowRetry() throws CoreException, InterruptedException {
 		int retry = 1;
 		int maxRetries = 2;
 		String microflowName = "MicroflowToRun";
@@ -271,7 +313,26 @@ public class TestQueueHandler {
 		when(e.getCause()).thenReturn(t);
 		when(t.getCause()).thenReturn(new CoreException()).thenReturn(null);
 		
-		
 		queueHandler.run();
+		verify(jobRepository, times(1)).getJob(context, jobId);
+		verify(jobRepository, times(1)).initialize(context, jobObject);
+		verify(job, times(1)).setStatus(context, ENU_JobStatus.Running);
+		verify(job, times(1)).commit(context);
+		verify(jobRepository, times(0)).sleep(anyLong());
+		verify(job, times(1)).getRetry(context);
+		verify(jobRepository, times(1)).getJobInput(jobObject);
+		verify(jobRepository, times(1)).executeJob(context, microflowName, true, jobInput);
+		verify(scheduledJobRepository, times(1)).remove(context, jobObject, retry);
+		verify(logger, times(1)).debug("Job object found.");
+		verify(logger, times(1)).debug("Trying to retrieve job object. Attempt 1 of 10.");
+		verify(logger, times(1)).debug("Job status set to Running.");
+		verify(logger, times(0)).debug("Job status set to Done.");
+		verify(logger, times(1)).debug("Starting execution of microflow " + job.getMicroflowName(context) + ".");
+		verify(logger, times(0)).debug("Finished execution of microflow " + job.getMicroflowName(context) + ".");
+		verify(logger, times(1)).error("Error during execution of microflow " + microflowName + ".", e);
+		verify(logger, times(1)).debug("Retry " + (retry + 1) + " of " + job.getMaxRetries(context) + " will be scheduled for job with microflow " + job.getMicroflowName(context) + ".");
+		verify(logger, times(1)).debug("Job rescheduled and status set to Queued.");
+		verify(e, times(1)).getCause();
+		verify(t, times(1)).getCause();
 	}
 }
