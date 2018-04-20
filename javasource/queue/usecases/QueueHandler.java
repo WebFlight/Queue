@@ -43,7 +43,8 @@ public class QueueHandler implements Runnable {
 			IContext context = queueRepository.getSystemContext();;
 			
 			int retries = 0;
-			while (retries <= 10) {
+			int maxRetries = 10;
+			while (retries < maxRetries) {
 				logger.debug("Trying to retrieve job object. Attempt " + (retries + 1) + " of 10.");
 				jobObject = jobRepository.getJob(context, jobId);
 				
@@ -53,15 +54,19 @@ public class QueueHandler implements Runnable {
 				}
 				logger.debug("Job object not found.");
 				
+				if (jobObject == null && retries == (maxRetries - 1)) {
+					throw new CoreException();
+				}
+				
 				try {
-					Thread.sleep(jobToQueueAdder.getExponentialBackoffCalculator().calculate(200, retries));
+					jobRepository.sleep(jobToQueueAdder.getExponentialBackoffCalculator().calculate(200, retries));
 				} catch (InterruptedException e) {
 					logger.error("While executing job, could bring Thread to sleep when retrieving job object.");
 				}
 				retries++;
 			}
 			
-			Job job = Job.initialize(context, jobObject);
+			Job job = jobRepository.initialize(context, jobObject);
 			this.retry = job.getRetry(context);
 			
 			HashMap<String, Object> jobInput = new HashMap<>();
