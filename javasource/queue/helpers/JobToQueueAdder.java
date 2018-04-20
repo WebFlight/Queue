@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledFuture;
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
@@ -48,22 +49,26 @@ public class JobToQueueAdder {
 		try {
 			job.commit(context);
 		} catch (Exception e) {
-			throw new CoreException("Could not commit job.");
+			throw new CoreException("Could not commit job.", e);
 		}
+		
+		IMendixObject jobObject = job.getMendixObject();
 				
 		ScheduledFuture<?> future =	executor.schedule(
-					queueRepository.getQueueHandler(logger, this, scheduledJobRepository, queueRepository, jobRepository, job.getMendixObject().getId()), 
+					queueRepository.getQueueHandler(logger, this, scheduledJobRepository, queueRepository, jobRepository, jobObject.getId()), 
 					job.getCurrentDelay(context), 
 					timeUnitConverter.getTimeUnit(job.getDelayUnit(context).getCaption())
 					);
 		
-		scheduledJobRepository.add(context, job.getMendixObject(), future);
+		scheduledJobRepository.add(context, jobObject, future);
 	}
 	
 	public void addRetry(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job) throws CoreException {
-		int newDelay= this.exponentialBackoffCalculator.calculate(job.getBaseDelay(context), job.getRetry(context));
+		int retry = job.getRetry(context);
+		int baseDelay = job.getBaseDelay(context);
+		int newDelay= this.exponentialBackoffCalculator.calculate(baseDelay, retry);
 		job.setCurrentDelay(context, newDelay);
-		job.setRetry(context, job.getRetry(context) + 1);
+		job.setRetry(context, retry + 1);
 		add(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
 	}
 	
