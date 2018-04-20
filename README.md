@@ -7,12 +7,22 @@ Welcome to the Mendix Queue module. This module can be used in [Mendix](http://w
 # Table of Contents
 
 * [Getting Started](#getting-started)
-* [Application](#application)
-	- [Supported](#supported)
-	- [Not supported](#not-supported)
-	- [Logging](#logging)
-	- [Dependencies](#dependencies)
-* [Development Notes](#development-notes)
+* [Features](#features)
+* [Job configuration](#job-configuration)
+* [Security roles](#security-roles)
+* [Not implemented](#not-implemented)
+* [Logging](#logging)
+* [Dependencies](#dependencies)
+* [Development notes](#development-notes)
+
+# Demo
+Check the demo application at https://queue100.mxapps.io
+
+User role account:
+demo_user
+hXPC3NKz49
+
+For an Administrator role account, please request at [Menno de Haas](mailto:menno.dehaas@webflight.nl). An Administrator can shutdown a queue, which makes it unavailable for others to experiment with.
 
 # Getting started
 1. The *Queue* module can be downloaded from within the Mendix Business Modeler in the Mendix Appstore into any model that is build with Mendix 7.13.1+.
@@ -52,6 +62,8 @@ To add a Job to the queue, create a new object of the *Job* entity. The Job enti
 | Status | The status of the Job. The Queue logic will change the status according to result and should not be set by the user. |
 
 # Security roles
+The module contains two security roles:
+
 * Administrator
 	- All rights
 * User
@@ -59,19 +71,19 @@ To add a Job to the queue, create a new object of the *Job* entity. The Job enti
 	- Cannot abort running jobs
 	- Cannot clean jobs
 
-# Not implemented / limitations
+# Not implemented
 * Job audit trail (can be easily implemented by adding logic or implement a specialization of the Job entity)
 * Initialization of a Queue in the UI
 * Jobs that return an error and are rescheduled, will be added to the end of the queue. Java implements a BlockingQueue (in contrast to a BlockingDequeue), which does not allow entries to be added to the head of the queue. If a FIFO mechanism is required, cancel and re-add all Jobs in the correct order in case of an error or implement the retry mechanism inside the microflow instead of using the retry mechanism provided by the Queue.
 
-## Logging
+# Logging
 * The *JobQueue* log node is available for logging.
 
-## Dependencies
+# Dependencies
 No userlib compile dependencies.
 
 # Development notes
-* Functionality is tested using JUnit and Mockito. The queue.helpers and queue.usecase packages contain business logic and have a 100% coverage.
+* Functionality is tested using JUnit and Mockito. The *queue.helpers* and *queue.usecase* packages contain business logic and have a 100% coverage.
 * For contributions, fork the repository, make changes, fix unit tests with 100% coverage and issue a pull request.
 
  [1]: docs/Queue.png
