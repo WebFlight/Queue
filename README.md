@@ -6,6 +6,7 @@ Welcome to the Mendix Queue module. This module can be used in [Mendix](http://w
 
 # Table of Contents
 
+* [Demo](#demo)
 * [Getting Started](#getting-started)
 * [Features](#features)
 * [Job configuration](#job-configuration)
@@ -16,11 +17,7 @@ Welcome to the Mendix Queue module. This module can be used in [Mendix](http://w
 * [Development notes](#development-notes)
 
 # Demo
-Check the demo application at https://queue100.mxapps.io
-
-User role account:
-demo_user
-hXPC3NKz49
+Check the demo application at https://queue100.mxapps.io and login using **demo_user** and **hXPC3NKz49**.
 
 For an Administrator role account, please request at [Menno de Haas](mailto:menno.dehaas@webflight.nl). An Administrator can shutdown a queue, which makes it unavailable for others to experiment with.
 
