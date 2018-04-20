@@ -1,9 +1,0 @@
--Executing job
-	-Logging
-	-Error handling
--Cleanup
-	-Clean up jobs in scheduled event
--Unit testing
--Deployment
-	-Prepare module package
-	-Commit on Github and write readme
