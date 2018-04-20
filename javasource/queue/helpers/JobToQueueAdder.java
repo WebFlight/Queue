@@ -49,7 +49,7 @@ public class JobToQueueAdder {
 		try {
 			job.commit(context);
 		} catch (Exception e) {
-			throw new CoreException("Could not commit job.");
+			throw new CoreException("Could not commit job.", e);
 		}
 		
 		IMendixObject jobObject = job.getMendixObject();
@@ -64,9 +64,11 @@ public class JobToQueueAdder {
 	}
 	
 	public void addRetry(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job) throws CoreException {
-		int newDelay= this.exponentialBackoffCalculator.calculate(job.getBaseDelay(context), job.getRetry(context));
+		int retry = job.getRetry(context);
+		int baseDelay = job.getBaseDelay(context);
+		int newDelay= this.exponentialBackoffCalculator.calculate(baseDelay, retry);
 		job.setCurrentDelay(context, newDelay);
-		job.setRetry(context, job.getRetry(context) + 1);
+		job.setRetry(context, retry + 1);
 		add(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
 	}
 	
