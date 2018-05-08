@@ -38,6 +38,7 @@ public class TestJobCanceller {
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(scheduledJobRepository.get(context, jobObject)).thenReturn(future);
 		when(future.cancel(true)).thenReturn(true);
+		when(future.isCancelled()).thenReturn(true);
 		
 		// When job is the cancel method is invoked with removeWhenRunning = true
 		JobCanceller jobCanceller = new JobCanceller();
@@ -47,6 +48,8 @@ public class TestJobCanceller {
 		verify(job, times(1)).getMendixObject();
 		verify(scheduledJobRepository, times(1)).get(context, jobObject);
 		verify(future, times(1)).cancel(true);
+		verify(job, times(1)).setStatus(context, ENU_JobStatus.Cancelled);
+		verify(job, times(1)).commit(context);
 		
 		// And result is true
 		assertTrue(actualResult);
@@ -58,9 +61,10 @@ public class TestJobCanceller {
 		// Given the following behavior of input objects
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(scheduledJobRepository.get(context, jobObject)).thenReturn(future);
-		when(future.cancel(false)).thenReturn(false);
+		when(future.cancel(false)).thenReturn(true);
+		when(future.isCancelled()).thenReturn(true);
 		
-		// When job is the cancel method is invoked with removeWhenRunning = true
+		// When job is the cancel method is invoked with removeWhenRunning = false
 		JobCanceller jobCanceller = new JobCanceller();
 		boolean actualResult = jobCanceller.cancel(context, scheduledJobRepository, job, false);
 		
@@ -68,8 +72,8 @@ public class TestJobCanceller {
 		verify(job, times(1)).getMendixObject();
 		verify(scheduledJobRepository, times(1)).get(context, jobObject);
 		verify(future, times(1)).cancel(false);
-		verify(job, times(0)).setStatus(context, ENU_JobStatus.Cancelled);
-		verify(job, times(0)).commit(context);
+		verify(job, times(1)).setStatus(context, ENU_JobStatus.Cancelled);
+		verify(job, times(1)).commit(context);
 		
 		// And result is true
 		assertTrue(actualResult);
@@ -88,5 +92,23 @@ public class TestJobCanceller {
 		expectedException.expect(CoreException.class);
 		expectedException.expectMessage("Job cannot be cancelled, because ScheduledFuture does not exist.");
 		jobCanceller.cancel(context, scheduledJobRepository, job, true);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void cancelJobRemoveWhenRunningFalseCouldNotCancel() throws CoreException {
+		// Given the following behavior of input objects
+		when(job.getMendixObject()).thenReturn(jobObject);
+		when(scheduledJobRepository.get(context, jobObject)).thenReturn(future);
+		when(future.cancel(false)).thenReturn(true);
+		when(future.isCancelled()).thenReturn(false);
+		
+		// Then exception is expected
+		expectedException.expect(CoreException.class);
+		expectedException.expectMessage("Job cannot be cancelled, because it has already completed, has already been cancelled, or could not be cancelled for some other reason.");
+		
+		// When job is the cancel method is invoked with removeWhenRunning = false
+		JobCanceller jobCanceller = new JobCanceller();
+		jobCanceller.cancel(context, scheduledJobRepository, job, false);
 	}
 }
