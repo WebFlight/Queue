@@ -57,7 +57,7 @@ public class JobToQueueAdder {
 		ScheduledFuture<?> future =	executor.schedule(
 					queueRepository.getQueueHandler(logger, this, scheduledJobRepository, queueRepository, jobRepository, jobObject.getId()), 
 					job.getCurrentDelay(context), 
-					timeUnitConverter.getTimeUnit(job.getDelayUnit(context).getCaption())
+					timeUnitConverter.getTimeUnit(job.getDelayUnit(context).getCaption("en_US"))
 					);
 		
 		scheduledJobRepository.add(context, jobObject, future);
