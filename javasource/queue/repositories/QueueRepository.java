@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import com.mendix.core.Core;
 import com.mendix.logging.ILogNode;
@@ -17,10 +16,10 @@ import queue.entities.QueueConfiguration;
 import queue.factories.QueueInfoFactory;
 import queue.factories.QueueThreadFactory;
 import queue.factories.QueueThreadPoolFactory;
+import queue.helpers.ClusterSupportInitializer;
 import queue.helpers.JobToQueueAdder;
 import queue.helpers.QueueInfoProvider;
 import queue.usecases.QueueHandler;
-import queue.usecases.QueueInfoUpdater;
 
 public final class QueueRepository {
 	
@@ -28,6 +27,13 @@ public final class QueueRepository {
 	private static final Object lock = new Object();
 	private volatile ConcurrentHashMap<String, ScheduledThreadPoolExecutor> queueMap = new ConcurrentHashMap<>();
 	private QueueInfoProvider queueInfoProvider = new QueueInfoProvider(new QueueInfoFactory());
+	
+	private QueueRepository() {
+		ConstantsRepository constantsRepository = new ConstantsRepository();
+		ClusterSupportInitializer clusterSupportInitializer = new ClusterSupportInitializer(constantsRepository);
+		clusterSupportInitializer.initialize();
+	}
+	
 	public static QueueRepository getInstance() {
 		QueueRepository instance = queueRepository;
 		
@@ -37,15 +43,13 @@ public final class QueueRepository {
 				if (instance == null) {
 					instance = new QueueRepository();
 					queueRepository = instance;
-										
-					Core.scheduleAtFixedRate(new QueueInfoUpdater<>(Core.createSystemContext()), 10L, 10L, TimeUnit.SECONDS);
 				}
 			}
 		}
 		
 		return instance;
 	}
-
+	
 	public void newQueue (QueueConfiguration configuration, QueueThreadPoolFactory poolFactory, QueueThreadFactory threadFactory) {
 		queueMap.put(configuration.getName(), (ScheduledThreadPoolExecutor) poolFactory.newScheduledThreadPool(configuration, threadFactory));
 	}
