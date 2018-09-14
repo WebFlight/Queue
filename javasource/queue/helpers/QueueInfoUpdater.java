@@ -1,4 +1,4 @@
-package queue.usecases;
+package queue.helpers;
 
 import java.util.List;
 

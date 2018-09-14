@@ -7,7 +7,6 @@ import com.mendix.logging.ILogNode;
 
 import queue.proxies.constants.Constants;
 import queue.repositories.ConstantsRepository;
-import queue.usecases.QueueInfoUpdater;
 
 public class ClusterSupportInitializer {
 	
