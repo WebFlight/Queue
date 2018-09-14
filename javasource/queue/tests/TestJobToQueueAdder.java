@@ -24,6 +24,7 @@ import queue.helpers.TimeUnitConverter;
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.ENU_TimeUnit;
 import queue.proxies.Job;
+import queue.repositories.ConstantsRepository;
 import queue.repositories.JobRepository;
 import queue.repositories.QueueRepository;
 import queue.repositories.ScheduledJobRepository;
@@ -46,6 +47,7 @@ public class TestJobToQueueAdder {
 	IMendixObject jobObject = mock(IMendixObject.class);
 	IMendixIdentifier jobIdentifier = mock(IMendixIdentifier.class);
 	QueueHandler queueHandler = mock(QueueHandler.class);
+	ConstantsRepository constantsRepository = mock(ConstantsRepository.class);
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -53,7 +55,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJob() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -84,7 +86,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobNotValid() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -110,7 +112,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobExecutorNull() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -136,7 +138,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobExecutorShutdown() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -162,7 +164,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobExecutorTerminated() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -188,7 +190,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobCommitException() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -215,7 +217,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobRetry() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		int newDelay = 1000;
@@ -257,7 +259,7 @@ public class TestJobToQueueAdder {
 	
 	@Test
 	public void getExponentialBackoffCalculator() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository);
 		
 		assertEquals(exponentialBackoffCalculator, jobToQueueAdder.getExponentialBackoffCalculator());
 	}

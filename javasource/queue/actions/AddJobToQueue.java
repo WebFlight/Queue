@@ -20,6 +20,7 @@ import queue.helpers.MicroflowValidator;
 import queue.helpers.TimeUnitConverter;
 import queue.proxies.constants.Constants;
 import queue.repositories.ScheduledJobRepository;
+import queue.repositories.ConstantsRepository;
 import queue.repositories.JobRepository;
 import queue.repositories.MicroflowRepository;
 import queue.repositories.QueueRepository;
@@ -48,7 +49,8 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 		JobValidator jobValidator = new JobValidator(logger, microflowValidator);
 		ExponentialBackoffCalculator exponentialBackoffCalculator = new ExponentialBackoffCalculator();
 		TimeUnitConverter timeUnitConverter = new TimeUnitConverter();
-		JobToQueueAdder adder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter);
+		ConstantsRepository constantsRepository = new ConstantsRepository();
+		JobToQueueAdder adder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository);
 		ScheduledJobRepository scheduledJobRepository = ScheduledJobRepository.getInstance();
 		QueueRepository queueRepository = QueueRepository.getInstance();
 		JobRepository jobRepository = new JobRepository();
