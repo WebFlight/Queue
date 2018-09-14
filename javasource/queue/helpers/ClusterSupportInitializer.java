@@ -19,7 +19,8 @@ public class ClusterSupportInitializer {
 	
 	public void initialize () {
 		if (constantsRepository.isClusterSupport()) {
-			Core.scheduleAtFixedRate(new QueueInfoUpdater<>(Core.createSystemContext()), 10L, 10L, TimeUnit.SECONDS);
+			Core.scheduleAtFixedRate(new QueueInfoUpdater<>(Core.createSystemContext()), 10L, 5L, TimeUnit.SECONDS);
+			Core.scheduleAtFixedRate(new QueueControlMessageFetcher<>(Core.createSystemContext()), 10L, 5L, TimeUnit.SECONDS);
 			logger.info("Support enabled for Mendix Clustered Runtime.");
 		}
 	}
