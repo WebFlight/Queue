@@ -5,9 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import com.mendix.core.Core;
-import com.mendix.core.conf.RuntimeVersion;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
@@ -20,6 +20,7 @@ import queue.factories.QueueThreadPoolFactory;
 import queue.helpers.JobToQueueAdder;
 import queue.helpers.QueueInfoProvider;
 import queue.usecases.QueueHandler;
+import queue.usecases.QueueInfoUpdater;
 
 public final class QueueRepository {
 	
@@ -27,7 +28,6 @@ public final class QueueRepository {
 	private static final Object lock = new Object();
 	private volatile ConcurrentHashMap<String, ScheduledThreadPoolExecutor> queueMap = new ConcurrentHashMap<>();
 	private QueueInfoProvider queueInfoProvider = new QueueInfoProvider(new QueueInfoFactory());
-	
 	public static QueueRepository getInstance() {
 		QueueRepository instance = queueRepository;
 		
@@ -37,6 +37,8 @@ public final class QueueRepository {
 				if (instance == null) {
 					instance = new QueueRepository();
 					queueRepository = instance;
+										
+					Core.scheduleAtFixedRate(new QueueInfoUpdater<>(Core.createSystemContext()), 10L, 10L, TimeUnit.SECONDS);
 				}
 			}
 		}
