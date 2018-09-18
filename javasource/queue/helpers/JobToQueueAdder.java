@@ -13,6 +13,7 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
 import queue.repositories.ScheduledJobRepository;
+import queue.utilities.CoreUtility;
 import system.proxies.XASInstance;
 import queue.repositories.ConstantsRepository;
 import queue.repositories.JobRepository;
@@ -24,12 +25,14 @@ public class JobToQueueAdder {
 	private ExponentialBackoffCalculator exponentialBackoffCalculator;
 	private TimeUnitConverter timeUnitConverter;
 	private ConstantsRepository constantsRepository;
+	private CoreUtility coreUtility;
 	
-	public JobToQueueAdder(JobValidator jobValidator, ExponentialBackoffCalculator exponentialBackoffCalculator, TimeUnitConverter timeUnitConverter, ConstantsRepository constantsRepository) {
+	public JobToQueueAdder(JobValidator jobValidator, ExponentialBackoffCalculator exponentialBackoffCalculator, TimeUnitConverter timeUnitConverter, ConstantsRepository constantsRepository, CoreUtility coreUtility) {
 		this.jobValidator = jobValidator;
 		this.exponentialBackoffCalculator = exponentialBackoffCalculator;
 		this.timeUnitConverter = timeUnitConverter;
 		this.constantsRepository = constantsRepository;
+		this.coreUtility = coreUtility;
 	}
 	
 	public void add(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job) throws CoreException {
@@ -54,7 +57,7 @@ public class JobToQueueAdder {
 			List<IMendixObject> xasInstances = null;
 			
 			try {
-				xasInstances = Core.retrieveXPathQuery(context, "//System.XASInstance[XASId='" + Core.getXASId() + "']");
+				xasInstances = coreUtility.retrieveXPathQuery(context, "//System.XASInstance[XASId='" + Core.getXASId() + "']");
 			} catch (CoreException e) {
 				logger.error("Could not retrieve XAS Instance from database.", e);
 			}
