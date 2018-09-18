@@ -4,17 +4,16 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import com.mendix.core.Core;
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
+import queue.factories.XASInstanceFactory;
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
 import queue.repositories.ScheduledJobRepository;
 import queue.utilities.CoreUtility;
-import system.proxies.XASInstance;
 import queue.repositories.ConstantsRepository;
 import queue.repositories.JobRepository;
 import queue.repositories.QueueRepository;
@@ -26,13 +25,15 @@ public class JobToQueueAdder {
 	private TimeUnitConverter timeUnitConverter;
 	private ConstantsRepository constantsRepository;
 	private CoreUtility coreUtility;
+	private XASInstanceFactory xasInstanceFactory;
 	
-	public JobToQueueAdder(JobValidator jobValidator, ExponentialBackoffCalculator exponentialBackoffCalculator, TimeUnitConverter timeUnitConverter, ConstantsRepository constantsRepository, CoreUtility coreUtility) {
+	public JobToQueueAdder(JobValidator jobValidator, ExponentialBackoffCalculator exponentialBackoffCalculator, TimeUnitConverter timeUnitConverter, ConstantsRepository constantsRepository, CoreUtility coreUtility, XASInstanceFactory xasInstanceFactory) {
 		this.jobValidator = jobValidator;
 		this.exponentialBackoffCalculator = exponentialBackoffCalculator;
 		this.timeUnitConverter = timeUnitConverter;
 		this.constantsRepository = constantsRepository;
 		this.coreUtility = coreUtility;
+		this.xasInstanceFactory = xasInstanceFactory;
 	}
 	
 	public void add(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job) throws CoreException {
@@ -57,13 +58,13 @@ public class JobToQueueAdder {
 			List<IMendixObject> xasInstances = null;
 			
 			try {
-				xasInstances = coreUtility.retrieveXPathQuery(context, "//System.XASInstance[XASId='" + Core.getXASId() + "']");
+				xasInstances = coreUtility.retrieveXPathQuery(context, "//System.XASInstance[XASId='" + coreUtility.getXASId() + "']");
 			} catch (CoreException e) {
-				logger.error("Could not retrieve XAS Instance from database.", e);
+				throw new CoreException("Could not retrieve XAS Instance from database.", e);
 			}
 			IMendixObject xasInstance = xasInstances.get(0);
 			
-			job.setJob_XASInstance(XASInstance.load(context, xasInstance.getId()));
+			job.setJob_XASInstance(context, xasInstanceFactory.load(context, xasInstance.getId()));
 		}
 	
 		job.setStatus(context, ENU_JobStatus.Queued);

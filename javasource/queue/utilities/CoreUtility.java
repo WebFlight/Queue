@@ -12,5 +12,9 @@ public class CoreUtility {
 	public List<IMendixObject> retrieveXPathQuery(IContext context, String xPath) throws CoreException {
 		return Core.retrieveXPathQuery(context, xPath);
 	}
+	
+	public String getXASId() {
+		return Core.getXASId();
+	}
 
 }

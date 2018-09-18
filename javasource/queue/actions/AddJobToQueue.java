@@ -13,6 +13,8 @@ import com.mendix.core.Core;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
+
+import queue.factories.XASInstanceFactory;
 import queue.helpers.ExponentialBackoffCalculator;
 import queue.helpers.JobToQueueAdder;
 import queue.helpers.JobValidator;
@@ -52,8 +54,9 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 		TimeUnitConverter timeUnitConverter = new TimeUnitConverter();
 		ConstantsRepository constantsRepository = new ConstantsRepository();
 		CoreUtility coreUtility = new CoreUtility();
+		XASInstanceFactory xasInstanceFactory = new XASInstanceFactory();
 		
-		JobToQueueAdder adder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility);
+		JobToQueueAdder adder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
 		ScheduledJobRepository scheduledJobRepository = ScheduledJobRepository.getInstance();
 		QueueRepository queueRepository = QueueRepository.getInstance();
 		JobRepository jobRepository = new JobRepository();
