@@ -13,13 +13,17 @@ import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 import queue.entities.QueueConfiguration;
+import queue.factories.QueueControlMessageFetcherFactory;
 import queue.factories.QueueInfoFactory;
+import queue.factories.QueueInfoUpdaterFactory;
 import queue.factories.QueueThreadFactory;
 import queue.factories.QueueThreadPoolFactory;
 import queue.helpers.ClusterSupportInitializer;
 import queue.helpers.JobToQueueAdder;
 import queue.helpers.QueueInfoProvider;
+import queue.proxies.constants.Constants;
 import queue.usecases.QueueHandler;
+import queue.utilities.CoreUtility;
 
 public final class QueueRepository {
 	
@@ -30,7 +34,11 @@ public final class QueueRepository {
 	
 	private QueueRepository() {
 		ConstantsRepository constantsRepository = new ConstantsRepository();
-		ClusterSupportInitializer clusterSupportInitializer = new ClusterSupportInitializer(constantsRepository);
+		CoreUtility coreUtility = new CoreUtility();
+		QueueInfoUpdaterFactory queueInfoUpdaterFactory = new QueueInfoUpdaterFactory();
+		QueueControlMessageFetcherFactory queueControlMessageFetcherFactory = new QueueControlMessageFetcherFactory();
+		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
+		ClusterSupportInitializer clusterSupportInitializer = new ClusterSupportInitializer(logger, constantsRepository, coreUtility, queueInfoUpdaterFactory, queueControlMessageFetcherFactory);
 		clusterSupportInitializer.initialize();
 	}
 	

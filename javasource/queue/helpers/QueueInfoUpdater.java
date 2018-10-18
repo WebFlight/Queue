@@ -9,15 +9,15 @@ import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
-import queue.proxies.constants.Constants;
 import queue.repositories.QueueRepository;
 
 public class QueueInfoUpdater<R> extends CoreAction<R> {
 	
-	private static ILogNode logger = Core.getLogger(Constants.getLOGNODE()); 
+	private ILogNode logger; 
 	
-	public QueueInfoUpdater(IContext arg0) {
+	public QueueInfoUpdater(ILogNode logger, IContext arg0) {
 		super(arg0);
+		this.logger = logger;
 	}
 
 	@Override

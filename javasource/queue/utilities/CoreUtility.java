@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
+import com.mendix.core.actionmanagement.CoreAction;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
@@ -15,6 +16,10 @@ public class CoreUtility {
 	
 	public String getXASId() {
 		return Core.getXASId();
+	}
+	
+	public void scheduleAtFixedRate(CoreAction<?> coreAction, long initialDelay, long period, java.util.concurrent.TimeUnit timeUnit) {
+		Core.scheduleAtFixedRate(coreAction, initialDelay, period, timeUnit);
 	}
 
 }
