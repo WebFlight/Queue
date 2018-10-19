@@ -1,11 +1,11 @@
-package queue.helpers;
+package queue.utilities;
 
 import com.mendix.core.actionmanagement.CoreAction;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 
+import queue.helpers.QueueInfoUpdaterExecutor;
 import queue.repositories.QueueRepository;
-import queue.utilities.CoreUtility;
 
 public class QueueInfoUpdater<R> extends CoreAction<R> {
 	

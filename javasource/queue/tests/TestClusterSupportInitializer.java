@@ -8,10 +8,10 @@ import com.mendix.logging.ILogNode;
 import queue.factories.QueueControlMessageFetcherFactory;
 import queue.factories.QueueInfoUpdaterFactory;
 import queue.helpers.ClusterSupportInitializer;
-import queue.helpers.QueueInfoUpdater;
 import queue.repositories.ConstantsRepository;
 import queue.utilities.CoreUtility;
 import queue.utilities.QueueControlMessageFetcher;
+import queue.utilities.QueueInfoUpdater;
 
 import static org.mockito.Mockito.*;
 
