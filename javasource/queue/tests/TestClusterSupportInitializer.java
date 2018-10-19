@@ -8,10 +8,10 @@ import com.mendix.logging.ILogNode;
 import queue.factories.QueueControlMessageFetcherFactory;
 import queue.factories.QueueInfoUpdaterFactory;
 import queue.helpers.ClusterSupportInitializer;
-import queue.helpers.QueueControlMessageFetcher;
 import queue.helpers.QueueInfoUpdater;
 import queue.repositories.ConstantsRepository;
 import queue.utilities.CoreUtility;
+import queue.utilities.QueueControlMessageFetcher;
 
 import static org.mockito.Mockito.*;
 
@@ -34,7 +34,7 @@ public class TestClusterSupportInitializer {
 	@Before
 	public void setup() {
 		when(queueInfoUpdaterFactory.getQueueInfoUpdater()).thenReturn(queueInfoUpdater);
-		when(queueControlMessageFetcherFactory.getQueueControlMessageFetcher(logger)).thenReturn(queueControlMessageFetcher);
+		when(queueControlMessageFetcherFactory.getQueueControlMessageFetcher(logger, coreUtility)).thenReturn(queueControlMessageFetcher);
 	}
 	
 	@Test
@@ -44,7 +44,7 @@ public class TestClusterSupportInitializer {
 		clusterSupportInitializer.initialize();
 		verify(constantsRepository, times(1)).isClusterSupport();
 		verify(queueInfoUpdaterFactory, times(1)).getQueueInfoUpdater();
-		verify(queueControlMessageFetcherFactory, times(1)).getQueueControlMessageFetcher(logger);
+		verify(queueControlMessageFetcherFactory, times(1)).getQueueControlMessageFetcher(logger, coreUtility);
 		verify(coreUtility, times(1)).scheduleAtFixedRate(queueInfoUpdater, 10L, 5L, TimeUnit.SECONDS);
 		verify(coreUtility, times(1)).scheduleAtFixedRate(queueControlMessageFetcher, 10L, 5L, TimeUnit.SECONDS);
 		verify(logger, times(1)).info("Support enabled for Mendix Clustered Runtime.");
@@ -57,7 +57,7 @@ public class TestClusterSupportInitializer {
 		clusterSupportInitializer.initialize();
 		verify(constantsRepository, times(1)).isClusterSupport();
 		verify(queueInfoUpdaterFactory, times(0)).getQueueInfoUpdater();
-		verify(queueControlMessageFetcherFactory, times(0)).getQueueControlMessageFetcher(logger);
+		verify(queueControlMessageFetcherFactory, times(0)).getQueueControlMessageFetcher(logger, coreUtility);
 		verify(coreUtility, times(0)).scheduleAtFixedRate(queueInfoUpdater, 10L, 5L, TimeUnit.SECONDS);
 		verify(coreUtility, times(0)).scheduleAtFixedRate(queueControlMessageFetcher, 10L, 5L, TimeUnit.SECONDS);
 		verify(logger, times(0)).info("Support enabled for Mendix Clustered Runtime.");

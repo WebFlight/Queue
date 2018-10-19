@@ -1,6 +1,8 @@
 package queue.utilities;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
@@ -20,6 +22,10 @@ public class CoreUtility {
 	
 	public void scheduleAtFixedRate(CoreAction<?> coreAction, long initialDelay, long period, java.util.concurrent.TimeUnit timeUnit) {
 		Core.scheduleAtFixedRate(coreAction, initialDelay, period, timeUnit);
+	}
+	
+	public Future<Object> executeAsync(IContext context, String action, boolean inTransaction, Map<String, Object> inputMap) throws CoreException {
+		return Core.executeAsync(context, action, inTransaction, inputMap);
 	}
 
 }
