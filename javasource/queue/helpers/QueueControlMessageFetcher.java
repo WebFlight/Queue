@@ -15,9 +15,9 @@ import queue.proxies.constants.Constants;
 
 public class QueueControlMessageFetcher<R> extends CoreAction<R> {
 	
-	private static ILogNode logger = Core.getLogger(Constants.getLOGNODE());
+	private ILogNode logger;
 
-	public QueueControlMessageFetcher(IContext arg0) {
+	public QueueControlMessageFetcher(ILogNode logger, IContext arg0) {
 		super(arg0);
 	}
 
