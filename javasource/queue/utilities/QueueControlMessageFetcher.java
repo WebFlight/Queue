@@ -1,5 +1,8 @@
 package queue.utilities;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.mendix.core.actionmanagement.CoreAction;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -20,8 +23,9 @@ public class QueueControlMessageFetcher<R> extends CoreAction<R> {
 	}
 
 	@Override
-	public R execute() throws Exception {		
-		queueControlMessageFetcherExecutor.execute(this.getContext(), coreUtility, logger);
+	public R execute() throws Exception {
+		Map<String, Object> inputMap = new HashMap<>();
+		queueControlMessageFetcherExecutor.execute(this.getContext(), coreUtility, logger, inputMap);
 		return null;
 	}
 	

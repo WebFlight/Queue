@@ -1,6 +1,5 @@
 package queue.helpers;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,11 +12,10 @@ import queue.utilities.CoreUtility;
 
 public class QueueControlMessageFetcherExecutor {
 	
-	public void execute(IContext context, CoreUtility coreUtility, ILogNode logger) throws CoreException {
+	public void execute(IContext context, CoreUtility coreUtility, ILogNode logger, Map<String, Object> inputMap) throws CoreException {
 		List<IMendixObject> queueControlMessages = coreUtility.retrieveXPathQuery(context, "//Queue.QueueControlMessage[Queue.QueueControlMessage_XASInstance/System.XASInstance/XASId='" + coreUtility.getXASId() + "']");
 		queueControlMessages.forEach(o ->
 			{
-				Map<String, Object> inputMap = new HashMap<>();
 				inputMap.put("QueueControlMessage", o);
 				try {
 					coreUtility.executeAsync(context, "Queue.IVK_ProcessQueueControlMessage", true, inputMap);
