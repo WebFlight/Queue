@@ -11,8 +11,6 @@ import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
-import queue.proxies.constants.Constants;
-
 public class QueueControlMessageFetcher<R> extends CoreAction<R> {
 	
 	private ILogNode logger;
