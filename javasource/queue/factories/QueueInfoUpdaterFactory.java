@@ -3,7 +3,10 @@ package queue.factories;
 import com.mendix.core.Core;
 
 import queue.helpers.QueueInfoUpdater;
+import queue.helpers.QueueInfoUpdaterExecutor;
 import queue.proxies.constants.Constants;
+import queue.repositories.QueueRepository;
+import queue.utilities.CoreUtility;
 
 public class QueueInfoUpdaterFactory {
 	
@@ -12,6 +15,9 @@ public class QueueInfoUpdaterFactory {
 	}
 	
 	public QueueInfoUpdater<?> getQueueInfoUpdater() {
-		return new QueueInfoUpdater<>(Core.getLogger(Constants.getLOGNODE()),Core.createSystemContext());
+		CoreUtility coreUtility = new CoreUtility();
+		QueueRepository queueRepository = QueueRepository.getInstance();
+		QueueInfoUpdaterExecutor queueInfoUpdaterExecutor = new QueueInfoUpdaterExecutor();
+		return new QueueInfoUpdater<>(Core.getLogger(Constants.getLOGNODE()),Core.createSystemContext(), coreUtility, queueRepository, queueInfoUpdaterExecutor);
 	}
 }

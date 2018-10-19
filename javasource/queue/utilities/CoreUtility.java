@@ -27,5 +27,12 @@ public class CoreUtility {
 	public Future<Object> executeAsync(IContext context, String action, boolean inTransaction, Map<String, Object> inputMap) throws CoreException {
 		return Core.executeAsync(context, action, inTransaction, inputMap);
 	}
+	
+	public void commit(IContext context, List<IMendixObject> objectList) {
+		Core.commit(context, objectList);
+	}
 
+	public void delete(IContext context, List<IMendixObject> objectList) {
+		Core.delete(context, objectList);
+	}
 }

@@ -1,54 +1,30 @@
 package queue.helpers;
 
-import java.util.List;
-
-import com.mendix.core.Core;
-import com.mendix.core.CoreException;
 import com.mendix.core.actionmanagement.CoreAction;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
-import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 import queue.repositories.QueueRepository;
+import queue.utilities.CoreUtility;
 
 public class QueueInfoUpdater<R> extends CoreAction<R> {
 	
-	private ILogNode logger; 
+	private ILogNode logger;
+	private CoreUtility coreUtility;
+	private QueueRepository queueRepository;
+	private QueueInfoUpdaterExecutor queueInfoUpdaterExecutor;
 	
-	public QueueInfoUpdater(ILogNode logger, IContext arg0) {
+	public QueueInfoUpdater(ILogNode logger, IContext arg0, CoreUtility coreUtility, QueueRepository queueRepository, QueueInfoUpdaterExecutor queueInfoUpdaterExecutor) {
 		super(arg0);
 		this.logger = logger;
+		this.coreUtility = coreUtility;
+		this.queueRepository = queueRepository;
+		this.queueInfoUpdaterExecutor = queueInfoUpdaterExecutor;
 	}
 
 	@Override
 	public R execute() {
-		IContext context = this.getContext();
-		
-		List<IMendixObject> queueInfoObjects = QueueRepository.getInstance().getQueueInfos(context);
-		List<IMendixObject> xasInstances = null;
-		List<IMendixObject> oldQueueInfos = null;
-		
-		try {
-			xasInstances = Core.retrieveXPathQuery(context, "//System.XASInstance[XASId='" + Core.getXASId() + "']");
-		} catch (CoreException e) {
-			logger.error("Could not retrieve XAS Instance from database.", e);
-		}
-		IMendixObject xasInstance = xasInstances.get(0);
-		
-		try {
-			oldQueueInfos = Core.retrieveXPathQuery(context, "//Queue.QueueInfo[Queue.QueueInfo_XASInstance=" + xasInstance.getId().toLong() + "]");
-		} catch (CoreException e) {  
-			logger.error("Could not retrieve QueueInfo objects for XAS Instance from database.", e);
-		}
-		
-		Core.delete(context, oldQueueInfos);
-		
-		for (IMendixObject queueInfoObject : queueInfoObjects) {
-			queueInfoObject.setValue(context, "Queue.QueueInfo_XASInstance", xasInstance.getId());
-		}
-
-		Core.commit(context, queueInfoObjects);
-		
+		queueInfoUpdaterExecutor.execute(this.getContext(), logger, queueRepository, coreUtility);
 		return null;
 	}
 
