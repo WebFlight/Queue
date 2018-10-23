@@ -33,15 +33,17 @@ public class TestQueueInfoUpdaterExecutor {
 	private IMendixObject xasInstance = mock(IMendixObject.class);
 	private IMendixIdentifier identifier = mock(IMendixIdentifier.class);
 	private long identifierLong = 12345678L;
+	private List<IMendixObject> xasInstances;
+	private List<IMendixObject> queueInfos;
 
 	@Before
 	public void setup() throws CoreException {
 		this.queueInfoUpdaterExecutor = new QueueInfoUpdaterExecutor();
 		when(coreUtility.getXASId()).thenReturn(XASId);
-		List<IMendixObject> queueInfos = new ArrayList<>();
+		queueInfos = new ArrayList<>();
 		queueInfos.add(queueInfo);
 		when(queueRepository.getQueueInfos(context)).thenReturn(queueInfos);
-		List<IMendixObject> xasInstances = new ArrayList<>();
+		xasInstances = new ArrayList<>();
 		xasInstances.add(xasInstance);
 		when(coreUtility.retrieveXPathQuery(context, "//System.XASInstance[XASId='" + XASId + "']")).thenReturn(xasInstances);
 		when(xasInstance.getId()).thenReturn(identifier);
@@ -51,6 +53,12 @@ public class TestQueueInfoUpdaterExecutor {
 	@Test
 	public void testExecute() throws Exception {
 		queueInfoUpdaterExecutor.execute(context, logger, queueRepository, coreUtility);
+		verify(queueRepository, times(1)).getQueueInfos(context);
+		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//System.XASInstance[XASId='" + XASId + "']");
+		verify(xasInstance, times(1)).getId();
+		verify(identifier, times(1)).toLong();
+		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//Queue.QueueInfo[Queue.QueueInfo_XASInstance=" + identifierLong + "]");
+		verify(coreUtility, times(1)).delete(context, queueInfos);
 	}
 	
 	@Test
