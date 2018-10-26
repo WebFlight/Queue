@@ -13,7 +13,7 @@ import queue.utilities.CoreUtility;
 
 public class QueueInfoUpdaterExecutor {
 	
-	public void execute(IContext context, ILogNode logger, QueueRepository queueRepository, CoreUtility coreUtility) {
+	public void execute(IContext context, ILogNode logger, QueueRepository queueRepository, CoreUtility coreUtility) throws CoreException {
 		
 		List<IMendixObject> queueInfoObjects = queueRepository.getQueueInfos(context);
 		List<IMendixObject> xasInstances = null;
@@ -23,6 +23,7 @@ public class QueueInfoUpdaterExecutor {
 			xasInstances = coreUtility.retrieveXPathQuery(context, "//System.XASInstance[XASId='" + coreUtility.getXASId() + "']");
 		} catch (CoreException e) {
 			logger.error("Could not retrieve XAS Instance from database.", e);
+			throw e;
 		}
 		IMendixObject xasInstance = xasInstances.get(0);
 		IMendixIdentifier xasInstanceId = xasInstance.getId();
@@ -31,6 +32,7 @@ public class QueueInfoUpdaterExecutor {
 			oldQueueInfos = coreUtility.retrieveXPathQuery(context, "//Queue.QueueInfo[Queue.QueueInfo_XASInstance=" + xasInstanceId.toLong() + "]");
 		} catch (CoreException e) {  
 			logger.error("Could not retrieve QueueInfo objects for XAS Instance from database.", e);
+			throw e;
 		}
 		
 		coreUtility.delete(context, oldQueueInfos);

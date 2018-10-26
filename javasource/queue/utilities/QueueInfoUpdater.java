@@ -1,5 +1,6 @@
 package queue.utilities;
 
+import com.mendix.core.CoreException;
 import com.mendix.core.actionmanagement.CoreAction;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -23,7 +24,7 @@ public class QueueInfoUpdater<R> extends CoreAction<R> {
 	}
 
 	@Override
-	public R execute() {
+	public R execute() throws CoreException {
 		queueInfoUpdaterExecutor.execute(this.getContext(), logger, queueRepository, coreUtility);
 		return null;
 	}
