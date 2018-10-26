@@ -86,6 +86,11 @@ public class JobToQueueAdder {
 		scheduledJobRepository.add(context, jobObject, future);
 	}
 	
+	public void addWithMicroflow(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job, String microflow) throws CoreException {
+		job.setMicroflowName(context, microflow);
+		add(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
+	}
+	
 	public void addRetry(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job) throws CoreException {
 		int retry = job.getRetry(context);
 		int baseDelay = job.getBaseDelay(context);
