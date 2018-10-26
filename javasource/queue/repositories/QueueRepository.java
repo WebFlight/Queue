@@ -7,19 +7,23 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import com.mendix.core.Core;
-import com.mendix.core.conf.RuntimeVersion;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 import queue.entities.QueueConfiguration;
+import queue.factories.QueueControlMessageFetcherFactory;
 import queue.factories.QueueInfoFactory;
+import queue.factories.QueueInfoUpdaterFactory;
 import queue.factories.QueueThreadFactory;
 import queue.factories.QueueThreadPoolFactory;
+import queue.helpers.ClusterSupportInitializer;
 import queue.helpers.JobToQueueAdder;
 import queue.helpers.QueueInfoProvider;
+import queue.proxies.constants.Constants;
 import queue.usecases.QueueHandler;
+import queue.utilities.CoreUtility;
 
 public final class QueueRepository {
 	
@@ -27,6 +31,16 @@ public final class QueueRepository {
 	private static final Object lock = new Object();
 	private volatile ConcurrentHashMap<String, ScheduledThreadPoolExecutor> queueMap = new ConcurrentHashMap<>();
 	private QueueInfoProvider queueInfoProvider = new QueueInfoProvider(new QueueInfoFactory());
+	private ConstantsRepository constantsRepository = new ConstantsRepository();
+	private CoreUtility coreUtility = new CoreUtility();
+	private QueueInfoUpdaterFactory queueInfoUpdaterFactory = new QueueInfoUpdaterFactory();
+	private QueueControlMessageFetcherFactory queueControlMessageFetcherFactory = new QueueControlMessageFetcherFactory();
+	private ILogNode logger = Core.getLogger(Constants.getLOGNODE());
+	
+	private QueueRepository() {
+		ClusterSupportInitializer clusterSupportInitializer = new ClusterSupportInitializer(logger, constantsRepository, coreUtility, queueInfoUpdaterFactory, queueControlMessageFetcherFactory, this);
+		clusterSupportInitializer.initialize();
+	}
 	
 	public static QueueRepository getInstance() {
 		QueueRepository instance = queueRepository;
@@ -43,7 +57,7 @@ public final class QueueRepository {
 		
 		return instance;
 	}
-
+	
 	public void newQueue (QueueConfiguration configuration, QueueThreadPoolFactory poolFactory, QueueThreadFactory threadFactory) {
 		queueMap.put(configuration.getName(), (ScheduledThreadPoolExecutor) poolFactory.newScheduledThreadPool(configuration, threadFactory));
 	}

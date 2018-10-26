@@ -1,6 +1,5 @@
 package queue.tests;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
@@ -36,6 +35,7 @@ public class TestQueueHandler {
 	IMendixObject jobObject = mock(IMendixObject.class);
 	ExponentialBackoffCalculator exponentialBackoffCalculator = mock(ExponentialBackoffCalculator.class);
 	Job job = mock(Job.class);
+	@SuppressWarnings("rawtypes")
 	HashMap jobInput = mock(HashMap.class);
 	CoreException e = mock(CoreException.class);
 	CoreException t = mock(CoreException.class);
@@ -43,6 +43,7 @@ public class TestQueueHandler {
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void run() throws CoreException, InterruptedException {
 		int retry = 1;
@@ -80,6 +81,7 @@ public class TestQueueHandler {
 		verify(logger, times(1)).debug("Finished execution of microflow " + job.getMicroflowName(context) + ".");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void runRetrieveRetry() throws CoreException, InterruptedException {
 		int retry = 1;
@@ -119,9 +121,7 @@ public class TestQueueHandler {
 	}
 	
 	@Test
-	public void runJobNotFound() throws CoreException {
-		int retry = 1;
-		
+	public void runJobNotFound() throws CoreException {		
 		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
 		
 		when(queueRepository.getSystemContext()).thenReturn(context);
@@ -162,6 +162,7 @@ public class TestQueueHandler {
 		verify(logger, times(1)).error("While executing job, could bring Thread to sleep when retrieving job object.");		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void runExceptionWhileExecutingMicroflow() throws CoreException, InterruptedException {
 		int retry = 1;
@@ -206,6 +207,7 @@ public class TestQueueHandler {
 		verify(t, times(1)).getCause();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void runAnotherExceptionWhileExecutingMicroflow() throws CoreException, InterruptedException {
 		int retry = 1;
@@ -250,6 +252,7 @@ public class TestQueueHandler {
 		verify(t, times(1)).getCause();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void runInterruptedWhileExecutingMicroflow() throws CoreException, InterruptedException {
 		int retry = 1;
@@ -292,6 +295,7 @@ public class TestQueueHandler {
 		verify(t, times(1)).getCause();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void runExceptionWhileExecutingMicroflowRetry() throws CoreException, InterruptedException {
 		int retry = 1;
