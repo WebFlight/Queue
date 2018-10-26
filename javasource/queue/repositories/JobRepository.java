@@ -27,6 +27,7 @@ public class JobRepository {
 		Thread.sleep(millis);
 	}
 	
+	
 	public HashMap<String, Object> getJobInput(IMendixObject jobObject) {
 		HashMap<String, Object> jobInput = new HashMap<>();
 		jobInput.put("Job", jobObject);
