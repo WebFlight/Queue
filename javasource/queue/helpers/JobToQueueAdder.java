@@ -87,7 +87,7 @@ public class JobToQueueAdder {
 	}
 	
 	public void addWithMicroflow(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job, String microflow) throws CoreException {
-		job.setMicroflowName(microflow);
+		job.setMicroflowName(context, microflow);
 		add(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
 	}
 	

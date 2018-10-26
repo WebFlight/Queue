@@ -118,6 +118,7 @@ public class TestJobToQueueAdder {
 		
 		verify(jobValidator, times(1)).isValid(context, queueRepository, job);
 		verify(job, times(1)).getQueue(context);
+		verify(job, times(1)).setMicroflowName(context, microflow);
 		verify(job, times(1)).setStatus(context, ENU_JobStatus.Queued);
 		verify(job, times(1)).commit(context);
 		verify(queue, times(1)).schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS);
