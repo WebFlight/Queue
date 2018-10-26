@@ -95,6 +95,39 @@ public class TestJobToQueueAdder {
 	
 	@SuppressWarnings({ "unchecked" })
 	@Test
+	public void addJobWithMicroflow() throws CoreException {
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		String name = "NewQueue";
+		int currentDelay = 500;
+		String microflow = "microflow";
+		
+		when(jobValidator.isValid(context, queueRepository, job)).thenReturn(true);
+		when(job.getQueue(context)).thenReturn(name);
+		when(queueRepository.getQueue(name)).thenReturn(queue);
+		when(queue.isShutdown()).thenReturn(false);
+		when(queue.isTerminated()).thenReturn(false);
+		when(job.getMendixObject()).thenReturn(jobObject);
+		when(jobObject.getId()).thenReturn(jobIdentifier);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
+		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
+		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
+		when(queue.schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS)).thenReturn(future);
+		
+		jobToQueueAdder.addWithMicroflow(context, logger, queueRepository, jobRepository, scheduledJobRepository, job, microflow);
+		
+		verify(jobValidator, times(1)).isValid(context, queueRepository, job);
+		verify(job, times(1)).getQueue(context);
+		verify(job, times(1)).setStatus(context, ENU_JobStatus.Queued);
+		verify(job, times(1)).commit(context);
+		verify(queue, times(1)).schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS);
+		verify(job, times(1)).getCurrentDelay(context);
+		verify(job, times(1)).getDelayUnit(context);
+		verify(job, times(1)).getMendixObject();
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	@Test
 	public void addJobNotValid() throws CoreException {
 		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
 		String name = "NewQueue";
