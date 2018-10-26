@@ -14,9 +14,8 @@ public class QueueInfoUpdaterFactory {
 	
 	}
 	
-	public QueueInfoUpdater<?> getQueueInfoUpdater() {
+	public QueueInfoUpdater<?> getQueueInfoUpdater(QueueRepository queueRepository) {
 		CoreUtility coreUtility = new CoreUtility();
-		QueueRepository queueRepository = QueueRepository.getInstance();
 		QueueInfoUpdaterExecutor queueInfoUpdaterExecutor = new QueueInfoUpdaterExecutor();
 		return new QueueInfoUpdater<>(Core.getLogger(Constants.getLOGNODE()),Core.createSystemContext(), coreUtility, queueRepository, queueInfoUpdaterExecutor);
 	}

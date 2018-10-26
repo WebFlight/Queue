@@ -9,6 +9,7 @@ import queue.factories.QueueControlMessageFetcherFactory;
 import queue.factories.QueueInfoUpdaterFactory;
 import queue.helpers.ClusterSupportInitializer;
 import queue.repositories.ConstantsRepository;
+import queue.repositories.QueueRepository;
 import queue.utilities.CoreUtility;
 import queue.utilities.QueueControlMessageFetcher;
 import queue.utilities.QueueInfoUpdater;
@@ -29,21 +30,22 @@ public class TestClusterSupportInitializer {
 	@SuppressWarnings("rawtypes")
 	private QueueControlMessageFetcher queueControlMessageFetcher = mock(QueueControlMessageFetcher.class);
 	private ILogNode logger = mock(ILogNode.class);
+	private QueueRepository queueRepository = mock(QueueRepository.class);
 	
 	@SuppressWarnings("unchecked")
 	@Before
 	public void setup() {
-		when(queueInfoUpdaterFactory.getQueueInfoUpdater()).thenReturn(queueInfoUpdater);
+		when(queueInfoUpdaterFactory.getQueueInfoUpdater(queueRepository)).thenReturn(queueInfoUpdater);
 		when(queueControlMessageFetcherFactory.getQueueControlMessageFetcher(logger, coreUtility)).thenReturn(queueControlMessageFetcher);
 	}
 	
 	@Test
 	public void initializeWithClusterSupport() {
 		when(constantsRepository.isClusterSupport()).thenReturn(true);
-		ClusterSupportInitializer clusterSupportInitializer = new ClusterSupportInitializer(logger, constantsRepository, coreUtility, queueInfoUpdaterFactory, queueControlMessageFetcherFactory);
+		ClusterSupportInitializer clusterSupportInitializer = new ClusterSupportInitializer(logger, constantsRepository, coreUtility, queueInfoUpdaterFactory, queueControlMessageFetcherFactory, queueRepository);
 		clusterSupportInitializer.initialize();
 		verify(constantsRepository, times(1)).isClusterSupport();
-		verify(queueInfoUpdaterFactory, times(1)).getQueueInfoUpdater();
+		verify(queueInfoUpdaterFactory, times(1)).getQueueInfoUpdater(queueRepository);
 		verify(queueControlMessageFetcherFactory, times(1)).getQueueControlMessageFetcher(logger, coreUtility);
 		verify(coreUtility, times(1)).scheduleAtFixedRate(queueInfoUpdater, 10L, 5L, TimeUnit.SECONDS);
 		verify(coreUtility, times(1)).scheduleAtFixedRate(queueControlMessageFetcher, 10L, 5L, TimeUnit.SECONDS);
@@ -53,10 +55,10 @@ public class TestClusterSupportInitializer {
 	@Test
 	public void initializeWithoutClusterSupport() {
 		when(constantsRepository.isClusterSupport()).thenReturn(false);
-		ClusterSupportInitializer clusterSupportInitializer = new ClusterSupportInitializer(logger, constantsRepository, coreUtility, queueInfoUpdaterFactory, queueControlMessageFetcherFactory);
+		ClusterSupportInitializer clusterSupportInitializer = new ClusterSupportInitializer(logger, constantsRepository, coreUtility, queueInfoUpdaterFactory, queueControlMessageFetcherFactory, queueRepository);
 		clusterSupportInitializer.initialize();
 		verify(constantsRepository, times(1)).isClusterSupport();
-		verify(queueInfoUpdaterFactory, times(0)).getQueueInfoUpdater();
+		verify(queueInfoUpdaterFactory, times(0)).getQueueInfoUpdater(queueRepository);
 		verify(queueControlMessageFetcherFactory, times(0)).getQueueControlMessageFetcher(logger, coreUtility);
 		verify(coreUtility, times(0)).scheduleAtFixedRate(queueInfoUpdater, 10L, 5L, TimeUnit.SECONDS);
 		verify(coreUtility, times(0)).scheduleAtFixedRate(queueControlMessageFetcher, 10L, 5L, TimeUnit.SECONDS);

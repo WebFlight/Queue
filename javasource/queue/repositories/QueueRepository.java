@@ -31,14 +31,14 @@ public final class QueueRepository {
 	private static final Object lock = new Object();
 	private volatile ConcurrentHashMap<String, ScheduledThreadPoolExecutor> queueMap = new ConcurrentHashMap<>();
 	private QueueInfoProvider queueInfoProvider = new QueueInfoProvider(new QueueInfoFactory());
+	private ConstantsRepository constantsRepository = new ConstantsRepository();
+	private CoreUtility coreUtility = new CoreUtility();
+	private QueueInfoUpdaterFactory queueInfoUpdaterFactory = new QueueInfoUpdaterFactory();
+	private QueueControlMessageFetcherFactory queueControlMessageFetcherFactory = new QueueControlMessageFetcherFactory();
+	private ILogNode logger = Core.getLogger(Constants.getLOGNODE());
 	
 	private QueueRepository() {
-		ConstantsRepository constantsRepository = new ConstantsRepository();
-		CoreUtility coreUtility = new CoreUtility();
-		QueueInfoUpdaterFactory queueInfoUpdaterFactory = new QueueInfoUpdaterFactory();
-		QueueControlMessageFetcherFactory queueControlMessageFetcherFactory = new QueueControlMessageFetcherFactory();
-		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
-		ClusterSupportInitializer clusterSupportInitializer = new ClusterSupportInitializer(logger, constantsRepository, coreUtility, queueInfoUpdaterFactory, queueControlMessageFetcherFactory);
+		ClusterSupportInitializer clusterSupportInitializer = new ClusterSupportInitializer(logger, constantsRepository, coreUtility, queueInfoUpdaterFactory, queueControlMessageFetcherFactory, this);
 		clusterSupportInitializer.initialize();
 	}
 	

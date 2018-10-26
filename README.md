@@ -24,9 +24,10 @@ For an Administrator role account, please request at [Menno de Haas](mailto:menn
 # Getting started
 1. The *Queue* module can be downloaded from within the Mendix Business Modeler in the Mendix Appstore into any model that is build with Mendix 7.13.1+.
 2. Use the documents in the _USE_ME folder:
-	- The IVK_InitializeQueue microflow will initiate a new queue, with a specific name, thread pool size, thread priority.
+	- The ASU_InitializeQueue microflow will initiate a new queue, with a specific name, thread pool size, thread priority. Use this in a startup microflow. Otherwise this will lead to issues when running a multi-instance cluster.
 	- The IVK_AddJobToQueue microflow will add a new job in a queue that was already initialized.
 	- Add the snippets or pages to your application for queue or job monitoring.
+3. Set the CLUSTER_SUPPORT constant if you are using the queue in an application that runs on a cluster of multiple instances. When cluster support is enabled, each instance will check for new queue control messages in the background that correspond to that XAS ID. When performing control activities from the front-end (shutdown queue, cancel or abort job), these will create queue control messages in the database that will be processed by the relevant instances.
 
 # Features
 * Queue control
