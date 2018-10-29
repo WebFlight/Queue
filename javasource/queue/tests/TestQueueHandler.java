@@ -62,6 +62,7 @@ public class TestQueueHandler {
 		
 		queueHandler.run();
 		
+		verify(jobToQueueAdder, times(1)).setTimeZone(context, logger);
 		verify(jobRepository, times(1)).getJob(context, jobId);
 		verify(jobRepository, times(1)).initialize(context, jobObject);
 		verify(job, times(1)).setStatus(context, ENU_JobStatus.Running);
@@ -100,6 +101,7 @@ public class TestQueueHandler {
 		
 		queueHandler.run();
 		
+		verify(jobToQueueAdder, times(1)).setTimeZone(context, logger);
 		verify(jobRepository, times(2)).getJob(context, jobId);
 		verify(jobRepository, times(1)).initialize(context, jobObject);
 		verify(job, times(1)).setStatus(context, ENU_JobStatus.Running);
@@ -130,6 +132,7 @@ public class TestQueueHandler {
 		when(exponentialBackoffCalculator.calculate(200, 0)).thenReturn(0);
 		
 		queueHandler.run();
+		verify(jobToQueueAdder, times(1)).setTimeZone(context, logger);
 		verify(logger, times(10)).debug("Job object not found.");
 		verify(logger, times(1)).error("Could not retrieve job object. Job will not be executed.");
 		verify(logger, times(1)).debug("Trying to retrieve job object. Attempt 1 of 10.");

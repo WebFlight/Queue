@@ -40,7 +40,8 @@ public class QueueHandler implements Runnable {
 		try {
 			IMendixObject jobObject = null;
 			
-			IContext context = queueRepository.getSystemContext();;
+			IContext context = queueRepository.getSystemContext();
+			jobToQueueAdder.setTimeZone(context, logger);
 			
 			int retries = 0;
 			int maxRetries = 10;
