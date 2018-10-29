@@ -28,6 +28,7 @@ For an Administrator role account, please request at [Menno de Haas](mailto:menn
 	- The IVK_AddJobToQueue microflow will add a new job in a queue that was already initialized.
 	- Add the snippets or pages to your application for queue or job monitoring.
 3. Set the CLUSTER_SUPPORT constant if you are using the queue in an application that runs on a cluster of multiple instances. When cluster support is enabled, each instance will check for new queue control messages in the background that correspond to that XAS ID. When performing control activities from the front-end (shutdown queue, cancel or abort job), these will create queue control messages in the database that will be processed by the relevant instances.
+4. Set the TIMEZONE_ID constant if you would like to use a specific time zone during executions of microflows from the queue. By default, GMT will be used. This feature is equivalent to the setting [Scheduled event time zone](https://docs.mendix.com/refguide/project-settings#3-8-scheduled-event-time-zone), but applies only to microflows executed by the queue. [Google Java TimeZoneIDs](http://lmgtfy.com/?q=Java+TimeZone+IDs) to browse possible values or check your System.TimeZone entity (the Code attribute equals the Java TimeZoneID). The value for The Netherlands should be Europe/Amsterdam.
 
 # Features
 * Queue control
@@ -82,6 +83,6 @@ No userlib compile dependencies.
 
 # Development notes
 * Functionality is tested using JUnit and Mockito. The *queue.helpers* and *queue.usecase* packages contain business logic and have a 100% coverage.
-* For contributions, fork the repository, make changes, fix unit tests with 100% coverage and issue a pull request.
+* For contributions, fork the repository, make changes, fix unit tests with 100% coverage and issue a pull request to the develop branch (Gitflow).
 
  [1]: docs/Queue.png
