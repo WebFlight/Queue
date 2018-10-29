@@ -121,6 +121,6 @@ public class JobToQueueAdder {
 			return;
 		}
 		
-		logger.warn("TimeZoneID " + timeZoneID + " is not valid. GMT will be used.");
+		logger.warn("TimeZoneID " + timeZoneID + " is not valid. No time zone will be configured.");
 	}
 }
