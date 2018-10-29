@@ -1,6 +1,8 @@
 package queue.helpers;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
@@ -80,7 +82,7 @@ public class JobToQueueAdder {
 		ScheduledFuture<?> future =	executor.schedule(
 					queueRepository.getQueueHandler(logger, this, scheduledJobRepository, queueRepository, jobRepository, jobObject.getId()), 
 					job.getCurrentDelay(context), 
-					timeUnitConverter.getTimeUnit(job.getDelayUnit(context).getCaption())
+					timeUnitConverter.getTimeUnit(job.getDelayUnit(context).getCaption("en_US"))
 					);
 		
 		scheduledJobRepository.add(context, jobObject, future);
@@ -102,5 +104,23 @@ public class JobToQueueAdder {
 	
 	public ExponentialBackoffCalculator getExponentialBackoffCalculator() {
 		return this.exponentialBackoffCalculator;
+	}
+	
+	public void setTimeZone(IContext context, ILogNode logger) {
+		String timeZoneID = constantsRepository.getTimeZoneID();
+		
+		if (timeZoneID == null || timeZoneID.equals("")) {
+			return;
+		}
+		
+		List<String> timeZoneList = Arrays.asList(TimeZone.getAvailableIDs());
+		boolean timeZoneExists = timeZoneList.stream().anyMatch(tz -> tz.equals(timeZoneID));
+		
+		if (timeZoneExists) {
+			context.getSession().setTimeZone(-TimeZone.getTimeZone(timeZoneID).getRawOffset()/1000/60);
+			return;
+		}
+		
+		logger.warn("TimeZoneID " + timeZoneID + " is not valid. No time zone will be configured.");
 	}
 }

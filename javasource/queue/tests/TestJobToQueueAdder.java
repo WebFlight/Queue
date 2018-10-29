@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -12,12 +13,14 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.systemwideinterfaces.core.ISession;
 
 import queue.factories.XASInstanceFactory;
 import queue.helpers.ExponentialBackoffCalculator;
@@ -58,6 +61,7 @@ public class TestJobToQueueAdder {
 	IMendixObject xasObject = mock(IMendixObject.class);
 	IMendixIdentifier xasObjectId = mock(IMendixIdentifier.class);
 	XASInstance xasInstance = mock(XASInstance.class);
+	ISession session = mock(ISession.class);
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -397,4 +401,60 @@ public class TestJobToQueueAdder {
 		verify(job, times(1)).setJob_XASInstance(context, xasInstance);
 	}
 
+	@Test
+	public void setTimeZone() {
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		
+		when(context.getSession()).thenReturn(session);
+		when(constantsRepository.getTimeZoneID()).thenReturn("Europe/Amsterdam");
+		
+		jobToQueueAdder.setTimeZone(context, logger);
+		
+		verify(context, times(1)).getSession();
+		verify(constantsRepository, times(1)).getTimeZoneID();
+		verify(session, times(1)).setTimeZone(-TimeZone.getTimeZone("Europe/Amsterdam").getRawOffset()/1000/60);	
+	}
+	
+	@Test
+	public void setTimeZoneNull() {
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		
+		when(context.getSession()).thenReturn(session);
+		when(constantsRepository.getTimeZoneID()).thenReturn(null);
+		
+		jobToQueueAdder.setTimeZone(context, logger);
+		
+		verify(constantsRepository, times(1)).getTimeZoneID();
+		verify(context, times(0)).getSession();
+		verify(session, times(0)).setTimeZone(Mockito.anyInt());	
+	}
+	
+	@Test
+	public void setTimeZoneEmpty() {
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		
+		when(context.getSession()).thenReturn(session);
+		when(constantsRepository.getTimeZoneID()).thenReturn("");
+		
+		jobToQueueAdder.setTimeZone(context, logger);
+		
+		verify(constantsRepository, times(1)).getTimeZoneID();
+		verify(context, times(0)).getSession();
+		verify(session, times(0)).setTimeZone(Mockito.anyInt());	
+	}
+	
+	@Test
+	public void setTimeZoneNonExists () {
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		
+		when(context.getSession()).thenReturn(session);
+		when(constantsRepository.getTimeZoneID()).thenReturn("NonExistingTimeZone");
+		
+		jobToQueueAdder.setTimeZone(context, logger);
+		
+		verify(constantsRepository, times(1)).getTimeZoneID();
+		verify(context, times(0)).getSession();
+		verify(session, times(0)).setTimeZone(Mockito.anyInt());
+		verify(logger, times(1)).warn("TimeZoneID NonExistingTimeZone is not valid. No time zone will be configured.");
+	}
 }
