@@ -36,7 +36,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertTrue(actualResult);
@@ -62,7 +62,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -83,7 +83,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -104,7 +104,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(false);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -125,7 +125,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -147,7 +147,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -169,7 +169,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(invalidMicroflowName)).thenReturn(false);
+		when(microflowValidator.validate(invalidMicroflowName, logger)).thenReturn(false);
 		when(microflowValidator.getClosestMatch(invalidMicroflowName)).thenReturn("");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
@@ -192,7 +192,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(invalidMicroflowName)).thenReturn(false);
+		when(microflowValidator.validate(invalidMicroflowName, logger)).thenReturn(false);
 		when(microflowValidator.getClosestMatch(invalidMicroflowName)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
@@ -216,7 +216,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(-1);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
@@ -238,7 +238,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
@@ -260,7 +260,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
@@ -282,7 +282,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
@@ -304,7 +304,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);

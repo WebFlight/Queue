@@ -8,12 +8,15 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.mendix.logging.ILogNode;
+
 import queue.helpers.MicroflowValidator;
 import queue.repositories.MicroflowRepository;
 
 public class TestMicroflowValidator {
 	
 	MicroflowRepository microflowRepository = mock(MicroflowRepository.class);
+	ILogNode logger = mock(ILogNode.class);
 
 	@Test
 	public void validateTrue() {
@@ -25,7 +28,7 @@ public class TestMicroflowValidator {
 		
 		MicroflowValidator microflowValidator = new MicroflowValidator(microflowRepository);
 		
-		boolean actualResult = microflowValidator.validate(existingMicroflow);
+		boolean actualResult = microflowValidator.validate(existingMicroflow, logger);
 		
 		assertTrue(actualResult);
 		verify(microflowRepository, times(1)).getMicroflowNames();
@@ -41,7 +44,7 @@ public class TestMicroflowValidator {
 		
 		MicroflowValidator microflowValidator = new MicroflowValidator(microflowRepository);
 		
-		boolean actualResult = microflowValidator.validate("nonExistingMicroflow");
+		boolean actualResult = microflowValidator.validate("nonExistingMicroflow", logger);
 		
 		assertFalse(actualResult);
 		verify(microflowRepository, times(1)).getMicroflowNames();
