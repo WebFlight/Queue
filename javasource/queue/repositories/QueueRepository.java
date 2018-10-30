@@ -74,8 +74,8 @@ public final class QueueRepository {
 		return queueInfoProvider.getQueueInfo(context, queueMap);
 	}
 	
-	public QueueHandler getQueueHandler(ILogNode logger, JobToQueueAdder jobToQueueAdder, ScheduledJobRepository scheduledJobRepository, QueueRepository queueRepository, JobRepository jobRepository, IMendixIdentifier jobId) {
-		return new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
+	public QueueHandler getQueueHandler(ILogNode logger, JobToQueueAdder jobToQueueAdder, ScheduledJobRepository scheduledJobRepository, QueueRepository queueRepository, JobRepository jobRepository, MicroflowRepository microflowRepository, IMendixIdentifier jobId) {
+		return new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobId);
 	}
 	
 	public IContext getSystemContext() {

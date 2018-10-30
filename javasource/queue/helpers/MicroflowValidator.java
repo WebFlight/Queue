@@ -75,13 +75,6 @@ public class MicroflowValidator {
 		return hasInputParameterOfTypeObject;
 	}
 	
-	public String getInputParameterJob(String microflowName, ILogNode logger) {
-		Map<String, IDataType> inputParameters = microflowRepository.getInputParameters(microflowName);
-		String parameterName = inputParameters.entrySet().stream().filter(p -> p.getValue().getObjectType().equals("Job")).findFirst().get().getKey();
-		
-		return parameterName;
-	}
-	
 	public String getClosestMatch(String microflowName) {
 		String microflowSuggestion = "";
 		Set<String> microflowNames = this.microflowRepository.getMicroflowNames();

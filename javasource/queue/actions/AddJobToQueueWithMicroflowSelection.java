@@ -57,7 +57,7 @@ public class AddJobToQueueWithMicroflowSelection extends CustomJavaAction<java.l
 		CoreUtility coreUtility = new CoreUtility();
 		XASInstanceFactory xasInstanceFactory = new XASInstanceFactory();
 		
-		JobToQueueAdder adder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder adder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		ScheduledJobRepository scheduledJobRepository = ScheduledJobRepository.getInstance();
 		QueueRepository queueRepository = QueueRepository.getInstance();
 		JobRepository jobRepository = new JobRepository();
