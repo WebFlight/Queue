@@ -3,12 +3,17 @@ package queue.tests;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.mendix.logging.ILogNode;
+import com.mendix.systemwideinterfaces.core.IDataType;
 
 import queue.helpers.MicroflowValidator;
 import queue.repositories.MicroflowRepository;
@@ -17,7 +22,14 @@ public class TestMicroflowValidator {
 	
 	MicroflowRepository microflowRepository = mock(MicroflowRepository.class);
 	ILogNode logger = mock(ILogNode.class);
+	@SuppressWarnings("rawtypes")
+	Map inputParameterMap = mock(Map.class);
+	@SuppressWarnings("rawtypes")
+	Collection collection = mock(Collection.class);
+	@SuppressWarnings({ "unchecked" })
+	Stream<IDataType> stream = mock(Stream.class);
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void validateTrue() {
 		Set<String> microflowNames = new HashSet<>();
@@ -25,13 +37,16 @@ public class TestMicroflowValidator {
 		microflowNames.add(existingMicroflow);
 		
 		when(microflowRepository.getMicroflowNames()).thenReturn(microflowNames);
+		when(microflowRepository.getInputParameters(existingMicroflow)).thenReturn(inputParameterMap);
+		when(inputParameterMap.values()).thenReturn(collection);
+		when(collection.stream()).thenReturn(stream);
+		when(stream.anyMatch(Mockito.any())).thenReturn(true);
 		
 		MicroflowValidator microflowValidator = new MicroflowValidator(microflowRepository);
 		
 		boolean actualResult = microflowValidator.validate(existingMicroflow, logger);
 		
 		assertTrue(actualResult);
-		verify(microflowRepository, times(1)).getMicroflowNames();
 	}
 	
 	@Test
@@ -62,24 +77,20 @@ public class TestMicroflowValidator {
 		
 		MicroflowValidator microflowValidator = new MicroflowValidator(microflowRepository);
 		
-		String actualResult = microflowValidator.getClosestMatch("AlmostExistingMicroflow");
+		String actualResult = microflowValidator.getClosestMatch("AlmostExistingMicroflow", microflowNames);
 		
 		assertEquals(existingMicroflow, actualResult);
-		verify(microflowRepository, times(1)).getMicroflowNames();
 	}
 	
 	@Test
 	public void getClosestMatchNoMicroflowsExist() {
 		Set<String> microflowNames = new HashSet<>();
 		
-		when(microflowRepository.getMicroflowNames()).thenReturn(microflowNames);
-		
 		MicroflowValidator microflowValidator = new MicroflowValidator(microflowRepository);
 		
-		String actualResult = microflowValidator.getClosestMatch("NonExistingMicroflow");
+		String actualResult = microflowValidator.getClosestMatch("NonExistingMicroflow", microflowNames);
 		
 		assertEquals("", actualResult);
-		verify(microflowRepository, times(1)).getMicroflowNames();
 	}
 
 	@Test
@@ -91,13 +102,10 @@ public class TestMicroflowValidator {
 		microflowNames.add("AlostExisticroflow");
 		microflowNames.add("AlostExistasdfjklasdfngMicroflow");
 		
-		when(microflowRepository.getMicroflowNames()).thenReturn(microflowNames);
-		
 		MicroflowValidator microflowValidator = new MicroflowValidator(microflowRepository);
 		
-		String actualResult = microflowValidator.getClosestMatch("AlmostExistingMicroflow");
+		String actualResult = microflowValidator.getClosestMatch("AlmostExistingMicroflow", microflowNames);
 		
 		assertEquals("AostExistingMicroflow", actualResult);
-		verify(microflowRepository, times(1)).getMicroflowNames();
 	}
 }
