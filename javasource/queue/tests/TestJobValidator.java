@@ -181,7 +181,6 @@ public class TestJobValidator {
 		assertFalse(actualResult);
 		verify(job, times(1)).getQueue(context);
 		verify(job, times(1)).getMicroflowName(context);
-		verify(logger, times(1)).error("Microflow " + invalidMicroflowName + " could not be found.");
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -205,7 +204,6 @@ public class TestJobValidator {
 		assertFalse(actualResult);
 		verify(job, times(1)).getQueue(context);
 		verify(job, times(1)).getMicroflowName(context);
-		verify(logger, times(1)).error("Microflow " + invalidMicroflowName + " could not be found. Did you mean ValidMicroflowName?");
 	}
 
 	
