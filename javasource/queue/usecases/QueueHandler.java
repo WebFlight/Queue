@@ -12,6 +12,7 @@ import queue.helpers.JobToQueueAdder;
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
 import queue.repositories.JobRepository;
+import queue.repositories.MicroflowRepository;
 import queue.repositories.QueueRepository;
 import queue.repositories.ScheduledJobRepository;
 
@@ -23,15 +24,17 @@ public class QueueHandler implements Runnable {
 	private ScheduledJobRepository scheduledJobRepository;
 	private QueueRepository queueRepository;
 	private JobRepository jobRepository;
+	private MicroflowRepository microflowRepository;
 	private int retry = 0;
 	
-	public QueueHandler (ILogNode logger, JobToQueueAdder jobToQueueAdder, ScheduledJobRepository scheduledJobRepository, QueueRepository queueRepository, JobRepository jobRepository, IMendixIdentifier jobId) {
+	public QueueHandler (ILogNode logger, JobToQueueAdder jobToQueueAdder, ScheduledJobRepository scheduledJobRepository, QueueRepository queueRepository, JobRepository jobRepository, MicroflowRepository microflowRepository, IMendixIdentifier jobId) {
 		this.jobId = jobId;
 		this.logger = logger;
 		this.jobToQueueAdder = jobToQueueAdder;
 		this.scheduledJobRepository = scheduledJobRepository;
 		this.queueRepository = queueRepository;
 		this.jobRepository = jobRepository;
+		this.microflowRepository = microflowRepository;
 	}
 
 	@Override
@@ -71,7 +74,7 @@ public class QueueHandler implements Runnable {
 			this.retry = job.getRetry(context);
 			String microflowName = job.getMicroflowName(context);
 			
-			HashMap<String, Object> jobInput = jobRepository.getJobInput(jobObject);
+			HashMap<String, Object> jobInput = microflowRepository.getJobInput(jobObject, microflowName);
 			
 			try {
 				job.setStatus(context, ENU_JobStatus.Running);

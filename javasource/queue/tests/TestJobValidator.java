@@ -3,6 +3,8 @@ package queue.tests;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Set;
+
 import org.junit.Test;
 
 import com.mendix.logging.ILogNode;
@@ -22,6 +24,8 @@ public class TestJobValidator {
 	QueueRepository queueRepository = mock(QueueRepository.class);
 	Job job = mock(Job.class);
 	JobValidator jobValidator = new JobValidator(logger, microflowValidator);
+	@SuppressWarnings("rawtypes")
+	Set microflowNames = mock(Set.class);
 	
 	@Test
 	public void validateTrue() {
@@ -36,7 +40,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertTrue(actualResult);
@@ -62,7 +66,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -83,7 +87,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -104,7 +108,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(false);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -125,7 +129,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -147,7 +151,7 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -156,6 +160,7 @@ public class TestJobValidator {
 		verify(logger, times(1)).error("MicroflowName is missing in Job object.");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void validateFalseMicroflowDoesNotExistNoSuggestions() {
 		String validQueueName = "ValidQueueName";
@@ -169,16 +174,16 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(invalidMicroflowName)).thenReturn(false);
-		when(microflowValidator.getClosestMatch(invalidMicroflowName)).thenReturn("");
+		when(microflowValidator.validate(invalidMicroflowName, logger)).thenReturn(false);
+		when(microflowValidator.getClosestMatch(invalidMicroflowName, microflowNames)).thenReturn("");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
 		verify(job, times(1)).getQueue(context);
 		verify(job, times(1)).getMicroflowName(context);
-		verify(logger, times(1)).error("Microflow " + invalidMicroflowName + " could not be found.");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void validateFalseMicroflowDoesNotExistSuggestions() {
 		String validQueueName = "ValidQueueName";
@@ -192,17 +197,17 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(invalidMicroflowName)).thenReturn(false);
-		when(microflowValidator.getClosestMatch(invalidMicroflowName)).thenReturn("ValidMicroflowName");
+		when(microflowValidator.validate(invalidMicroflowName, logger)).thenReturn(false);
+		when(microflowValidator.getClosestMatch(invalidMicroflowName, microflowNames)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
 		verify(job, times(1)).getQueue(context);
 		verify(job, times(1)).getMicroflowName(context);
-		verify(logger, times(1)).error("Microflow " + invalidMicroflowName + " could not be found. Did you mean ValidMicroflowName?");
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void validateFalseRetryNegative() {
 		String validQueueName = "ValidQueueName";
@@ -216,8 +221,8 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(-1);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
-		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
+		when(microflowValidator.getClosestMatch(validMicroflowName, microflowNames)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -225,6 +230,7 @@ public class TestJobValidator {
 		verify(logger, times(1)).error("Retry of -1 is invalid and should be a number larger than or equal to 0.");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void validateFalseDelayUnitNull () {
 		String validQueueName = "ValidQueueName";
@@ -238,8 +244,8 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
-		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
+		when(microflowValidator.getClosestMatch(validMicroflowName, microflowNames)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -247,6 +253,7 @@ public class TestJobValidator {
 		verify(logger, times(1)).error("DelayUnit cannot be empty.");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void validateFalseMaxRetriesNegative() {
 		String validQueueName = "ValidQueueName";
@@ -260,8 +267,8 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
-		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
+		when(microflowValidator.getClosestMatch(validMicroflowName, microflowNames)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -269,6 +276,7 @@ public class TestJobValidator {
 		verify(logger, times(1)).error("MaxRetries of -3 is invalid and should be a number larger than or equal to 0.");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void validateFalseCurrentDelayNegative() {
 		String validQueueName = "ValidQueueName";
@@ -282,8 +290,8 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
-		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
+		when(microflowValidator.getClosestMatch(validMicroflowName, microflowNames)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);
@@ -291,6 +299,7 @@ public class TestJobValidator {
 		verify(logger, times(1)).error("CurrentDelay of -800 is invalid and should be a number larger than or equal to 0.");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void validateFalseBaseDelayNegative() {
 		String validQueueName = "ValidQueueName";
@@ -304,8 +313,8 @@ public class TestJobValidator {
 		when(job.getRetry(context)).thenReturn(0);
 		
 		when(queueRepository.queueExists(validQueueName)).thenReturn(true);
-		when(microflowValidator.validate(validMicroflowName)).thenReturn(true);
-		when(microflowValidator.getClosestMatch(validMicroflowName)).thenReturn("ValidMicroflowName");
+		when(microflowValidator.validate(validMicroflowName, logger)).thenReturn(true);
+		when(microflowValidator.getClosestMatch(validMicroflowName, microflowNames)).thenReturn("ValidMicroflowName");
 		
 		boolean actualResult = jobValidator.isValid(context, queueRepository, job);
 		assertFalse(actualResult);

@@ -18,6 +18,7 @@ import queue.repositories.ScheduledJobRepository;
 import queue.utilities.CoreUtility;
 import queue.repositories.ConstantsRepository;
 import queue.repositories.JobRepository;
+import queue.repositories.MicroflowRepository;
 import queue.repositories.QueueRepository;
 
 public class JobToQueueAdder {
@@ -28,14 +29,16 @@ public class JobToQueueAdder {
 	private ConstantsRepository constantsRepository;
 	private CoreUtility coreUtility;
 	private XASInstanceFactory xasInstanceFactory;
+	private MicroflowRepository microflowRepository;
 	
-	public JobToQueueAdder(JobValidator jobValidator, ExponentialBackoffCalculator exponentialBackoffCalculator, TimeUnitConverter timeUnitConverter, ConstantsRepository constantsRepository, CoreUtility coreUtility, XASInstanceFactory xasInstanceFactory) {
+	public JobToQueueAdder(JobValidator jobValidator, ExponentialBackoffCalculator exponentialBackoffCalculator, TimeUnitConverter timeUnitConverter, ConstantsRepository constantsRepository, CoreUtility coreUtility, XASInstanceFactory xasInstanceFactory, MicroflowRepository microflowRepository) {
 		this.jobValidator = jobValidator;
 		this.exponentialBackoffCalculator = exponentialBackoffCalculator;
 		this.timeUnitConverter = timeUnitConverter;
 		this.constantsRepository = constantsRepository;
 		this.coreUtility = coreUtility;
 		this.xasInstanceFactory = xasInstanceFactory;
+		this.microflowRepository = microflowRepository;
 	}
 	
 	public void add(IContext context, ILogNode logger, QueueRepository queueRepository, JobRepository jobRepository, ScheduledJobRepository scheduledJobRepository, Job job) throws CoreException {
@@ -80,7 +83,7 @@ public class JobToQueueAdder {
 		IMendixObject jobObject = job.getMendixObject();
 				
 		ScheduledFuture<?> future =	executor.schedule(
-					queueRepository.getQueueHandler(logger, this, scheduledJobRepository, queueRepository, jobRepository, jobObject.getId()), 
+					queueRepository.getQueueHandler(logger, this, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobObject.getId()), 
 					job.getCurrentDelay(context), 
 					timeUnitConverter.getTimeUnit(job.getDelayUnit(context).getCaption("en_US"))
 					);

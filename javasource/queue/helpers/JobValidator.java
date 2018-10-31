@@ -20,7 +20,7 @@ public class JobValidator {
 	public boolean isValid (IContext context, QueueRepository queueRepository, Job job) {
 		return 
 				checkQueue(context, queueRepository, job) &&
-				checkMicroflowName(context, job) &&
+				checkMicroflow(context, job) &&
 				checkMaxRetries(context, job) &&
 				checkCurrentDelay(context, job) &&
 				checkBaseDelay(context, job) &&
@@ -46,25 +46,17 @@ public class JobValidator {
 		return false;
 	}
 	
-	private boolean checkMicroflowName(IContext context, Job job) {
+	private boolean checkMicroflow(IContext context, Job job) {
 		String microflowName = job.getMicroflowName(context);
 		
 		boolean validString = checkIfStringExistsAndNotEmpty(microflowName, "MicroflowName");
 				
 		if (validString) {
-			if (this.microflowValidator.validate(microflowName)) {
-				this.logger.debug("Microflow " + microflowName + " found.");
-				return true;
+			if (this.microflowValidator.validate(microflowName, this.logger)) {
+				this.logger.debug("Microflow " + microflowName + " valid.");
+				
+				return  true;
 			}
-			
-			String microflowSuggestion = this.microflowValidator.getClosestMatch(microflowName);
-			
-			if  (microflowSuggestion == "") {
-				this.logger.error("Microflow " + microflowName + " could not be found.");
-				return false;
-			}
-			
-			this.logger.error("Microflow " + microflowName + " could not be found. Did you mean " + microflowSuggestion + "?");
 			
 			return false;
 		}

@@ -11,6 +11,7 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 import queue.proxies.Job;
 
 public class JobRepository {
+	
 	public IMendixObject getJob(IContext context, IMendixIdentifier jobId) throws CoreException {
 		return Core.retrieveId(context, jobId);
 	}
@@ -26,13 +27,5 @@ public class JobRepository {
 	public void sleep(long millis) throws InterruptedException {
 		Thread.sleep(millis);
 	}
-	
-	
-	public HashMap<String, Object> getJobInput(IMendixObject jobObject) {
-		HashMap<String, Object> jobInput = new HashMap<>();
-		jobInput.put("Job", jobObject);
-		return jobInput;
-	}
-	
 	
 }
