@@ -32,6 +32,7 @@ import queue.proxies.ENU_TimeUnit;
 import queue.proxies.Job;
 import queue.repositories.ConstantsRepository;
 import queue.repositories.JobRepository;
+import queue.repositories.MicroflowRepository;
 import queue.repositories.QueueRepository;
 import queue.repositories.ScheduledJobRepository;
 import queue.usecases.QueueHandler;
@@ -62,6 +63,7 @@ public class TestJobToQueueAdder {
 	IMendixIdentifier xasObjectId = mock(IMendixIdentifier.class);
 	XASInstance xasInstance = mock(XASInstance.class);
 	ISession session = mock(ISession.class);
+	MicroflowRepository microflowRepository = mock(MicroflowRepository.class);
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -69,7 +71,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJob() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -80,7 +82,7 @@ public class TestJobToQueueAdder {
 		when(queue.isTerminated()).thenReturn(false);
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
 		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
 		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
 		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
@@ -100,7 +102,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobWithMicroflow() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		String microflow = "microflow";
@@ -112,7 +114,7 @@ public class TestJobToQueueAdder {
 		when(queue.isTerminated()).thenReturn(false);
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
 		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
 		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
 		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
@@ -134,7 +136,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobNotValid() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -145,7 +147,7 @@ public class TestJobToQueueAdder {
 		when(queue.isTerminated()).thenReturn(false);
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
 		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
 		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
 		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
@@ -160,7 +162,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobExecutorNull() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -171,7 +173,7 @@ public class TestJobToQueueAdder {
 		when(queue.isTerminated()).thenReturn(false);
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
 		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
 		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
 		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
@@ -186,7 +188,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobExecutorShutdown() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -197,7 +199,7 @@ public class TestJobToQueueAdder {
 		when(queue.isTerminated()).thenReturn(false);
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
 		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
 		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
 		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
@@ -212,7 +214,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobExecutorTerminated() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -223,7 +225,7 @@ public class TestJobToQueueAdder {
 		when(queue.isTerminated()).thenReturn(true);
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
 		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
 		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
 		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
@@ -238,7 +240,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobCommitException() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -249,7 +251,7 @@ public class TestJobToQueueAdder {
 		when(queue.isTerminated()).thenReturn(false);
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
 		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
 		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
 		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
@@ -265,7 +267,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobRetry() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		int newDelay = 1000;
@@ -279,7 +281,7 @@ public class TestJobToQueueAdder {
 		when(queue.isTerminated()).thenReturn(false);
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
 		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
 		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
 		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
@@ -307,7 +309,7 @@ public class TestJobToQueueAdder {
 	
 	@Test
 	public void getExponentialBackoffCalculator() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		
 		assertEquals(exponentialBackoffCalculator, jobToQueueAdder.getExponentialBackoffCalculator());
 	}
@@ -315,7 +317,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobClusterSupport() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		String xasId = "XASId";
@@ -329,7 +331,7 @@ public class TestJobToQueueAdder {
 		when(queue.isTerminated()).thenReturn(false);
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
 		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
 		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
 		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
@@ -358,7 +360,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobClusterSupportXASInstanceNotFound() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		String xasId = "XASId";
@@ -372,7 +374,7 @@ public class TestJobToQueueAdder {
 		when(queue.isTerminated()).thenReturn(false);
 		when(job.getMendixObject()).thenReturn(jobObject);
 		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobIdentifier)).thenReturn(queueHandler);
+		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
 		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
 		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
 		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
@@ -403,7 +405,7 @@ public class TestJobToQueueAdder {
 
 	@Test
 	public void setTimeZone() {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		
 		when(context.getSession()).thenReturn(session);
 		when(constantsRepository.getTimeZoneID()).thenReturn("Europe/Amsterdam");
@@ -417,7 +419,7 @@ public class TestJobToQueueAdder {
 	
 	@Test
 	public void setTimeZoneNull() {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		
 		when(context.getSession()).thenReturn(session);
 		when(constantsRepository.getTimeZoneID()).thenReturn(null);
@@ -431,7 +433,7 @@ public class TestJobToQueueAdder {
 	
 	@Test
 	public void setTimeZoneEmpty() {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		
 		when(context.getSession()).thenReturn(session);
 		when(constantsRepository.getTimeZoneID()).thenReturn("");
@@ -445,7 +447,7 @@ public class TestJobToQueueAdder {
 	
 	@Test
 	public void setTimeZoneNonExists () {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
 		
 		when(context.getSession()).thenReturn(session);
 		when(constantsRepository.getTimeZoneID()).thenReturn("NonExistingTimeZone");

@@ -19,6 +19,7 @@ import queue.helpers.JobToQueueAdder;
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
 import queue.repositories.JobRepository;
+import queue.repositories.MicroflowRepository;
 import queue.repositories.QueueRepository;
 import queue.repositories.ScheduledJobRepository;
 import queue.usecases.QueueHandler;
@@ -39,6 +40,7 @@ public class TestQueueHandler {
 	HashMap jobInput = mock(HashMap.class);
 	CoreException e = mock(CoreException.class);
 	CoreException t = mock(CoreException.class);
+	MicroflowRepository microflowRepository = mock(MicroflowRepository.class);
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -49,7 +51,7 @@ public class TestQueueHandler {
 		int retry = 1;
 		String microflowName = "Microflow";
 		
-		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
+		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobId);
 		
 		when(queueRepository.getSystemContext()).thenReturn(context);
 		when(jobRepository.getJob(context, jobId)).thenReturn(jobObject);
@@ -57,7 +59,7 @@ public class TestQueueHandler {
 		when(exponentialBackoffCalculator.calculate(200, 0)).thenReturn(0);
 		when(jobRepository.initialize(context, jobObject)).thenReturn(job);
 		when(job.getRetry(context)).thenReturn(retry);
-		when(jobRepository.getJobInput(jobObject)).thenReturn(jobInput);
+		when(microflowRepository.getJobInput(jobObject, microflowName)).thenReturn(jobInput);
 		when(job.getMicroflowName(context)).thenReturn(microflowName);
 		
 		queueHandler.run();
@@ -71,7 +73,7 @@ public class TestQueueHandler {
 		verify(jobRepository, times(0)).sleep(anyLong());
 		verify(job, times(1)).getRetry(context);
 		verify(job, times(1)).getMicroflowName(context);
-		verify(jobRepository, times(1)).getJobInput(jobObject);
+		verify(microflowRepository, times(1)).getJobInput(jobObject, microflowName);
 		verify(jobRepository, times(1)).executeJob(context, microflowName, true, jobInput);
 		verify(scheduledJobRepository, times(1)).remove(context, jobObject, retry);
 		verify(logger, times(1)).debug("Job object found.");
@@ -88,7 +90,7 @@ public class TestQueueHandler {
 		int retry = 1;
 		String microflowName = "Microflow";
 		
-		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
+		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobId);
 		
 		when(queueRepository.getSystemContext()).thenReturn(context);
 		when(jobRepository.getJob(context, jobId)).thenReturn(null).thenReturn(jobObject);
@@ -96,7 +98,7 @@ public class TestQueueHandler {
 		when(exponentialBackoffCalculator.calculate(200, 0)).thenReturn(0);
 		when(jobRepository.initialize(context, jobObject)).thenReturn(job);
 		when(job.getRetry(context)).thenReturn(retry);
-		when(jobRepository.getJobInput(jobObject)).thenReturn(jobInput);
+		when(microflowRepository.getJobInput(jobObject, microflowName)).thenReturn(jobInput);
 		when(job.getMicroflowName(context)).thenReturn(microflowName);
 		
 		queueHandler.run();
@@ -109,7 +111,7 @@ public class TestQueueHandler {
 		verify(job, times(2)).commit(context);
 		verify(jobRepository, times(1)).sleep(anyLong());
 		verify(job, times(1)).getRetry(context);
-		verify(jobRepository, times(1)).getJobInput(jobObject);
+		verify(microflowRepository, times(1)).getJobInput(jobObject, microflowName);
 		verify(jobRepository, times(1)).executeJob(context, microflowName, true, jobInput);
 		verify(scheduledJobRepository, times(1)).remove(context, jobObject, retry);
 		verify(logger, times(1)).debug("Job object found.");
@@ -124,7 +126,7 @@ public class TestQueueHandler {
 	
 	@Test
 	public void runJobNotFound() throws CoreException {		
-		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
+		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobId);
 		
 		when(queueRepository.getSystemContext()).thenReturn(context);
 		when(jobRepository.getJob(context, jobId)).thenReturn(null);
@@ -151,7 +153,7 @@ public class TestQueueHandler {
 	public void runThreadInterupted() throws CoreException, InterruptedException {
 		int retry = 1;
 		
-		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
+		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobId);
 		
 		when(queueRepository.getSystemContext()).thenReturn(context);
 		when(jobRepository.getJob(context, jobId)).thenReturn(null).thenReturn(jobObject);
@@ -171,7 +173,7 @@ public class TestQueueHandler {
 		int retry = 1;
 		String microflowName = "MicroflowToRun";
 		
-		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
+		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobId);
 		
 		when(queueRepository.getSystemContext()).thenReturn(context);
 		when(jobRepository.getJob(context, jobId)).thenReturn(jobObject);
@@ -179,7 +181,7 @@ public class TestQueueHandler {
 		when(exponentialBackoffCalculator.calculate(200, 0)).thenReturn(0);
 		when(jobRepository.initialize(context, jobObject)).thenReturn(job);
 		when(job.getRetry(context)).thenReturn(retry);
-		when(jobRepository.getJobInput(jobObject)).thenReturn(jobInput);
+		when(microflowRepository.getJobInput(jobObject, microflowName)).thenReturn(jobInput);
 		when(job.getMicroflowName(context)).thenReturn(microflowName);
 		doThrow(e).when(jobRepository).executeJob(context, microflowName, true, jobInput);
 		when(e.getCause()).thenReturn(t);
@@ -195,7 +197,7 @@ public class TestQueueHandler {
 		verify(job, times(2)).commit(context);
 		verify(jobRepository, times(0)).sleep(anyLong());
 		verify(job, times(1)).getRetry(context);
-		verify(jobRepository, times(1)).getJobInput(jobObject);
+		verify(microflowRepository, times(1)).getJobInput(jobObject, microflowName);
 		verify(jobRepository, times(1)).executeJob(context, microflowName, true, jobInput);
 		verify(scheduledJobRepository, times(1)).remove(context, jobObject, retry);
 		verify(logger, times(1)).debug("Job object found.");
@@ -216,7 +218,7 @@ public class TestQueueHandler {
 		int retry = 1;
 		String microflowName = "MicroflowToRun";
 		
-		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
+		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobId);
 		
 		when(queueRepository.getSystemContext()).thenReturn(context);
 		when(jobRepository.getJob(context, jobId)).thenReturn(jobObject);
@@ -224,7 +226,7 @@ public class TestQueueHandler {
 		when(exponentialBackoffCalculator.calculate(200, 0)).thenReturn(0);
 		when(jobRepository.initialize(context, jobObject)).thenReturn(job);
 		when(job.getRetry(context)).thenReturn(retry);
-		when(jobRepository.getJobInput(jobObject)).thenReturn(jobInput);
+		when(microflowRepository.getJobInput(jobObject, microflowName)).thenReturn(jobInput);
 		when(job.getMicroflowName(context)).thenReturn(microflowName);
 		doThrow(e).when(jobRepository).executeJob(context, microflowName, true, jobInput);
 		when(e.getCause()).thenReturn(t);
@@ -240,7 +242,7 @@ public class TestQueueHandler {
 		verify(job, times(2)).commit(context);
 		verify(jobRepository, times(0)).sleep(anyLong());
 		verify(job, times(1)).getRetry(context);
-		verify(jobRepository, times(1)).getJobInput(jobObject);
+		verify(microflowRepository, times(1)).getJobInput(jobObject, microflowName);
 		verify(jobRepository, times(1)).executeJob(context, microflowName, true, jobInput);
 		verify(scheduledJobRepository, times(1)).remove(context, jobObject, retry);
 		verify(logger, times(1)).debug("Job object found.");
@@ -261,7 +263,7 @@ public class TestQueueHandler {
 		int retry = 1;
 		String microflowName = "MicroflowToRun";
 		
-		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
+		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobId);
 		
 		when(queueRepository.getSystemContext()).thenReturn(context);
 		when(jobRepository.getJob(context, jobId)).thenReturn(jobObject);
@@ -269,7 +271,7 @@ public class TestQueueHandler {
 		when(exponentialBackoffCalculator.calculate(200, 0)).thenReturn(0);
 		when(jobRepository.initialize(context, jobObject)).thenReturn(job);
 		when(job.getRetry(context)).thenReturn(retry);
-		when(jobRepository.getJobInput(jobObject)).thenReturn(jobInput);
+		when(microflowRepository.getJobInput(jobObject, microflowName)).thenReturn(jobInput);
 		when(job.getMicroflowName(context)).thenReturn(microflowName);
 		doThrow(e).when(jobRepository).executeJob(context, microflowName, true, jobInput);
 		when(e.getCause()).thenReturn(t);
@@ -284,7 +286,7 @@ public class TestQueueHandler {
 		verify(job, times(2)).commit(context);
 		verify(jobRepository, times(0)).sleep(anyLong());
 		verify(job, times(1)).getRetry(context);
-		verify(jobRepository, times(1)).getJobInput(jobObject);
+		verify(microflowRepository, times(1)).getJobInput(jobObject, microflowName);
 		verify(jobRepository, times(1)).executeJob(context, microflowName, true, jobInput);
 		verify(scheduledJobRepository, times(1)).remove(context, jobObject, retry);
 		verify(logger, times(1)).debug("Job object found.");
@@ -305,7 +307,7 @@ public class TestQueueHandler {
 		int maxRetries = 2;
 		String microflowName = "MicroflowToRun";
 		
-		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, jobId);
+		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobId);
 		
 		when(queueRepository.getSystemContext()).thenReturn(context);
 		when(jobRepository.getJob(context, jobId)).thenReturn(jobObject);
@@ -314,7 +316,7 @@ public class TestQueueHandler {
 		when(jobRepository.initialize(context, jobObject)).thenReturn(job);
 		when(job.getRetry(context)).thenReturn(retry);
 		when(job.getMaxRetries(context)).thenReturn(maxRetries);
-		when(jobRepository.getJobInput(jobObject)).thenReturn(jobInput);
+		when(microflowRepository.getJobInput(jobObject, microflowName)).thenReturn(jobInput);
 		when(job.getMicroflowName(context)).thenReturn(microflowName);
 		doThrow(e).when(jobRepository).executeJob(context, microflowName, true, jobInput);
 		when(e.getCause()).thenReturn(t);
@@ -327,7 +329,7 @@ public class TestQueueHandler {
 		verify(job, times(1)).commit(context);
 		verify(jobRepository, times(0)).sleep(anyLong());
 		verify(job, times(1)).getRetry(context);
-		verify(jobRepository, times(1)).getJobInput(jobObject);
+		verify(microflowRepository, times(1)).getJobInput(jobObject, microflowName);
 		verify(jobRepository, times(1)).executeJob(context, microflowName, true, jobInput);
 		verify(scheduledJobRepository, times(1)).remove(context, jobObject, retry);
 		verify(logger, times(1)).debug("Job object found.");

@@ -1,7 +1,12 @@
 package queue.helpers;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+
+import com.mendix.logging.ILogNode;
+import com.mendix.systemwideinterfaces.core.IDataType;
+import com.mendix.systemwideinterfaces.core.IDataType.DataTypeEnum;
 
 import queue.repositories.MicroflowRepository;
 
@@ -13,13 +18,56 @@ public class MicroflowValidator {
 		this.microflowRepository = microflowRepository;
 	}
 	
-	public boolean validate(String microflowName) {
-		return microflowRepository.getMicroflowNames().contains(microflowName);
+	public boolean validate(String microflowName, ILogNode logger) {
+		boolean isValid = microflowExists(microflowName, logger) &&
+				hasInputParameterJob(microflowName, logger);
+				
+				return isValid;
+	}
+		
+	public boolean microflowExists(String microflowName, ILogNode logger) {
+		Set<String> microflowNames = microflowRepository.getMicroflowNames();
+		boolean exists = microflowNames.contains(microflowName);
+		
+		if(exists) {
+			logger.debug("Validating microflow " + microflowName + ": microflow exists.");
+			return true;
+		}
+		
+		String microflowSuggestion = getClosestMatch(microflowName, microflowNames);
+		
+		if  (microflowSuggestion.equals("")) {
+			logger.error("Microflow " + microflowName + " could not be found.");
+			return false;
+		}
+		
+		logger.error("Microflow " + microflowName + " could not be found. Did you mean " + microflowSuggestion + "?");
+		return false;
 	}
 	
-	public String getClosestMatch(String microflowName) {
+	public boolean hasInputParameterJob(String microflowName, ILogNode logger) {
+		Map<String, IDataType> inputParameters = microflowRepository.getInputParameters(microflowName);
+		boolean hasInputParameterOfTypeObject = hasInputParameterOfTypeObject(inputParameters);
+		
+		System.out.println(hasInputParameterOfTypeObject);
+		
+		if (hasInputParameterOfTypeObject) {
+			logger.debug("Validating microflow " + microflowName + ": has input parameter with data type Object and entity Queue.Job.");
+		}
+		
+		if (!hasInputParameterOfTypeObject) {
+			logger.error("Validating microflow " + microflowName + ": has no input parameter with data type Object and Entity Queue.Job.");
+		}
+		
+		return hasInputParameterOfTypeObject;
+	}
+	
+	public boolean hasInputParameterOfTypeObject(Map<String, IDataType> inputParameters) {
+		return inputParameters.values().stream().anyMatch(p -> p.getObjectType().equals("Queue.Job") && p.getType() == DataTypeEnum.Object);
+	}
+	
+	public String getClosestMatch(String microflowName, Set<String> microflowNames) {
 		String microflowSuggestion = "";
-		Set<String> microflowNames = this.microflowRepository.getMicroflowNames();
 		
 		if (microflowNames.size() == 0) {
 			return "";
