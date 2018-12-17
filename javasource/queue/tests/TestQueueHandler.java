@@ -207,7 +207,7 @@ public class TestQueueHandler {
 		verify(logger, times(1)).debug("Starting execution of microflow " + job.getMicroflowName(context) + ".");
 		verify(logger, times(0)).debug("Finished execution of microflow " + job.getMicroflowName(context) + ".");
 		verify(logger, times(1)).debug("Max retries reached, status is set to Error.");
-		verify(logger, times(1)).error("Error during execution of microflow " + microflowName + ".", e);
+		verify(logger, times(1)).error("Job " + job.getIdJob(context) + ": Error during execution of microflow " + microflowName + ".", e);
 		verify(e, times(1)).getCause();
 		verify(t, times(1)).getCause();
 	}
@@ -252,7 +252,7 @@ public class TestQueueHandler {
 		verify(logger, times(1)).debug("Starting execution of microflow " + job.getMicroflowName(context) + ".");
 		verify(logger, times(0)).debug("Finished execution of microflow " + job.getMicroflowName(context) + ".");
 		verify(logger, times(1)).debug("Max retries reached, status is set to Error.");
-		verify(logger, times(1)).error("Error during execution of microflow " + microflowName + ".", e);
+		verify(logger, times(1)).error("Job " + job.getIdJob(context) + ": Error during execution of microflow " + microflowName + ".", e);
 		verify(e, times(1)).getCause();
 		verify(t, times(1)).getCause();
 	}
@@ -338,7 +338,7 @@ public class TestQueueHandler {
 		verify(logger, times(0)).debug("Job status set to Done.");
 		verify(logger, times(1)).debug("Starting execution of microflow " + job.getMicroflowName(context) + ".");
 		verify(logger, times(0)).debug("Finished execution of microflow " + job.getMicroflowName(context) + ".");
-		verify(logger, times(1)).error("Error during execution of microflow " + microflowName + ".", e);
+		verify(logger, times(1)).error("Job " + job.getIdJob(context) + ": Error during execution of microflow " + microflowName + ".", e);
 		verify(logger, times(1)).debug("Retry " + (retry + 1) + " of " + job.getMaxRetries(context) + " will be scheduled for job with microflow " + job.getMicroflowName(context) + ".");
 		verify(logger, times(1)).debug("Job rescheduled and status set to Queued.");
 		verify(e, times(1)).getCause();
