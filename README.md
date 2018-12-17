@@ -29,6 +29,7 @@ For an Administrator role account, please request at [Menno de Haas](mailto:menn
 	- Add the snippets or pages to your application for queue or job monitoring.
 3. Set the CLUSTER_SUPPORT constant if you are using the queue in an application that runs on a cluster of multiple instances. When cluster support is enabled, each instance will check for new queue control messages in the background that correspond to that XAS ID. When performing control activities from the front-end (shutdown queue, cancel or abort job), these will create queue control messages in the database that will be processed by the relevant instances.
 4. Set the TIMEZONE_ID constant if you would like to use a specific time zone during executions of microflows from the queue. By default, GMT will be used. This feature is equivalent to the setting [Scheduled event time zone](https://docs.mendix.com/refguide/project-settings#3-8-scheduled-event-time-zone), but applies only to microflows executed by the queue. [Google Java TimeZoneIDs](http://lmgtfy.com/?q=Java+TimeZone+IDs) to browse possible values or check your System.TimeZone entity (the Code attribute equals the Java TimeZoneID). The value for The Netherlands should be Europe/Amsterdam.
+5. If you would like to set a Job's status to Error, use the SetErrorForJob Java action. Changing the Job's status in the microflow will not have any effect if the SetErrorForJob Java action is not used.
 
 # Features
 * Queue control
@@ -37,6 +38,7 @@ For an Administrator role account, please request at [Menno de Haas](mailto:menn
 	- Java does not allow to reuse a queue that has been shut down. Queue should be re-initialized after shutdown.
 * Queue displayed in UI based on queue instance state (not stored in database)
 * Job retry mechanism when Job fails (delay calculated based on exponential backoff)
+* Throw errors from microflow in queue with or without stack trace (use the SetErrorForJob Java action)
 * Job is cancelled (cancel or abort depending on status) using a before commit event in case Job is deleted
 * Job control UI
 	- Cancel Job when queued
