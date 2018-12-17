@@ -14,7 +14,7 @@ import com.mendix.webui.CustomJavaAction;
 import queue.helpers.ExceptionGenerator;
 
 /**
- * User can throw an exception (give an error) when a Job is executed unsuccessfully. When used in the microflow, the status of the Job is set to error. If retries are left, the Job will be executed again after the specified delay.
+ * User can throw an exception (give an error) when a Job is executed unsuccessfully. When used in the microflow, the status of the Job is set to error. If retries are left, the Job will be executed again after the delay specified in the Job object.
  * 
  * When using stack traces, please take performance into account. Stack traces can significantly slow down the application and fiill log files when used often.
  */
