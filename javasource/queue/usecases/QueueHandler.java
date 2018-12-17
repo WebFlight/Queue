@@ -87,7 +87,7 @@ public class QueueHandler implements Runnable {
 				job.commit(context);
 				logger.debug("Job status set to Done.");
 				scheduledJobRepository.remove(context, jobObject, retry);
-			} catch (CoreException e) {
+			} catch (Exception e) {
 				scheduledJobRepository.remove(context, jobObject, retry);
 				Throwable t = e.getCause();
 				while(true) {
@@ -104,7 +104,7 @@ public class QueueHandler implements Runnable {
 					}
 				}
 				
-				logger.error("Error during execution of microflow " + microflowName + ".", e);
+				logger.error("Job " + job.getIdJob(context) + ": Error during execution of microflow " + microflowName + ".", e);
 				if (this.retry < job.getMaxRetries(context)) {
 					logger.debug("Retry " + (this.retry + 1) + " of " + job.getMaxRetries(context) + " will be scheduled for job with microflow " + job.getMicroflowName(context) + ".");
 					jobToQueueAdder.addRetry(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
