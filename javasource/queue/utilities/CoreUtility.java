@@ -19,10 +19,6 @@ public class CoreUtility {
 		return Core.retrieveXPathQuery(context, xPath);
 	}
 	
-	public String getXASId() {
-		return Core.getXASId();
-	}
-	
 	public void scheduleAtFixedRate(CoreAction<?> coreAction, long initialDelay, long period, java.util.concurrent.TimeUnit timeUnit) {
 		Core.scheduleAtFixedRate(coreAction, initialDelay, period, timeUnit);
 	}

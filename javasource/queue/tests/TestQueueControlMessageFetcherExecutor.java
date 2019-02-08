@@ -34,7 +34,6 @@ public class TestQueueControlMessageFetcherExecutor {
 	@Before
 	public void setup() throws CoreException {
 		this.queueControlMessageFetcherExecutor = new QueueControlMessageFetcherExecutor();
-		when(coreUtility.getXASId()).thenReturn(XASId);
 		List<IMendixObject> queueControlMessages = new ArrayList<>();
 		queueControlMessages.add(queueControlMessage);
 		when(coreUtility.retrieveXPathQuery(context, "//Queue.QueueControlMessage[Queue.QueueControlMessage_XASInstance/System.XASInstance/XASId='" + this.XASId + "']")).thenReturn(queueControlMessages);

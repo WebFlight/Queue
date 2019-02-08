@@ -46,7 +46,6 @@ public class TestQueueInfoUpdaterExecutor {
 	@Before
 	public void setup() throws CoreException {
 		this.queueInfoUpdaterExecutor = new QueueInfoUpdaterExecutor();
-		when(coreUtility.getXASId()).thenReturn(XASId);
 		queueInfos = new ArrayList<>();
 		queueInfos.add(queueInfo);
 		when(queueRepository.getQueueInfos(context)).thenReturn(queueInfos);
