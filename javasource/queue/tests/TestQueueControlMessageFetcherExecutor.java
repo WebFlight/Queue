@@ -43,7 +43,6 @@ public class TestQueueControlMessageFetcherExecutor {
 	@Test
 	public void testExecute() throws Exception {
 		queueControlMessageFetcherExecutor.execute(context, coreUtility, logger, inputMap);
-		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//Queue.QueueControlMessage[Queue.QueueControlMessage_XASInstance/System.XASInstance/XASId='" + this.XASId + "']");
 		verify(inputMap, times(1)).put("QueueControlMessage", queueControlMessage);
 		verify(coreUtility, times(1)).executeAsync(context, "Queue.IVK_ProcessQueueControlMessage", true, inputMap);
 	}

@@ -55,9 +55,10 @@ public class JobToQueueAdder {
 			throw new CoreException("Queue with name " + job.getQueue(context) + " has already been shut down or terminated. Job has not been added.");
 		}
 		
+		long instanceIndex = coreUtility.getInstanceIndex();
 		
-		if(constantsRepository.isClusterSupport() && coreUtility.getInstanceIndex() >= 0) {
-			job.setInstanceIndex(context, (int) coreUtility.getInstanceIndex());
+		if(constantsRepository.isClusterSupport() && instanceIndex >= 0) {
+			job.setInstanceIndex(context, (int) instanceIndex);
 		}
 	
 		job.setStatus(context, ENU_JobStatus.Queued);

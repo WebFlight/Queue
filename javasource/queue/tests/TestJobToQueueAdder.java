@@ -348,49 +348,7 @@ public class TestJobToQueueAdder {
 		verify(job, times(1)).getDelayUnit(context);
 		verify(job, times(1)).getMendixObject();
 		verify(constantsRepository, times(1)).isClusterSupport();
-		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//System.XASInstance[XASId='" + xasId + "']");
-	}
-	
-	@SuppressWarnings({ "unchecked" })
-	@Test
-	public void addJobClusterSupportXASInstanceNotFound() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
-		String name = "NewQueue";
-		int currentDelay = 500;
-		String xasId = "XASId";
-		List<IMendixObject> xasObjectList = new ArrayList<>();
-		xasObjectList.add(xasObject);
-		
-		when(jobValidator.isValid(context, queueRepository, job)).thenReturn(true);
-		when(job.getQueue(context)).thenReturn(name);
-		when(queueRepository.getQueue(name)).thenReturn(queue);
-		when(queue.isShutdown()).thenReturn(false);
-		when(queue.isTerminated()).thenReturn(false);
-		when(job.getMendixObject()).thenReturn(jobObject);
-		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
-		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
-		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
-		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
-		when(queue.schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS)).thenReturn(future);
-		when(constantsRepository.isClusterSupport()).thenReturn(true);
-		when(xasObject.getId()).thenReturn(xasObjectId);
-		doThrow(new CoreException()).when(coreUtility).retrieveXPathQuery(context, "//System.XASInstance[XASId='" + xasId + "']");
-		
-		expectedException.expect(CoreException.class);
-		expectedException.expectMessage("Could not retrieve XAS Instance from database.");
-		
-		jobToQueueAdder.add(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
-		verify(jobValidator, times(1)).isValid(context, queueRepository, job);
-		verify(job, times(1)).getQueue(context);
-		verify(job, times(1)).setStatus(context, ENU_JobStatus.Queued);
-		verify(job, times(1)).commit(context);
-		verify(queue, times(1)).schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS);
-		verify(job, times(1)).getCurrentDelay(context);
-		verify(job, times(1)).getDelayUnit(context);
-		verify(job, times(1)).getMendixObject();
-		verify(constantsRepository, times(1)).isClusterSupport();
-		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//System.XASInstance[XASId='" + xasId + "']");
+		verify(coreUtility, times(1)).getInstanceIndex();
 	}
 
 	@Test
