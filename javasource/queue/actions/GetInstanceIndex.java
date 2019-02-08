@@ -11,7 +11,6 @@ package queue.actions;
 
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
-
 import queue.utilities.CoreUtility;
 
 public class GetInstanceIndex extends CustomJavaAction<java.lang.Long>
