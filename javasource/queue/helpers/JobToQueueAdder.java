@@ -11,7 +11,6 @@ import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
-import queue.factories.XASInstanceFactory;
 import queue.proxies.ENU_JobStatus;
 import queue.proxies.Job;
 import queue.repositories.ScheduledJobRepository;
@@ -28,16 +27,14 @@ public class JobToQueueAdder {
 	private TimeUnitConverter timeUnitConverter;
 	private ConstantsRepository constantsRepository;
 	private CoreUtility coreUtility;
-	private XASInstanceFactory xasInstanceFactory;
 	private MicroflowRepository microflowRepository;
 	
-	public JobToQueueAdder(JobValidator jobValidator, ExponentialBackoffCalculator exponentialBackoffCalculator, TimeUnitConverter timeUnitConverter, ConstantsRepository constantsRepository, CoreUtility coreUtility, XASInstanceFactory xasInstanceFactory, MicroflowRepository microflowRepository) {
+	public JobToQueueAdder(JobValidator jobValidator, ExponentialBackoffCalculator exponentialBackoffCalculator, TimeUnitConverter timeUnitConverter, ConstantsRepository constantsRepository, CoreUtility coreUtility, MicroflowRepository microflowRepository) {
 		this.jobValidator = jobValidator;
 		this.exponentialBackoffCalculator = exponentialBackoffCalculator;
 		this.timeUnitConverter = timeUnitConverter;
 		this.constantsRepository = constantsRepository;
 		this.coreUtility = coreUtility;
-		this.xasInstanceFactory = xasInstanceFactory;
 		this.microflowRepository = microflowRepository;
 	}
 	
@@ -59,17 +56,8 @@ public class JobToQueueAdder {
 		}
 		
 		
-		if(constantsRepository.isClusterSupport()) {
-			List<IMendixObject> xasInstances = null;
-			
-			try {
-				xasInstances = coreUtility.retrieveXPathQuery(context, "//System.XASInstance[XASId='" + coreUtility.getXASId() + "']");
-			} catch (CoreException e) {
-				throw new CoreException("Could not retrieve XAS Instance from database.", e);
-			}
-			IMendixObject xasInstance = xasInstances.get(0);
-			
-			job.setJob_XASInstance(context, xasInstanceFactory.load(context, xasInstance.getId()));
+		if(constantsRepository.isClusterSupport() && coreUtility.getInstanceIndex() >= 0) {
+			job.setInstanceIndex(context, (int) coreUtility.getInstanceIndex());
 		}
 	
 		job.setStatus(context, ENU_JobStatus.Queued);

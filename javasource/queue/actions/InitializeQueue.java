@@ -19,7 +19,9 @@ import queue.factories.QueueThreadPoolFactory;
 import queue.helpers.QueueInitializer;
 import queue.helpers.QueueValidator;
 import queue.proxies.constants.Constants;
+import queue.repositories.ConstantsRepository;
 import queue.repositories.QueueRepository;
+import queue.utilities.CoreUtility;
 
 public class InitializeQueue extends CustomJavaAction<java.lang.Boolean>
 {
@@ -47,8 +49,10 @@ public class InitializeQueue extends CustomJavaAction<java.lang.Boolean>
 		QueueThreadFactory threadFactory = new QueueThreadFactory(configuration);
 		QueueThreadPoolFactory threadPoolFactory = new QueueThreadPoolFactory();
 		QueueInitializer queueInitializer = new QueueInitializer();
+		ConstantsRepository constantsRepository = new ConstantsRepository();
+		CoreUtility coreUtility = new CoreUtility();
 		
-		boolean initialized = queueInitializer.initialize(logger, configuration, threadPoolFactory, threadFactory, queueValidator, queueRepository);
+		boolean initialized = queueInitializer.initialize(logger, configuration, threadPoolFactory, threadFactory, queueValidator, queueRepository, coreUtility, constantsRepository);
 		
 		return initialized;
 		// END USER CODE

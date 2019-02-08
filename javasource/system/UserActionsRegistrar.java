@@ -33,6 +33,7 @@ public class UserActionsRegistrar
     registrator.registerUserAction(queue.actions.AddJobToQueue.class);
     registrator.registerUserAction(queue.actions.AddJobToQueueWithMicroflowSelection.class);
     registrator.registerUserAction(queue.actions.CancelJob.class);
+    registrator.registerUserAction(queue.actions.GetInstanceIndex.class);
     registrator.registerUserAction(queue.actions.GetQueueOverview.class);
     registrator.registerUserAction(queue.actions.InitializeQueue.class);
     registrator.registerUserAction(queue.actions.SetErrorForJob.class);
