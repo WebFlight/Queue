@@ -7,6 +7,7 @@ import java.util.HashMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
@@ -40,6 +41,7 @@ public class TestQueueHandler {
 	HashMap jobInput = mock(HashMap.class);
 	CoreException e = mock(CoreException.class);
 	CoreException t = mock(CoreException.class);
+	Exception exception = mock(RuntimeException.class);
 	MicroflowRepository microflowRepository = mock(MicroflowRepository.class);
 	
 	@Rule
@@ -136,7 +138,7 @@ public class TestQueueHandler {
 		queueHandler.run();
 		verify(jobToQueueAdder, times(1)).setTimeZone(context, logger);
 		verify(logger, times(10)).debug("Job object not found.");
-		verify(logger, times(1)).error("Could not retrieve job object. Job will not be executed.");
+		verify(logger, times(1)).error(eq("Could not retrieve job object. Job will not be executed."), Mockito.any(CoreException.class));
 		verify(logger, times(1)).debug("Trying to retrieve job object. Attempt 1 of 10.");
 		verify(logger, times(1)).debug("Trying to retrieve job object. Attempt 2 of 10.");
 		verify(logger, times(1)).debug("Trying to retrieve job object. Attempt 3 of 10.");
@@ -211,6 +213,7 @@ public class TestQueueHandler {
 		verify(e, times(1)).getCause();
 		verify(t, times(1)).getCause();
 	}
+	
 	
 	@SuppressWarnings("unchecked")
 	@Test
@@ -341,6 +344,51 @@ public class TestQueueHandler {
 		verify(logger, times(1)).error("Job " + job.getIdJob(context) + ": Error during execution of microflow " + microflowName + ".", e);
 		verify(logger, times(1)).debug("Retry " + (retry + 1) + " of " + job.getMaxRetries(context) + " will be scheduled for job with microflow " + job.getMicroflowName(context) + ".");
 		verify(logger, times(1)).debug("Job rescheduled and status set to Queued.");
+		verify(e, times(1)).getCause();
+		verify(t, times(1)).getCause();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void runExceptionWhileHandlingError() throws CoreException, InterruptedException {
+		int retry = 1;
+		String microflowName = "MicroflowToRun";
+		
+		QueueHandler queueHandler = new QueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobId);
+		
+		when(queueRepository.getSystemContext()).thenReturn(context);
+		when(jobRepository.getJob(context, jobId)).thenReturn(jobObject);
+		when(jobToQueueAdder.getExponentialBackoffCalculator()).thenReturn(exponentialBackoffCalculator);
+		when(exponentialBackoffCalculator.calculate(200, 0)).thenReturn(0);
+		when(jobRepository.initialize(context, jobObject)).thenReturn(job);
+		when(job.getRetry(context)).thenReturn(retry);
+		when(microflowRepository.getJobInput(jobObject, microflowName)).thenReturn(jobInput);
+		when(job.getMicroflowName(context)).thenReturn(microflowName);
+		doThrow(exception).when(job).setStatus(context, ENU_JobStatus.Error);
+		doThrow(e).when(jobRepository).executeJob(context, microflowName, true, jobInput);
+		when(e.getCause()).thenReturn(t);
+		when(t.getCause()).thenReturn(null);
+		
+		
+		queueHandler.run();
+		
+		verify(jobRepository, times(1)).getJob(context, jobId);
+		verify(jobRepository, times(1)).initialize(context, jobObject);
+		verify(job, times(1)).setStatus(context, ENU_JobStatus.Running);
+		verify(job, times(1)).setStatus(context, ENU_JobStatus.Error);
+		verify(job, times(1)).commit(context);
+		verify(jobRepository, times(0)).sleep(anyLong());
+		verify(job, times(1)).getRetry(context);
+		verify(microflowRepository, times(1)).getJobInput(jobObject, microflowName);
+		verify(scheduledJobRepository, times(1)).remove(context, jobObject, retry);
+		verify(logger, times(1)).debug("Job object found.");
+		verify(logger, times(1)).debug("Trying to retrieve job object. Attempt 1 of 10.");
+		verify(logger, times(1)).debug("Job status set to Running.");
+		verify(logger, times(0)).debug("Job status set to Done.");
+		verify(logger, times(1)).debug("Starting execution of microflow " + job.getMicroflowName(context) + ".");
+		verify(logger, times(0)).debug("Finished execution of microflow " + job.getMicroflowName(context) + ".");
+		verify(logger, times(1)).error("Job " + job.getIdJob(context) + ": Error during execution of microflow " + microflowName + ".", e);
+		verify(logger, times(1)).error(eq("Exception during error handling of Job."), Mockito.any(Exception.class));
 		verify(e, times(1)).getCause();
 		verify(t, times(1)).getCause();
 	}
