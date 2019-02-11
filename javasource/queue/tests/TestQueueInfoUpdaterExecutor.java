@@ -16,7 +16,6 @@ import org.junit.rules.ExpectedException;
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
-import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 import queue.helpers.QueueInfoUpdaterExecutor;
@@ -29,13 +28,9 @@ public class TestQueueInfoUpdaterExecutor {
 	private IContext context = mock(IContext.class);
 	private QueueInfoUpdaterExecutor queueInfoUpdaterExecutor;
 	private CoreUtility coreUtility = mock(CoreUtility.class);
-	private final String XASId = "ABCDEabcde12345";
+	private long instanceIndex = 1L;
 	private QueueRepository queueRepository = mock(QueueRepository.class);
 	private IMendixObject queueInfo = mock(IMendixObject.class);
-	private IMendixObject xasInstance = mock(IMendixObject.class);
-	private IMendixIdentifier identifier = mock(IMendixIdentifier.class);
-	private long identifierLong = 12345678L;
-	private List<IMendixObject> xasInstances;
 	private List<IMendixObject> queueInfos;
 	@SuppressWarnings("unchecked")
 	private List<IMendixObject> oldQueueInfos = mock(List.class);
@@ -49,40 +44,25 @@ public class TestQueueInfoUpdaterExecutor {
 		queueInfos = new ArrayList<>();
 		queueInfos.add(queueInfo);
 		when(queueRepository.getQueueInfos(context)).thenReturn(queueInfos);
-		xasInstances = new ArrayList<>();
-		xasInstances.add(xasInstance);
-		when(coreUtility.retrieveXPathQuery(context, "//System.XASInstance[XASId='" + XASId + "']")).thenReturn(xasInstances);
-		when(xasInstance.getId()).thenReturn(identifier);
-		when(identifier.toLong()).thenReturn(identifierLong);
-		when(coreUtility.retrieveXPathQuery(context, "//Queue.QueueInfo[Queue.QueueInfo_XASInstance=" + identifierLong + "]")).thenReturn(oldQueueInfos);
+		when(coreUtility.retrieveXPathQuery(context, "//Queue.QueueInfo[InstanceIndex=" + instanceIndex + "]")).thenReturn(oldQueueInfos);
+		when(coreUtility.getInstanceIndex()).thenReturn(instanceIndex);
 	}
 	
 	@Test
 	public void testExecute() throws Exception {
 		queueInfoUpdaterExecutor.execute(context, logger, queueRepository, coreUtility);
 		verify(queueRepository, times(1)).getQueueInfos(context);
-		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//System.XASInstance[XASId='" + XASId + "']");
-		verify(xasInstance, times(1)).getId();
-		verify(identifier, times(1)).toLong();
-		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//Queue.QueueInfo[Queue.QueueInfo_XASInstance=" + identifierLong + "]");
+		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//Queue.QueueInfo[InstanceIndex=" + instanceIndex + "]");
 		verify(coreUtility, times(1)).delete(context, oldQueueInfos);
-		verify(queueInfo, times(1)).setValue(context, "Queue.QueueInfo_XASInstance", identifier);
+		verify(coreUtility, times(1)).getInstanceIndex();
+		verify(queueInfo, times(1)).setValue(context, "InstanceIndex", instanceIndex);
 		verify(coreUtility, times(1)).commit(context, queueInfos);
-	}
-	
-	@Test
-	public void testExecuteExceptionXAS() throws Exception {
-		CoreException e = new CoreException();
-		when(coreUtility.retrieveXPathQuery(context, "//System.XASInstance[XASId='" + XASId + "']")).thenThrow(e);
-		expectedException.expect(CoreException.class);
-		
-		queueInfoUpdaterExecutor.execute(context, logger, queueRepository, coreUtility);
 	}
 	
 	@Test
 	public void testExecuteExceptionQueueInfos() throws Exception {
 		CoreException e = new CoreException();
-		when(coreUtility.retrieveXPathQuery(context, "//Queue.QueueInfo[Queue.QueueInfo_XASInstance=" + identifierLong + "]")).thenThrow(e);
+		when(coreUtility.retrieveXPathQuery(context, "//Queue.QueueInfo[InstanceIndex=" + instanceIndex + "]")).thenThrow(e);
 		expectedException.expect(CoreException.class);
 		
 		queueInfoUpdaterExecutor.execute(context, logger, queueRepository, coreUtility);

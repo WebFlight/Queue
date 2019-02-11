@@ -3,7 +3,6 @@ package queue.helpers;
 import java.util.List;
 import java.util.Map;
 
-import com.mendix.core.Core;
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -23,7 +22,7 @@ public class QueueControlMessageFetcherExecutor {
 					coreUtility.executeAsync(context, "Queue.IVK_ProcessQueueControlMessage", true, inputMap);
 				} catch (CoreException e) {
 					logger.error("Could not process Queue Control Message with ID " + o.getId().toLong() + ".", e);
-					Core.delete(context, o);
+					coreUtility.delete(context, o);
 				}
 			}
 		);

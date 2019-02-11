@@ -35,6 +35,10 @@ public class CoreUtility {
 		Core.delete(context, objectList);
 	}
 	
+	public void delete(IContext context, IMendixObject object) {
+		Core.delete(context, object);
+	}
+	
 	public long getInstanceIndex() {
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
 		
