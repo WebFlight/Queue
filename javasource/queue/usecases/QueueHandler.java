@@ -120,13 +120,13 @@ public class QueueHandler implements Runnable {
 					}
 				}
 				
-				logger.error("Job " + job.getIdJob(context) + ": Error during execution of microflow " + microflowName + ".", e);
-				if (this.retry < job.getMaxRetries(context)) {
-					logger.debug("Retry " + (this.retry + 1) + " of " + job.getMaxRetries(context) + " will be scheduled for job with microflow " + job.getMicroflowName(context) + ".");
+				logger.error("Job " + job.getIdJob(errorContext) + ": Error during execution of microflow " + microflowName + ".", e);
+				if (this.retry < job.getMaxRetries(errorContext)) {
+					logger.debug("Retry " + (this.retry + 1) + " of " + job.getMaxRetries(errorContext) + " will be scheduled for job with microflow " + job.getMicroflowName(errorContext) + ".");
 					jobToQueueAdder.addRetry(errorContext, logger, queueRepository, jobRepository, scheduledJobRepository, job);
 					logger.debug("Job rescheduled and status set to Queued.");
 				} else {
-					job.setStatus(context, ENU_JobStatus.Error);
+					job.setStatus(errorContext, ENU_JobStatus.Error);
 					job.commit(errorContext);
 					logger.debug("Max retries reached, status is set to Error.");
 				}

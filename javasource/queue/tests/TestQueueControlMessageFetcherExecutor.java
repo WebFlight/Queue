@@ -24,27 +24,26 @@ public class TestQueueControlMessageFetcherExecutor {
 	private IContext context = mock(IContext.class);
 	private QueueControlMessageFetcherExecutor queueControlMessageFetcherExecutor;
 	private CoreUtility coreUtility = mock(CoreUtility.class);
-	private final String XASId = "ABCDEabcde12345";
 	private IMendixObject queueControlMessage = mock(IMendixObject.class);
 	@SuppressWarnings({ "rawtypes" })
 	private HashMap inputMap = mock(HashMap.class);
 	private IMendixIdentifier identifier = mock(IMendixIdentifier.class);
 	private long identifierLong = 12345678L;
+	private long instanceIndex = 1L; 
 
 	@Before
 	public void setup() throws CoreException {
 		this.queueControlMessageFetcherExecutor = new QueueControlMessageFetcherExecutor();
-		when(coreUtility.getXASId()).thenReturn(XASId);
 		List<IMendixObject> queueControlMessages = new ArrayList<>();
 		queueControlMessages.add(queueControlMessage);
-		when(coreUtility.retrieveXPathQuery(context, "//Queue.QueueControlMessage[Queue.QueueControlMessage_XASInstance/System.XASInstance/XASId='" + this.XASId + "']")).thenReturn(queueControlMessages);
+		when(coreUtility.getInstanceIndex()).thenReturn(instanceIndex);
+		when(coreUtility.retrieveXPathQuery(context, "//Queue.QueueControlMessage[InstanceIndex='" + instanceIndex + "']")).thenReturn(queueControlMessages);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testExecute() throws Exception {
 		queueControlMessageFetcherExecutor.execute(context, coreUtility, logger, inputMap);
-		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//Queue.QueueControlMessage[Queue.QueueControlMessage_XASInstance/System.XASInstance/XASId='" + this.XASId + "']");
 		verify(inputMap, times(1)).put("QueueControlMessage", queueControlMessage);
 		verify(coreUtility, times(1)).executeAsync(context, "Queue.IVK_ProcessQueueControlMessage", true, inputMap);
 	}
@@ -59,7 +58,7 @@ public class TestQueueControlMessageFetcherExecutor {
 		
 		queueControlMessageFetcherExecutor.execute(context, coreUtility, logger, inputMap);
 		
-		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//Queue.QueueControlMessage[Queue.QueueControlMessage_XASInstance/System.XASInstance/XASId='" + this.XASId + "']");
+		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//Queue.QueueControlMessage[InstanceIndex='" + instanceIndex + "']");
 		verify(inputMap, times(1)).put("QueueControlMessage", queueControlMessage);
 		verify(coreUtility, times(1)).executeAsync(context, "Queue.IVK_ProcessQueueControlMessage", true, inputMap);
 		verify(logger, times(1)).error("Could not process Queue Control Message with ID " + identifierLong + ".", e);

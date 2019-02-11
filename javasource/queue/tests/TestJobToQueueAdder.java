@@ -22,7 +22,6 @@ import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.systemwideinterfaces.core.ISession;
 
-import queue.factories.XASInstanceFactory;
 import queue.helpers.ExponentialBackoffCalculator;
 import queue.helpers.JobToQueueAdder;
 import queue.helpers.JobValidator;
@@ -58,7 +57,6 @@ public class TestJobToQueueAdder {
 	QueueHandler queueHandler = mock(QueueHandler.class);
 	ConstantsRepository constantsRepository = mock(ConstantsRepository.class);
 	CoreUtility coreUtility = mock(CoreUtility.class);
-	XASInstanceFactory xasInstanceFactory = mock(XASInstanceFactory.class);
 	IMendixObject xasObject = mock(IMendixObject.class);
 	IMendixIdentifier xasObjectId = mock(IMendixIdentifier.class);
 	XASInstance xasInstance = mock(XASInstance.class);
@@ -71,7 +69,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJob() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -102,7 +100,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobWithMicroflow() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		String microflow = "microflow";
@@ -136,7 +134,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobNotValid() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -162,7 +160,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobExecutorNull() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -188,7 +186,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobExecutorShutdown() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -214,7 +212,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobExecutorTerminated() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -240,7 +238,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobCommitException() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		
@@ -267,7 +265,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobRetry() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		int newDelay = 1000;
@@ -309,7 +307,7 @@ public class TestJobToQueueAdder {
 	
 	@Test
 	public void getExponentialBackoffCalculator() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		
 		assertEquals(exponentialBackoffCalculator, jobToQueueAdder.getExponentialBackoffCalculator());
 	}
@@ -317,7 +315,7 @@ public class TestJobToQueueAdder {
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void addJobClusterSupport() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		String name = "NewQueue";
 		int currentDelay = 500;
 		String xasId = "XASId";
@@ -337,10 +335,8 @@ public class TestJobToQueueAdder {
 		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
 		when(queue.schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS)).thenReturn(future);
 		when(constantsRepository.isClusterSupport()).thenReturn(true);
-		when(coreUtility.getXASId()).thenReturn(xasId);
 		when(coreUtility.retrieveXPathQuery(context, "//System.XASInstance[XASId='" + xasId + "']")).thenReturn(xasObjectList);
 		when(xasObject.getId()).thenReturn(xasObjectId);
-		when(xasInstanceFactory.load(context, xasObjectId)).thenReturn(xasInstance);
 		
 		jobToQueueAdder.add(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
 		verify(jobValidator, times(1)).isValid(context, queueRepository, job);
@@ -352,60 +348,12 @@ public class TestJobToQueueAdder {
 		verify(job, times(1)).getDelayUnit(context);
 		verify(job, times(1)).getMendixObject();
 		verify(constantsRepository, times(1)).isClusterSupport();
-		verify(coreUtility, times(1)).getXASId();
-		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//System.XASInstance[XASId='" + xasId + "']");
-		verify(job, times(1)).setJob_XASInstance(context, xasInstance);
-	}
-	
-	@SuppressWarnings({ "unchecked" })
-	@Test
-	public void addJobClusterSupportXASInstanceNotFound() throws CoreException {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
-		String name = "NewQueue";
-		int currentDelay = 500;
-		String xasId = "XASId";
-		List<IMendixObject> xasObjectList = new ArrayList<>();
-		xasObjectList.add(xasObject);
-		
-		when(jobValidator.isValid(context, queueRepository, job)).thenReturn(true);
-		when(job.getQueue(context)).thenReturn(name);
-		when(queueRepository.getQueue(name)).thenReturn(queue);
-		when(queue.isShutdown()).thenReturn(false);
-		when(queue.isTerminated()).thenReturn(false);
-		when(job.getMendixObject()).thenReturn(jobObject);
-		when(jobObject.getId()).thenReturn(jobIdentifier);
-		when(queueRepository.getQueueHandler(logger, jobToQueueAdder, scheduledJobRepository, queueRepository, jobRepository, microflowRepository, jobIdentifier)).thenReturn(queueHandler);
-		when(job.getCurrentDelay(context)).thenReturn(currentDelay);
-		when(job.getDelayUnit(context)).thenReturn(ENU_TimeUnit.Milliseconds);
-		when(timeUnitConverter.getTimeUnit("Milliseconds")).thenReturn(TimeUnit.MILLISECONDS);
-		when(queue.schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS)).thenReturn(future);
-		when(constantsRepository.isClusterSupport()).thenReturn(true);
-		when(coreUtility.getXASId()).thenReturn(xasId);
-		when(xasObject.getId()).thenReturn(xasObjectId);
-		when(xasInstanceFactory.load(context, xasObjectId)).thenReturn(xasInstance);
-		doThrow(new CoreException()).when(coreUtility).retrieveXPathQuery(context, "//System.XASInstance[XASId='" + xasId + "']");
-		
-		expectedException.expect(CoreException.class);
-		expectedException.expectMessage("Could not retrieve XAS Instance from database.");
-		
-		jobToQueueAdder.add(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
-		verify(jobValidator, times(1)).isValid(context, queueRepository, job);
-		verify(job, times(1)).getQueue(context);
-		verify(job, times(1)).setStatus(context, ENU_JobStatus.Queued);
-		verify(job, times(1)).commit(context);
-		verify(queue, times(1)).schedule(queueHandler, currentDelay, TimeUnit.MILLISECONDS);
-		verify(job, times(1)).getCurrentDelay(context);
-		verify(job, times(1)).getDelayUnit(context);
-		verify(job, times(1)).getMendixObject();
-		verify(constantsRepository, times(1)).isClusterSupport();
-		verify(coreUtility, times(1)).getXASId();
-		verify(coreUtility, times(1)).retrieveXPathQuery(context, "//System.XASInstance[XASId='" + xasId + "']");
-		verify(job, times(1)).setJob_XASInstance(context, xasInstance);
+		verify(coreUtility, times(1)).getInstanceIndex();
 	}
 
 	@Test
 	public void setTimeZone() {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		
 		when(context.getSession()).thenReturn(session);
 		when(constantsRepository.getTimeZoneID()).thenReturn("Europe/Amsterdam");
@@ -419,7 +367,7 @@ public class TestJobToQueueAdder {
 	
 	@Test
 	public void setTimeZoneNull() {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		
 		when(context.getSession()).thenReturn(session);
 		when(constantsRepository.getTimeZoneID()).thenReturn(null);
@@ -433,7 +381,7 @@ public class TestJobToQueueAdder {
 	
 	@Test
 	public void setTimeZoneEmpty() {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		
 		when(context.getSession()).thenReturn(session);
 		when(constantsRepository.getTimeZoneID()).thenReturn("");
@@ -447,7 +395,7 @@ public class TestJobToQueueAdder {
 	
 	@Test
 	public void setTimeZoneNonExists () {
-		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, xasInstanceFactory, microflowRepository);
+		JobToQueueAdder jobToQueueAdder = new JobToQueueAdder(jobValidator, exponentialBackoffCalculator, timeUnitConverter, constantsRepository, coreUtility, microflowRepository);
 		
 		when(context.getSession()).thenReturn(session);
 		when(constantsRepository.getTimeZoneID()).thenReturn("NonExistingTimeZone");

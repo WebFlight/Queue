@@ -424,7 +424,7 @@ public class TestManager
 		
 		ZipFile zipFile = new ZipFile(projectJar);
 		Enumeration<? extends ZipEntry> entries = zipFile.entries();
-		System.out.println("Starting processProjec");
+		
 		while(entries.hasMoreElements()){
 			ZipEntry zipEntry = entries.nextElement();
 			String fileName = zipEntry.getName();

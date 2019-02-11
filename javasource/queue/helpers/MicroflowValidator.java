@@ -49,8 +49,6 @@ public class MicroflowValidator {
 		Map<String, IDataType> inputParameters = microflowRepository.getInputParameters(microflowName);
 		boolean hasInputParameterOfTypeObject = hasInputParameterOfTypeObject(inputParameters);
 		
-		System.out.println(hasInputParameterOfTypeObject);
-		
 		if (hasInputParameterOfTypeObject) {
 			logger.debug("Validating microflow " + microflowName + ": has input parameter with data type Object and entity Queue.Job.");
 		}
