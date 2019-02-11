@@ -13,7 +13,8 @@ import queue.utilities.CoreUtility;
 public class QueueControlMessageFetcherExecutor {
 	
 	public void execute(IContext context, CoreUtility coreUtility, ILogNode logger, Map<String, Object> inputMap) throws CoreException {
-		List<IMendixObject> queueControlMessages = coreUtility.retrieveXPathQuery(context, "//Queue.QueueControlMessage[Queue.QueueControlMessage_XASInstance/System.XASInstance/XASId='" + coreUtility.getXASId() + "']");
+		long instanceIndex = coreUtility.getInstanceIndex();
+		List<IMendixObject> queueControlMessages = coreUtility.retrieveXPathQuery(context, "//Queue.QueueControlMessage[InstanceIndex='" + instanceIndex + "']");
 		queueControlMessages.forEach(o ->
 			{
 				inputMap.put("QueueControlMessage", o);
@@ -21,6 +22,7 @@ public class QueueControlMessageFetcherExecutor {
 					coreUtility.executeAsync(context, "Queue.IVK_ProcessQueueControlMessage", true, inputMap);
 				} catch (CoreException e) {
 					logger.error("Could not process Queue Control Message with ID " + o.getId().toLong() + ".", e);
+					coreUtility.delete(context, o);
 				}
 			}
 		);
