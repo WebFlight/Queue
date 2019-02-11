@@ -40,10 +40,13 @@ public class QueueHandler implements Runnable {
 	@Override
 	public void run() {
 		
+		Job job = null;
+		IContext context = null;
+		IMendixObject jobObject = null;
+		
+		// Retrieve Job from database. Retry is implemented, because it could happen that the Job has not been committed yet. 
 		try {
-			IMendixObject jobObject = null;
-			
-			IContext context = queueRepository.getSystemContext();
+			context = queueRepository.getSystemContext();
 			jobToQueueAdder.setTimeZone(context, logger);
 			
 			int retries = 0;
@@ -70,26 +73,39 @@ public class QueueHandler implements Runnable {
 				retries++;
 			}
 			
-			Job job = jobRepository.initialize(context, jobObject);
+			job = jobRepository.initialize(context, jobObject);
 			this.retry = job.getRetry(context);
-			String microflowName = job.getMicroflowName(context);
 			
+			} catch (CoreException e) {
+			logger.error("Could not retrieve job object. Job will not be executed.", e);
+			return;
+		}
+		
+		String microflowName = null;
+		
+		// Execute the microflow.
+		try {
+			microflowName = job.getMicroflowName(context);
 			HashMap<String, Object> jobInput = microflowRepository.getJobInput(jobObject, microflowName);
+			job.setStatus(context, ENU_JobStatus.Running);
+			job.commit(context);
+			logger.debug("Job status set to Running.");
+			logger.debug("Starting execution of microflow " + microflowName + ".");
+			jobRepository.executeJob(context, microflowName, true, jobInput);
+			logger.debug("Finished execution of microflow " + microflowName + ".");
+			job.setStatus(context, ENU_JobStatus.Done);
+			job.commit(context);
+			logger.debug("Job status set to Done.");
+			scheduledJobRepository.remove(context, jobObject, retry);
+		} catch (Exception e) {
 			
+			// Handle exceptions during execution of the microflow. Create a new system context to prevent issues with modeling errors in the microflow.
 			try {
-				job.setStatus(context, ENU_JobStatus.Running);
-				job.commit(context);
-				logger.debug("Job status set to Running.");
-				logger.debug("Starting execution of microflow " + microflowName + ".");
-				jobRepository.executeJob(context, microflowName, true, jobInput);
-				logger.debug("Finished execution of microflow " + microflowName + ".");
-				job.setStatus(context, ENU_JobStatus.Done);
-				job.commit(context);
-				logger.debug("Job status set to Done.");
-				scheduledJobRepository.remove(context, jobObject, retry);
-			} catch (Exception e) {
-				scheduledJobRepository.remove(context, jobObject, retry);
+				IContext errorContext = queueRepository.getSystemContext();
+				scheduledJobRepository.remove(errorContext, jobObject, retry);
 				Throwable t = e.getCause();
+				
+				// Look for InterruptedException. This occurs when a job is aborted.
 				while(true) {
 					t = t.getCause();
 					if (t == null) {
@@ -98,8 +114,8 @@ public class QueueHandler implements Runnable {
 					
 					if(t instanceof InterruptedException) {
 						logger.warn("Microflow " + microflowName + " has been interrupted. Status will be set to Cancelled.");
-						job.setStatus(context, ENU_JobStatus.Cancelled);
-						job.commit(context);
+						job.setStatus(errorContext, ENU_JobStatus.Cancelled);
+						job.commit(errorContext);
 						return;
 					}
 				}
@@ -107,16 +123,16 @@ public class QueueHandler implements Runnable {
 				logger.error("Job " + job.getIdJob(context) + ": Error during execution of microflow " + microflowName + ".", e);
 				if (this.retry < job.getMaxRetries(context)) {
 					logger.debug("Retry " + (this.retry + 1) + " of " + job.getMaxRetries(context) + " will be scheduled for job with microflow " + job.getMicroflowName(context) + ".");
-					jobToQueueAdder.addRetry(context, logger, queueRepository, jobRepository, scheduledJobRepository, job);
+					jobToQueueAdder.addRetry(errorContext, logger, queueRepository, jobRepository, scheduledJobRepository, job);
 					logger.debug("Job rescheduled and status set to Queued.");
 				} else {
 					job.setStatus(context, ENU_JobStatus.Error);
-					job.commit(context);
+					job.commit(errorContext);
 					logger.debug("Max retries reached, status is set to Error.");
 				}
-			} 
-		} catch (CoreException e) {
-			logger.error("Could not retrieve job object. Job will not be executed.");
-		}
+			} catch (Exception errorException) {
+				logger.error("Exception during error handling of Job.", errorException);
+			}
+		} 
 	}
 }
