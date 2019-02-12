@@ -31,11 +31,12 @@ public class UserActionsRegistrar
     registrator.registerUserAction(objecthandling.actions.refreshClassByObject.class);
     registrator.registerUserAction(objecthandling.actions.StartTransaction.class);
     registrator.registerUserAction(queue.actions.AddJobToQueue.class);
-    registrator.registerUserAction(queue.actions.AddJobToQueueWithMicroflowSelection.class);
+    registrator.registerUserAction(queue.actions.AddJobToQueueTextToMicroflow.class);
     registrator.registerUserAction(queue.actions.CancelJob.class);
     registrator.registerUserAction(queue.actions.GetInstanceIndex.class);
     registrator.registerUserAction(queue.actions.GetQueueOverview.class);
     registrator.registerUserAction(queue.actions.InitializeQueue.class);
+    registrator.registerUserAction(queue.actions.InitializeQueueAndRecoverJobs.class);
     registrator.registerUserAction(queue.actions.SetErrorForJob.class);
     registrator.registerUserAction(queue.actions.ShutdownQueue.class);
     registrator.registerUserAction(system.actions.VerifyPassword.class);
