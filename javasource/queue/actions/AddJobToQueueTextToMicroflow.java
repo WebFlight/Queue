@@ -19,25 +19,23 @@ import queue.helpers.JobValidator;
 import queue.helpers.MicroflowValidator;
 import queue.helpers.TimeUnitConverter;
 import queue.proxies.constants.Constants;
+import queue.repositories.ScheduledJobRepository;
+import queue.utilities.CoreUtility;
 import queue.repositories.ConstantsRepository;
 import queue.repositories.JobRepository;
 import queue.repositories.MicroflowRepository;
 import queue.repositories.QueueRepository;
-import queue.repositories.ScheduledJobRepository;
-import queue.utilities.CoreUtility;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
-public class AddJobToQueueWithMicroflowSelection extends CustomJavaAction<java.lang.Boolean>
+public class AddJobToQueueTextToMicroflow extends CustomJavaAction<java.lang.Boolean>
 {
 	private IMendixObject __job;
 	private queue.proxies.Job job;
-	private java.lang.String microflow;
 
-	public AddJobToQueueWithMicroflowSelection(IContext context, IMendixObject job, java.lang.String microflow)
+	public AddJobToQueueTextToMicroflow(IContext context, IMendixObject job)
 	{
 		super(context);
 		this.__job = job;
-		this.microflow = microflow;
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class AddJobToQueueWithMicroflowSelection extends CustomJavaAction<java.l
 		QueueRepository queueRepository = QueueRepository.getInstance();
 		JobRepository jobRepository = new JobRepository();
 		
-		adder.addWithMicroflow(this.context(), logger, queueRepository, jobRepository, scheduledJobRepository, job, microflow);
+		adder.add(this.context(), logger, queueRepository, jobRepository, scheduledJobRepository, job);
 		return true;
 		// END USER CODE
 	}
@@ -71,7 +69,7 @@ public class AddJobToQueueWithMicroflowSelection extends CustomJavaAction<java.l
 	@Override
 	public java.lang.String toString()
 	{
-		return "AddJobToQueueWithMicroflowSelection";
+		return "AddJobToQueueTextToMicroflow";
 	}
 
 	// BEGIN EXTRA CODE
