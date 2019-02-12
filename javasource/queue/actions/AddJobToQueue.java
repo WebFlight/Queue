@@ -19,23 +19,28 @@ import queue.helpers.JobValidator;
 import queue.helpers.MicroflowValidator;
 import queue.helpers.TimeUnitConverter;
 import queue.proxies.constants.Constants;
-import queue.repositories.ScheduledJobRepository;
-import queue.utilities.CoreUtility;
 import queue.repositories.ConstantsRepository;
 import queue.repositories.JobRepository;
 import queue.repositories.MicroflowRepository;
 import queue.repositories.QueueRepository;
+import queue.repositories.ScheduledJobRepository;
+import queue.utilities.CoreUtility;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
+/**
+ * Add a job to a specific Queue. The Job object contains the configuration, such as the name of the Queue the Job is added to and the retry configuration of the Job.
+ */
 public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 {
 	private IMendixObject __job;
 	private queue.proxies.Job job;
+	private java.lang.String microflow;
 
-	public AddJobToQueue(IContext context, IMendixObject job)
+	public AddJobToQueue(IContext context, IMendixObject job, java.lang.String microflow)
 	{
 		super(context);
 		this.__job = job;
+		this.microflow = microflow;
 	}
 
 	@Override
@@ -58,7 +63,7 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 		QueueRepository queueRepository = QueueRepository.getInstance();
 		JobRepository jobRepository = new JobRepository();
 		
-		adder.add(this.context(), logger, queueRepository, jobRepository, scheduledJobRepository, job);
+		adder.addWithMicroflow(this.context(), logger, queueRepository, jobRepository, scheduledJobRepository, job, microflow);
 		return true;
 		// END USER CODE
 	}
