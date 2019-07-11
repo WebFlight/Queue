@@ -26,18 +26,18 @@ import queue.repositories.QueueRepository;
  */
 public class ShutdownQueue extends CustomJavaAction<java.lang.Boolean>
 {
-	private java.lang.String Name;
-	private java.lang.Boolean Gracefully;
-	private java.lang.Boolean AwaitTermination;
-	private java.lang.Long TerminationTimeout;
+	private java.lang.String name;
+	private java.lang.Boolean gracefully;
+	private java.lang.Boolean awaitTermination;
+	private java.lang.Long terminationTimeout;
 
-	public ShutdownQueue(IContext context, java.lang.String Name, java.lang.Boolean Gracefully, java.lang.Boolean AwaitTermination, java.lang.Long TerminationTimeout)
+	public ShutdownQueue(IContext context, java.lang.String name, java.lang.Boolean gracefully, java.lang.Boolean awaitTermination, java.lang.Long terminationTimeout)
 	{
 		super(context);
-		this.Name = Name;
-		this.Gracefully = Gracefully;
-		this.AwaitTermination = AwaitTermination;
-		this.TerminationTimeout = TerminationTimeout;
+		this.name = name;
+		this.gracefully = gracefully;
+		this.awaitTermination = awaitTermination;
+		this.terminationTimeout = terminationTimeout;
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class ShutdownQueue extends CustomJavaAction<java.lang.Boolean>
 		ILogNode logger = Core.getLogger(Constants.getLOGNODE());
 		QueueController queueController = new QueueController(logger);
 		QueueRepository queueRepository = QueueRepository.getInstance();
-		return queueController.shutdown(queueRepository, Name, Gracefully, AwaitTermination, TerminationTimeout.intValue());
+		return queueController.shutdown(queueRepository, name, gracefully, awaitTermination, terminationTimeout.intValue());
 		// END USER CODE
 	}
 
