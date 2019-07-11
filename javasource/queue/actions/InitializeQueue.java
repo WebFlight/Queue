@@ -25,16 +25,16 @@ import queue.utilities.CoreUtility;
 
 public class InitializeQueue extends CustomJavaAction<java.lang.Boolean>
 {
-	private java.lang.String Name;
-	private java.lang.Long PoolSize;
-	private java.lang.Long Priority;
+	private java.lang.String name;
+	private java.lang.Long poolSize;
+	private java.lang.Long priority;
 
-	public InitializeQueue(IContext context, java.lang.String Name, java.lang.Long PoolSize, java.lang.Long Priority)
+	public InitializeQueue(IContext context, java.lang.String name, java.lang.Long poolSize, java.lang.Long priority)
 	{
 		super(context);
-		this.Name = Name;
-		this.PoolSize = PoolSize;
-		this.Priority = Priority;
+		this.name = name;
+		this.poolSize = poolSize;
+		this.priority = priority;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class InitializeQueue extends CustomJavaAction<java.lang.Boolean>
 		
 		QueueValidator queueValidator = new QueueValidator(logger);
 		QueueRepository queueRepository = QueueRepository.getInstance();
-		QueueConfiguration configuration = new QueueConfiguration(this.Name, this.PoolSize.intValue(), this.Priority.intValue());
+		QueueConfiguration configuration = new QueueConfiguration(this.name, this.poolSize.intValue(), this.priority.intValue());
 		QueueThreadFactory threadFactory = new QueueThreadFactory(configuration);
 		QueueThreadPoolFactory threadPoolFactory = new QueueThreadPoolFactory();
 		QueueInitializer queueInitializer = new QueueInitializer();
