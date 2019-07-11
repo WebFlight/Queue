@@ -42,6 +42,7 @@ public class TestMicroflowValidator {
 		when(microflowRepository.getInputParameters(existingMicroflow)).thenReturn(inputParameterMap);
 		when(inputParameterMap.values()).thenReturn(collection);
 		when(collection.stream()).thenReturn(stream);
+		when(stream.filter(Mockito.any())).thenReturn(stream);
 		when(stream.anyMatch(Mockito.any())).thenReturn(true);
 		
 		MicroflowValidator microflowValidator = new MicroflowValidator(microflowRepository);
