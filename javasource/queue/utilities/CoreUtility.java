@@ -50,9 +50,9 @@ public class CoreUtility {
 			} catch(SecurityException securityException) {
 				logger.warn("GetCFInstanceIndex: Could not access environment variable CF_INSTANCE_INDEX, permission denied. Value of -1 is returned.");
 			} catch(NumberFormatException numberFormatException) {
-				logger.warn("GetCFInstanceIndex: Could not parse value of environment variable CF_INSTANCE_INDEX as Long. Value of -1 is returned.");
+				logger.debug("GetCFInstanceIndex: Could not parse value of environment variable CF_INSTANCE_INDEX as Long. Value of -1 is returned.");
 			} catch(NullPointerException nullPointerException) {
-				logger.warn("GetCFInstanceIndex: Could not find value for environment variable CF_INSTANCE_INDEX. This could indicate a local deployment is running. Value of -1 is returned.");
+				logger.debug("GetCFInstanceIndex: Could not find value for environment variable CF_INSTANCE_INDEX. This could indicate a local deployment is running. Value of -1 is returned.");
 			}
 		}
 		
