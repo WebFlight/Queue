@@ -21,7 +21,7 @@ public class GetQueueOverview extends CustomJavaAction<java.util.List<IMendixObj
 		super(context);
 	}
 
-	@Override
+	@java.lang.Override
 	public java.util.List<IMendixObject> executeAction() throws Exception
 	{
 		// BEGIN USER CODE
@@ -33,7 +33,7 @@ public class GetQueueOverview extends CustomJavaAction<java.util.List<IMendixObj
 	/**
 	 * Returns a string representation of this action
 	 */
-	@Override
+	@java.lang.Override
 	public java.lang.String toString()
 	{
 		return "GetQueueOverview";

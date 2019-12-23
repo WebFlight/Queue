@@ -10,10 +10,10 @@
     .navbar-inner > ul {
         margin: 0;
         padding-left: 0;
-         > li {
+        & > li {
             padding: 0;
             border-style: none;
-             > a {
+            & > a {
                 display: flex;
                 align-items: center;
                 height: $navigation-item-height;
@@ -35,7 +35,7 @@
                     margin-right: 0.5em;
                 }
                 .glyphicon {
-                    top: -1px;
+                    top: 0;
                     margin-right: 0.5em;
                     vertical-align: middle;
                     font-size: $navigation-glyph-size;
@@ -62,7 +62,7 @@
 
     /* Sub navigation item specific */
     li.mx-navigationtree-has-items {
-         > ul {
+        & > ul {
             margin: 0;
             padding-left: 0;
             background-color: $navigation-sub-bg;
@@ -84,6 +84,7 @@
                     &:focus,
                     &.active {
                         color: $navigation-sub-color-hover;
+                        outline: 0;
                         background-color: $navigation-sub-bg-hover;
                     }
                     &.active {
@@ -110,8 +111,8 @@
     .mx-navigationtree {
         background-color: $navtopbar-bg;
         .navbar-inner > ul {
-             > li {
-                 > a {
+            & > li {
+                & > a {
                     color: $navtopbar-color;
                     border-color: $navtopbar-border-color;
                     background-color: $navtopbar-bg;
@@ -145,7 +146,7 @@
 
         /* Sub navigation item specific */
         li.mx-navigationtree-has-items {
-             > ul {
+            & > ul {
                 background-color: $navtopbar-sub-bg;
                 li {
                     a {
@@ -174,8 +175,8 @@
     .mx-navigationtree {
         background-color: $navsidebar-bg;
         .navbar-inner > ul {
-             > li {
-                 > a {
+            & > li {
+                & > a {
                     color: $navsidebar-color;
                     border-color: $navsidebar-border-color;
                     background-color: $navsidebar-bg;
@@ -209,7 +210,7 @@
 
         /* Sub navigation item specific */
         li.mx-navigationtree-has-items {
-             > ul {
+            & > ul {
                 background-color: $navsidebar-sub-bg;
                 li {
                     a {

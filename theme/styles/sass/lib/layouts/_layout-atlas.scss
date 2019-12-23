@@ -4,7 +4,6 @@
    The core stucture of all atlas layouts
 ========================================================================== */
 .layout-atlas {
-
     // Toggle button
     .toggle-btn > .glyphicon {
         margin: 0;
@@ -13,10 +12,10 @@
     // Sidebar
     .region-sidebar {
         background-color: $navsidebar-bg;
-        
+
         .mx-navigationtree .navbar-inner > ul > li > a {
             padding: 0 15px;
-        
+
             .glyphicon {
                 margin-right: 10px;
             }
@@ -38,14 +37,18 @@
         box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
 
         &::before {
-            position: absolute;
-            top: 0;
             z-index: 1;
             display: block;
             width: 100%;
-            height: 5px;
+            height: 4px;
             content: "";
             background-color: $brand-primary;
+        }
+        // Topbar Content
+        .topbar-content {
+            display: flex;
+            align-items: center;
+            min-height: $topbar-minimalheight;
         }
 
         // Toggle btn
@@ -57,17 +60,18 @@
         // For your company, product, or project name
         .navbar-brand {
             display: inline-block;
+            // reset bootstrap
             float: none;
-            min-height: $topbar-minimalheight;
+            height: auto;
             padding: 0;
-            line-height: $topbar-minimalheight;
+            line-height: inherit;
 
             img {
                 display: inline-block;
                 @if $brand-logo !=false {
                     width: 0;
                     height: 0;
-                    padding: $brand-logo-width / 2;
+                    padding: ($brand-logo-height / 2) ($brand-logo-width / 2);
                     background-image: url($brand-logo);
                     background-repeat: no-repeat;
                     background-position: left center;
@@ -91,12 +95,13 @@
         }
 
         .mx-navbar {
-            float: right;
-            min-height: $topbar-minimalheight;
+            display: inline-block;
+            margin-left: $gutter-size;
+            vertical-align: middle;
             background: transparent;
 
-            > .mx-navbar-item {
-                > a {
+            & > .mx-navbar-item {
+                & > a {
                     margin-top: 5px;
                     padding: 0 20px;
                 }

@@ -1,0 +1,222 @@
+/* ==========================================================================
+   Card
+========================================================================== */
+
+//== Default
+//-------------------------------------------------------------------------------------------------------------------//
+.card {
+    padding: $container-spacing;
+    border: 1px solid $border-color-default;
+    border-radius: $border-radius-default;
+    background-color: #FFFFFF;
+    .mx-layoutgrid {
+        padding: 0 !important;
+    }
+
+    //== Elements
+    //-------------------------------------------------------------------------------------------------------------------//
+    .card-title {
+        margin-top: 0;
+    }
+}
+
+//== Varations
+//-------------------------------------------------------------------------------------------------------------------//
+.cardaction {
+    text-align: center;
+    .card-image {
+        margin: 0 auto 20px;
+    }
+    .btn {
+    }
+    .card-linkicon {
+        margin: 0 auto 20px;
+        .glyphicon {
+            font-size: 58px;
+        }
+    }
+}
+
+.cardmetrics {
+    .card-title {
+        margin-bottom: 0;
+    }
+    .figurecontent {
+    }
+    .card-image {
+        width: 100px;
+        height: auto;
+        // If btn
+        &.btn {
+            width: 100px;
+            height: 100px;
+            padding: 0;
+            cursor: default;
+            pointer-events: none;
+            font-size: 40px;
+        }
+    }
+    .card-counter {
+        margin: 0;
+        font-size: 64px;
+    }
+    .card-morebutton {
+    }
+}
+
+.cardinfo {
+    .card-text {
+        margin-bottom: $container-spacing;
+    }
+}
+// Used in card info
+.textwithicon {
+    overflow: hidden;
+    max-width: 100%;
+    margin-bottom: 15px;
+    text-overflow: ellipsis;
+    .textwithicon-icon,
+    .textwithicon-text {
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .textwithicon-icon {
+        margin-right: 15px;
+        padding: 0;
+        color: $brand-primary; // class .text-primary
+        border: 0;
+        background: transparent;
+        font-size: 23px;
+    }
+    .textwithicon-text {
+    }
+}
+
+// Used in card info
+.socialprofiles {
+    .socialprofiles-title {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold; // class text-bold
+    }
+    .socialprofiles-button {
+        width: 24px;
+        height: 24px;
+        margin-right: 15px;
+        padding: 0;
+        border-radius: 24px;
+        .glyphicon {
+            margin: 0;
+        }
+    }
+}
+
+
+.cardtabs {
+    padding: 0;
+    .cardtabs-tabs {
+        margin: 0;
+        ul.mx-tabcontainer-tabs {
+            display: flex;
+            margin: 0;
+            background-color: mix($tabs-border-color, #FFFFFF, 20%);
+
+            li {
+                flex: 1 1 auto;
+                text-align: center;
+                a,
+                a:hover,
+                a:focus {
+                    border-top-width: 0;
+                    border-right-width: 1px;
+                    border-left-width: 0;
+                }
+                &:first-child a {
+                    border-radius: $border-radius-default 0 0 0;
+                }
+                &:last-child a {
+                    border-radius: 0 $border-radius-default 0 0;
+                }
+            }
+        }
+        .mx-tabcontainer-pane {
+            @include layout-spacing($type: padding, $direction: all, $device: responsive);
+        }
+    }
+}
+
+.carduser {
+    .card-controls {
+    }
+    .card-title {
+    }
+    .card-detail {
+    }
+}
+
+.cardgraph {
+    .card-title {
+    }
+}
+
+.cardchart {
+    .card-title {
+    }
+}
+
+.cardproduct {
+    padding: 0;
+    .cardproduct-header {
+        position: relative;
+        overflow: hidden;
+        height: 200px;
+        .card-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+        }
+        .cardproduct-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 30px;
+            background: rgba(0, 0, 0, 0.60);
+
+            .cardproduct-overlay-category,
+            .cardproduct-overlay-title {
+                margin: 0;
+                color: #FFFFFF;
+            }
+        }
+    }
+    .cardproduct-footer {
+        position: relative;
+        padding: 20px 30px;
+        .cardproduct-name {
+            margin: 0;
+        }
+        .widget-star-rating-font {
+            font-size: 20px;
+        }
+        .cardproduct-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding: 30px;
+            border-left: 1px solid $border-color-default;
+        }
+    }
+}
+
+.cardshopping {
+}
+
+.carduserlist {
+}

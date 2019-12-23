@@ -1,13 +1,14 @@
+$wizard-step-number-size: 60px;
+$wizard-step-height: 50px;
+
 .wizard {
-    $wizard-step-number-size: 60px;
     display: flex;
     justify-content: space-between;
-
     .wizard-step {
         position: relative;
         width: 100%;
         text-align: center;
-        &:before {
+        &::before {
             position: absolute;
             z-index: -1;
             top: $wizard-step-number-size / 2;
@@ -17,21 +18,23 @@
             content: "";
             background-color: $border-color-default;
         }
+        .wizard-step-number {
+            width: $wizard-step-number-size;
+            height: $wizard-step-number-size;
+            border-color: $border-color-default;
+            border-radius: 50%;
+            background-color: #FFFFFF;
+            font-size: 20px;
+        }
+        .wizard-step-text {
+            display: block;
+            margin-top: 15px;
+        }
     }
-    .wizard-step-number {
-        width: $wizard-step-number-size;
-        height: $wizard-step-number-size;
-        border-color: $border-color-default;
-        border-radius: 50%;
-        background-color: #FFFFFF;
-        font-size: 20px;
-    }
-    .wizard-step-text {
-        display: block;
-        margin-top: 15px;
-    }
+
+
     // States
-    .wizard-step--active {
+    .wizard-step-active {
         .wizard-step-number {
             color: #FFFFFF;
             border-color: $brand-primary;
@@ -41,7 +44,7 @@
             color: $brand-primary;
         }
     }
-    .wizard-step--visited {
+    .wizard-step-visited {
         .wizard-step-number {
             color: #FFFFFF;
             border-color: $brand-success;
@@ -52,13 +55,10 @@
     }
 }
 
-.wizard--progress {
-    $wizard-step-height: 50px;
+.wizardprogress {
     display: flex;
     justify-content: space-between;
-    table.mx-table > tbody > tr > td {
-        padding: 0;
-    }
+
     .wizard-step-text {
         width: 100%;
     }
@@ -83,8 +83,8 @@
             text-overflow: ellipsis;
             color: $font-color-default;
         }
-        &:before,
-        &:after {
+        &::before,
+        &::after {
             position: absolute;
             z-index: 1;
             left: 100%;
@@ -96,7 +96,7 @@
         &::after {
             top: 1px;
             border-width: (($wizard-step-height / 2) - 1);
-            border-left-color: white;
+            border-left-color: #FFFFFF;
         }
         &::before {
             top: 0;
@@ -112,14 +112,14 @@
 
         &:last-child {
             border-radius: 0 5px 5px 0;
-            &:before,
-            &:after {
+            &::before,
+            &::after {
                 display: none;
             }
         }
     }
     // States
-    .wizard-step--active {
+    .wizard-step-active {
         background: $brand-primary;
         a {
             text-decoration: none;
@@ -129,7 +129,7 @@
             border-left-color: $brand-primary;
         }
     }
-    .wizard-step--visited {
+    .wizard-step-visited {
         a {
             color: $link-color;
         }

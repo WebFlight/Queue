@@ -34,7 +34,7 @@ public class InitializeQueueAndRecoverJobs extends CustomJavaAction<java.lang.Bo
 		this.priority = priority;
 	}
 
-	@Override
+	@java.lang.Override
 	public java.lang.Boolean executeAction() throws Exception
 	{
 		// BEGIN USER CODE
@@ -52,7 +52,7 @@ public class InitializeQueueAndRecoverJobs extends CustomJavaAction<java.lang.Bo
 	/**
 	 * Returns a string representation of this action
 	 */
-	@Override
+	@java.lang.Override
 	public java.lang.String toString()
 	{
 		return "InitializeQueueAndRecoverJobs";

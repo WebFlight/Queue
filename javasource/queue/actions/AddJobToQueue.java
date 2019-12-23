@@ -43,7 +43,7 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 		this.microflow = microflow;
 	}
 
-	@Override
+	@java.lang.Override
 	public java.lang.Boolean executeAction() throws Exception
 	{
 		this.job = __job == null ? null : queue.proxies.Job.initialize(getContext(), __job);
@@ -71,7 +71,7 @@ public class AddJobToQueue extends CustomJavaAction<java.lang.Boolean>
 	/**
 	 * Returns a string representation of this action
 	 */
-	@Override
+	@java.lang.Override
 	public java.lang.String toString()
 	{
 		return "AddJobToQueue";

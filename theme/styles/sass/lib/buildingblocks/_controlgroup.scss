@@ -1,8 +1,13 @@
+/* ==========================================================================
+   Control Group
+   
+   A group of buttons next to eachother
+========================================================================== */
 .controlgroup {
     .btn,
     .btn-group {
-        margin-right: $element-spacing;
-        margin-bottom: $element-spacing;
+        margin-right: $spacing-small;
+        margin-bottom: $spacing-small;
 
         &:last-child {
             margin-right: 0;

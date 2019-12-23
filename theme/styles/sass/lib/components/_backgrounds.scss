@@ -4,7 +4,7 @@
    Different background components, all managed by variables
 ========================================================================== */
 
-.background-primary {
+.background-main {
     background-color: $bg-color !important;
 }
 
@@ -150,4 +150,8 @@
 
 .background-danger-lighter {
     background-color: $color-danger-lighter !important;
+}
+
+.background-brand-gradient {
+    background-image: $brand-gradient !important;
 }
