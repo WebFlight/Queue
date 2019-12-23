@@ -13,7 +13,7 @@ public class TestExponentialBackoffCalculator {
 		ExponentialBackoffCalculator exponentialBackoffCalculator = new ExponentialBackoffCalculator();
 		int base = 500;
 		int retry = 3;
-		int expectedResult = new Double(Math.round(base * Math.pow(2, retry))).intValue(); 
+		int expectedResult = Math.toIntExact(Math.round(base * Math.pow(2, retry))); 
 		int actualResult = exponentialBackoffCalculator.calculate(base, retry);
 		assertEquals(expectedResult, actualResult);
 	}
