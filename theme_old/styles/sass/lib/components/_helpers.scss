@@ -34,23 +34,10 @@
 
 .nowrap,
 .nowrap * {
-    overflow: hidden;
+    overflow: hidden !important;
     // Star for inside an element, IE8 span > a
     white-space: nowrap !important;
-    text-overflow: ellipsis;
-}
-
-.form-disabled p {
-    @extend .form-control;
-    background-color: $form-input-bg-disabled !important;
-}
-
-.padding-bottom-none {
-    padding-bottom: 0 !important;
-}
-
-.no-margin {
-    margin: 0 !important;
+    text-overflow: ellipsis !important;
 }
 
 // Render DIV as Table Cells
@@ -88,119 +75,205 @@
 }
 
 // Flex alignments
-.align-content-left {
+.row-left {
     display: flex !important;
-    flex-flow: row wrap !important;
+    align-items: center !important;
+    flex-flow: row !important;
     justify-content: flex-start !important;
 }
-
-.align-content-right {
+.row-center {
     display: flex !important;
-    flex-flow: row wrap !important;
+    align-items: center !important;
+    flex-flow: row !important;
+    justify-content: center !important;
+}
+.row-right {
+    display: flex !important;
+    align-items: center !important;
+    flex-flow: row !important;
     justify-content: flex-end !important;
 }
-
-.align-content-center {
+.col-left {
+    display: flex !important;
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+.col-center {
     display: flex !important;
     align-items: center !important;
     flex-direction: column !important;
     justify-content: center !important;
 }
- 
-// Spacing
+.col-right {
+    display: flex !important;
+    align-items: flex-end !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+// Spacing none
+.spacing-inner-none {
+    padding: 0 !important;
+}
+.spacing-inner-top-none {
+    padding-top: 0 !important;
+}
+.spacing-inner-right-none {
+    padding-right: 0 !important;
+}
+.spacing-inner-bottom-none {
+    padding-bottom: 0 !important;
+}
+.spacing-inner-left-none {
+    padding-left: 0 !important;
+}
+
+.spacing-outer-none {
+    margin: 0 !important;
+}
+.spacing-outer-top-none {
+    margin-top: 0 !important;
+}
+.spacing-outer-right-none {
+    margin-right: 0 !important;
+}
+.spacing-outer-bottom-none {
+    margin-bottom: 0 !important;
+}
+.spacing-outer-left-none {
+    margin-left: 0 !important;
+}
+
+// Spacing small
 .spacing-inner {
-    padding: $element-spacing !important;
+    padding: $spacing-small !important;
 }
 .spacing-inner-top {
-    padding-top: $element-spacing !important;
+    padding-top: $spacing-small !important;
 }
 .spacing-inner-right {
-    padding-right: $element-spacing !important;
+    padding-right: $spacing-small !important;
 }
 .spacing-inner-bottom {
-    padding-bottom: $element-spacing !important;
+    padding-bottom: $spacing-small !important;
 }
 .spacing-inner-left {
-    padding-left: $element-spacing !important;
+    padding-left: $spacing-small !important;
 }
 
 .spacing-outer {
-    margin: $element-spacing !important;
+    margin: $spacing-small !important;
 }
 .spacing-outer-top {
-    margin-top: $element-spacing !important;
+    margin-top: $spacing-small !important;
 }
 .spacing-outer-right {
-    margin-right: $element-spacing !important;
+    margin-right: $spacing-small !important;
 }
 .spacing-outer-bottom {
-    margin-bottom: $element-spacing !important;
+    margin-bottom: $spacing-small !important;
 }
 .spacing-outer-left {
-    margin-left: $element-spacing !important;
+    margin-left: $spacing-small !important;
 }
 
-.spacing-inner-container {
-    padding: $container-spacing !important;
+// Spacing Medium
+.spacing-inner-medium {
+    @include get-responsive-spacing-medium($type: padding, $direction: all, $is_important: true);
 }
-.spacing-inner-top-container {
-    padding-top: $container-spacing !important;
+.spacing-inner-top-medium {
+    @include get-responsive-spacing-medium($type: padding, $direction: top, $is_important: true);
 }
-.spacing-inner-right-container {
-    padding-right: $container-spacing !important;
+.spacing-inner-right-medium {
+    @include get-responsive-spacing-medium($type: padding, $direction: right, $is_important: true);
 }
-.spacing-inner-bottom-container {
-    padding-bottom: $container-spacing !important;
+.spacing-inner-bottom-medium {
+    @include get-responsive-spacing-medium($type: padding, $direction: bottom, $is_important: true);
 }
-.spacing-inner-left-container {
-    padding-left: $container-spacing !important;
-}
-
-.spacing-outer-container {
-    margin: $element-spacing !important;
-}
-.spacing-outer-top-container {
-    margin-top: $container-spacing !important;
-}
-.spacing-outer-right-container {
-    margin-right: $container-spacing !important;
-}
-.spacing-outer-bottom-container {
-    margin-bottom: $container-spacing !important;
-}
-.spacing-outer-left-container {
-    margin-left: $container-spacing !important;
+.spacing-inner-left-medium {
+    @include get-responsive-spacing-medium($type: padding, $direction: left, $is_important: true);
 }
 
-.spacing-inner-responsive {
+.spacing-outer-medium {
+    @include get-responsive-spacing-medium($type: margin, $direction: all, $is_important: true);
+}
+.spacing-outer-top-medium {
+    @include get-responsive-spacing-medium($type: margin, $direction: top, $is_important: true);
+}
+.spacing-outer-right-medium {
+    @include get-responsive-spacing-medium($type: margin, $direction: right, $is_important: true);
+}
+.spacing-outer-bottom-medium {
+    @include get-responsive-spacing-medium($type: margin, $direction: bottom, $is_important: true);
+}
+.spacing-outer-left-medium {
+    @include get-responsive-spacing-medium($type: margin, $direction: left, $is_important: true);
+}
+
+// Spacing Large
+.spacing-inner-large {
+    @include get-responsive-spacing-large($type: padding, $direction: all, $is_important: true);
+}
+.spacing-inner-top-large {
+    @include get-responsive-spacing-large($type: padding, $direction: top, $is_important: true);
+}
+.spacing-inner-right-large {
+    @include get-responsive-spacing-large($type: padding, $direction: right, $is_important: true);
+}
+.spacing-inner-bottom-large {
+    @include get-responsive-spacing-large($type: padding, $direction: bottom, $is_important: true);
+}
+.spacing-inner-left-large {
+    @include get-responsive-spacing-large($type: padding, $direction: left, $is_important: true);
+}
+
+.spacing-outer-large {
+    @include get-responsive-spacing-large($type: margin, $direction: all, $is_important: true);
+}
+.spacing-outer-top-large {
+    @include get-responsive-spacing-large($type: margin, $direction: top, $is_important: true);
+}
+.spacing-outer-right-large {
+    @include get-responsive-spacing-large($type: margin, $direction: right, $is_important: true);
+}
+.spacing-outer-bottom-large {
+    @include get-responsive-spacing-large($type: margin, $direction: bottom, $is_important: true);
+}
+.spacing-outer-left-large {
+    @include get-responsive-spacing-large($type: margin, $direction: left, $is_important: true);
+}
+
+// Spacing layouts
+.spacing-inner-layout {
     @include layout-spacing($type: padding, $direction: all, $device: responsive, $is_important: true);
 }
-.spacing-inner-top-responsive {
+.spacing-inner-top-layout {
     @include layout-spacing($type: padding, $direction: top, $device: responsive, $is_important: true);
 }
-.spacing-inner-right-responsive {
+.spacing-inner-right-layout {
     @include layout-spacing($type: padding, $direction: right, $device: responsive, $is_important: true);
 }
-.spacing-inner-bottom-responsive {
+.spacing-inner-bottom-layout {
     @include layout-spacing($type: padding, $direction: bottom, $device: responsive, $is_important: true);
 }
-.spacing-inner-left-responsive {
+.spacing-inner-left-layout {
     @include layout-spacing($type: padding, $direction: left, $device: responsive, $is_important: true);
 }
 
-.spacing-outer-responsive {
+.spacing-outer-layout {
     @include layout-spacing($type: margin, $direction: all, $device: responsive, $is_important: true);
 }
-.spacing-outer-top-responsive {
+.spacing-outer-top-layout {
     @include layout-spacing($type: margin, $direction: top, $device: responsive, $is_important: true);
 }
-.spacing-outer-right-responsive {
+.spacing-outer-right-layout {
     @include layout-spacing($type: margin, $direction: right, $device: responsive, $is_important: true);
 }
-.spacing-outer-bottom-responsive {
+.spacing-outer-bottom-layout {
     @include layout-spacing($type: margin, $direction: bottom, $device: responsive, $is_important: true);
 }
-.spacing-outer-left-responsive {
+.spacing-outer-left-layout {
     @include layout-spacing($type: margin, $direction: left, $device: responsive, $is_important: true);
 }
 
@@ -213,4 +286,20 @@
 }
 .d-block {
     display: block !important;
+}
+
+@media (max-width: $screen-xs-max) {
+    .hidden-xs {
+        display: none !important;
+    }
+}
+@media (min-width: $screen-sm) and (max-width: $screen-sm-max) {
+    .hidden-sm {
+        display: none !important;
+    }
+}
+@media (min-width: $screen-md) {
+    .hidden-md {
+        display: none !important;
+    }
 }

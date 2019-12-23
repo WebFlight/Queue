@@ -1,4 +1,7 @@
-// Breadcrumb
+/* ==========================================================================
+   Breadcrumbs
+
+========================================================================== */
 .breadcrumb {
     //reset
     margin: 0;
@@ -7,11 +10,14 @@
     background-color: transparent;
     font-size: $font-size-default;
 }
+
+//== Elements
+//-------------------------------------------------------------------------------------------------------------------//
 .breadcrumb-item {
     display: inline-block;
     margin: 0;
     &:last-child {
-        color: $font-base-color;
+        color: $font-color-default;
         a {
             text-decoration: none;
         }
@@ -26,10 +32,13 @@
         color: $gray-light;
     }
 }
-.breadcrumb--large {
+
+//== Variations 
+//-------------------------------------------------------------------------------------------------------------------//
+.breadcrumb-large {
     font-size: $font-size-h3;
 }
-.breadcrumb--underline {
+.breadcrumb-underline {
     padding-bottom: $gutter-size;
     border-bottom: 1px solid $border-color-default;
 }

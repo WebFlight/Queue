@@ -23,7 +23,7 @@
                         bottom: 0;
                         left: $sidebar-width;
                         display: block;
-                        overflow-y: scroll;
+                        overflow-y: auto;
                         min-width: 200px;
                         padding-top: 10px;
                     }
@@ -57,10 +57,14 @@
         }
 
         .mx-scrollcontainer-wrapper > .mx-navigationtree {
-            ul li {
-                a {
+            .navbar-inner > ul > li {
+                & > a {
+                    height: $sidebar-width;
                     // Glyph icon
                     .glyphicon {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                         width: 40px;
                         height: 40px;
                         margin-left: -5px;
@@ -98,6 +102,17 @@
             @media (max-width: $screen-xs-max) {
                 display: inline-block;
             }
+        }
+    }
+}
+
+// Fix Safari issue of sidebar disappearing
+.profile-tablet {
+    .mx-scrollcontainer:not(.mx-scrollcontainer-open) > .region-sidebar {
+        overflow-y: auto;
+
+        .mx-scrollcontainer-wrapper {
+            overflow: visible;
         }
     }
 }

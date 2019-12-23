@@ -41,8 +41,9 @@ textarea.form-control {
     height: auto;
 }
 
+
 select.form-control {
-    $arrow: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='15px' height='8px'><polyline id='Line' fill='none' stroke='#{$form-input-color}' points='0.5 0.5 6 6 11.545361 0.5'></polyline></svg>";
+    $arrow: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='15px' height='8px'><polyline id='Line' fill='none' stroke='%23555555' points='0.5 0.5 6 6 11.545361 0.5'></polyline></svg>";
     padding-right: 30px;
     background-image: url($arrow);
     background-repeat: no-repeat;
@@ -62,7 +63,7 @@ select.form-control {
     }
 }
 
-// Read only fom control class
+// Read only form control class
 .form-control-static {
     overflow: hidden;
     min-height: auto;
@@ -99,7 +100,7 @@ select.form-control {
 // Form Group
 .form-group {
     margin-bottom: $form-group-margin-bottom;
-    [class*="col-"] {
+    & > [class*="col-"] {
         padding-right: $form-group-gutter;
         padding-left: $form-group-gutter;
     }
@@ -116,7 +117,10 @@ select.form-control {
         font-weight: $form-label-weight;
     }
 }
-
+// Targets only webkit iOS devices
+.dj_webkit.dj_ios .form-control {
+    transform: translateZ(0);
+}
 // Orientation
 .form-horizontal {
     @media (min-width: $screen-sm) {
@@ -125,5 +129,15 @@ select.form-control {
             padding-bottom: $form-input-padding-y;
             line-height: $form-input-line-height;
         }
+    }
+}
+
+// Fixes alignment bug on iPads / iPhones where datefield is not aligned vertically
+@media only screen and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 0) {
+    input[type=date],
+    input[type=time],
+    input[type=datetime-local],
+    input[type=month] {
+        line-height: 1;
     }
 }

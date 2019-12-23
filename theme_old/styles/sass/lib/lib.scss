@@ -1,3 +1,8 @@
+//
+// Atlas-UI-Framework v1.1.1 (https://atlas.mendix.com/)
+// Copyright (c) 2018 Mendix
+// Licensed under MIT (https://github.com/mendix/Atlas-UI-Framework/blob/master/LICENSE)
+//
 @import "../custom/custom-variables";
 
 @import "variables";
@@ -7,6 +12,7 @@
 @import "base/mixins";
 @import "base/reset";
 @import "base/base";
+@import "base/login";
 
 // Components
 @import "components/inputs";
@@ -40,6 +46,7 @@
 @import "buildingblocks/alignment-block";
 @import "buildingblocks/breadcrumb";
 @import "buildingblocks/card";
+@import "buildingblocks/chat";
 @import "buildingblocks/controlgroup";
 @import "buildingblocks/pageblocks";
 @import "buildingblocks/pageheader";
@@ -56,6 +63,7 @@
 @import "layouts/layout-atlas-phone";
 @import "layouts/layout-atlas-responsive";
 @import "layouts/layout-atlas-tablet";
+@import "layouts/layout-atlas-device-wrapper";
 
 //customwidgets
 @import "customwidgets/progress-bar-theme";
