@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IDataType;
 import com.mendix.systemwideinterfaces.core.IDataType.DataTypeEnum;
+import com.mendix.systemwideinterfaces.core.meta.IMetaObject;
 
 import queue.helpers.MicroflowValidator;
 import queue.repositories.MicroflowRepository;
@@ -23,6 +24,7 @@ import queue.repositories.MicroflowRepository;
 public class TestMicroflowValidator {
 	
 	MicroflowRepository microflowRepository = mock(MicroflowRepository.class);
+	IMetaObject metaObject = mock(IMetaObject.class);
 	ILogNode logger = mock(ILogNode.class);
 	@SuppressWarnings("rawtypes")
 	Map inputParameterMap = mock(Map.class);
@@ -114,6 +116,9 @@ public class TestMicroflowValidator {
 		
 		when(dataType.getObjectType()).thenReturn("Queue.Job");
 		when(dataType.getType()).thenReturn(DataTypeEnum.Object);
+		when(microflowRepository.getMetaObject("Queue.Job")).thenReturn(metaObject);
+		when(dataType.getObjectType()).thenReturn("Queue.Job");
+		when(metaObject.isSubClassOf(metaObject)).thenReturn(true);
 		
 		MicroflowValidator microflowValidator = new MicroflowValidator(microflowRepository);
 		
@@ -146,6 +151,9 @@ public class TestMicroflowValidator {
 		
 		when(dataType.getObjectType()).thenReturn("Queue.WrongJob");
 		when(dataType.getType()).thenReturn(DataTypeEnum.Object);
+		when(microflowRepository.getMetaObject("Queue.Job")).thenReturn(metaObject);
+		when(dataType.getObjectType()).thenReturn("Queue.Job");
+		when(metaObject.isSubClassOf(metaObject)).thenReturn(false);
 		
 		MicroflowValidator microflowValidator = new MicroflowValidator(microflowRepository);
 		
