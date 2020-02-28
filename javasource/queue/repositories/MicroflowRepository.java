@@ -7,6 +7,7 @@ import java.util.Set;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IDataType;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.systemwideinterfaces.core.meta.IMetaObject;
 
 import queue.helpers.MicroflowJobParameterProvider;
 
@@ -28,5 +29,9 @@ public class MicroflowRepository {
 		jobInput.put(jobParameterName, jobObject);
 		
 		return jobInput;
+	}
+	
+	public IMetaObject getMetaObject(String objectType) {
+		return Core.getMetaObject(objectType);
 	}
 }
