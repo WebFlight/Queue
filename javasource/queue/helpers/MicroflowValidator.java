@@ -61,7 +61,7 @@ public class MicroflowValidator {
 	}
 	
 	public boolean hasInputParameterOfTypeObject(Map<String, IDataType> inputParameters) {
-		return inputParameters.values().stream().filter(p -> p.getType() == DataTypeEnum.Object).anyMatch(p -> p.getObjectType().equals("Queue.Job"));
+		return inputParameters.values().stream().filter(p -> p.getType() == DataTypeEnum.Object).anyMatch(p -> microflowRepository.getMetaObject(p.getObjectType()).isSubClassOf(microflowRepository.getMetaObject("Queue.Job")));
 	}
 	
 	public String getClosestMatch(String microflowName, Set<String> microflowNames) {
