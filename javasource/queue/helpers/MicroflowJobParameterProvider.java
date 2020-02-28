@@ -16,7 +16,7 @@ public class MicroflowJobParameterProvider {
 
 	public String getJobParameterName(String microflowName) {
 		Map<String, IDataType> inputParameters = microflowRepository.getInputParameters(microflowName);
-		String parameterName = inputParameters.entrySet().stream().filter(p -> p.getValue().getObjectType().equals("Queue.Job")).findFirst().get().getKey();
+		String parameterName = inputParameters.entrySet().stream().filter(p -> microflowRepository.getMetaObject(p.getValue().getObjectType()).isSubClassOf(microflowRepository.getMetaObject("Queue.Job"))).findFirst().get().getKey();
 		
 		return parameterName;
 	}
