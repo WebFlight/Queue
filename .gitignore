@@ -1,4 +1,5 @@
 /deployment
+/GPUCache
 /releases
 /.settings
 /*.launch
