@@ -17,7 +17,10 @@ public class JobRepository {
 	}
 	
 	public void executeJob(IContext context, String microflowName, boolean inTransaction, HashMap<String, Object> jobInput) throws CoreException {
-		Core.execute(context, microflowName, inTransaction, jobInput);
+		Core.microflowCall(microflowName)
+            .withParams(jobInput)
+            .inTransaction(inTransaction)
+            .execute(context);
 	}
 	
 	public Job initialize(IContext context, IMendixObject jobObject) {
