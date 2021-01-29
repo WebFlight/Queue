@@ -14,6 +14,7 @@ import java.util.Map;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
+import static queue.proxies.microflows.Microflows.aSU_InitializeQueue;
 
 /**
  * Use this action to initialize a Queue during the After startup microflow in your application. If you do not use this action in the after startup microflow, the action cannot guarantee initialization of the Queue on all instances (relevant for multi-instance setup). 
@@ -38,14 +39,7 @@ public class InitializeQueueAndRecoverJobs extends CustomJavaAction<java.lang.Bo
 	public java.lang.Boolean executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		Map<String, Object> inputMap = new HashMap<>();
-		inputMap.put("Name", this.name);
-		inputMap.put("PoolSize", this.poolSize);
-		inputMap.put("Priority", this.priority);
-		
-		boolean result = Core.execute(this.context(), "Queue.ASU_InitializeQueue", true, inputMap);
-		
-		return result;
+		return aSU_InitializeQueue(this.context(), name, poolSize, priority);
 		// END USER CODE
 	}
 
