@@ -1,6 +1,7 @@
 package queue.helpers;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledExecutorService;
@@ -106,22 +107,31 @@ public class JobToQueueAdder {
 		}
 		
 		List<String> timeZoneList = Arrays.asList(TimeZone.getAvailableIDs());
-		boolean timeZoneExists = timeZoneList.stream().anyMatch(tz -> tz.equals(timeZoneID));
+		boolean timeZoneExists = timeZoneList.stream().anyMatch(
+				tz -> tz.equals(timeZoneID)
+				);
+		boolean timeZoneDoesNotExist = (timeZoneExists == false);
 		
-		boolean useDstCorrection = constantsRepository.useDstIfAppliccable();
-		int rawOffset  = TimeZone.getTimeZone(timeZoneID).getRawOffset();
-		int dstCorrection = 0;
-		
-		if (useDstCorrection) {
-			dstCorrection = TimeZone.getTimeZone(timeZoneID).getDSTSavings();
-		}
-		
-		if (timeZoneExists) {
-			int offset  = rawOffset + dstCorrection;
-			context.getSession().setTimeZone(-offset/1000/60);
+		if(timeZoneDoesNotExist) {
+			logger.warn("TimeZoneID " + timeZoneID + " is not valid. No time zone will be configured.");
 			return;
 		}
 		
-		logger.warn("TimeZoneID " + timeZoneID + " is not valid. No time zone will be configured.");
+		boolean useDstCorrection = constantsRepository.useDstIfAppliccable();
+		TimeZone timeZone = TimeZone.getTimeZone(timeZoneID); 
+		int offset  = timeZone.getRawOffset();
+		
+		if (useDstCorrection) {
+			
+			boolean inDaylightSavingTime = timeZone.inDaylightTime(new Date());
+			int dstCorrection = timeZone.getDSTSavings();
+			
+			if (inDaylightSavingTime) {
+				offset = offset + dstCorrection;
+			}
+			
+		}
+		
+		context.getSession().setTimeZone(-offset/1000/60);
 	}
 }
