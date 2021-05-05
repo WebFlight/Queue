@@ -14,3 +14,4 @@ proxies
 /*.mpr.bak
 /*.mpr.left*
 /*.mpr.right*
+/bin/
